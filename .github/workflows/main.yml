@@ -10,7 +10,8 @@ jobs:
         DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
       run: |
-        docker build -t avid-covider-pipelines . &&\
+        docker pull avidcovider/pipelines:latest &&\
+        docker build --cache-from avidcovider/pipelines:latest -t avid-covider-pipelines . &&\
         if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
           docker tag avid-covider-pipelines avidcovider/pipelines:latest &&\
           docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
