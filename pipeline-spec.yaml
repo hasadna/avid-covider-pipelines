@@ -1,0 +1,11 @@
+preprocess:
+  schedule:
+    crontab: "0 01 * * *"
+  pipeline:
+    - flow: common.github_pull_covid19_israel
+    - flow: common.run_covid19_israel
+      parameters:
+        module: src.utils.get_raw_data
+    - flow: common.run_covid19_israel
+      parameters:
+        module: src.utils.preprocess_raw_data

@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        docker build -t avid-covider-pipelines . &&\
+        if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
+          docker tag avid-covider-pipelines avidcovider/pipelines:latest &&\
+          docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
+          echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
+          docker push avidcovider/pipelines:latest &&\
+          docker push "avidcovider/pipelines:${GITHUB_SHA}"
+        fi

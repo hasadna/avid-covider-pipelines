@@ -1,0 +1,15 @@
+-r requirements.txt
+
+datapackage-pipelines[speedup]==2.1.15
+
+# requirements-preprocess
+
+google-api-python-client==1.8.0
+google-auth-httplib2==0.0.3
+google-auth-oauthlib==0.4.1
+geopandas==0.6.1
+geocoder==1.38.1
+tqdm==4.45.0
+googlemaps==4.2.0
+xlrd==1.2.0
+Rtree==0.8.3
