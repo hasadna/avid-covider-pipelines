@@ -1,16 +1,23 @@
-from dataflows import Flow
+from dataflows import Flow, update_resource, printer, dump_to_path
 import os
 import logging
 from common import utils
+import subprocess
 
 
 def flow(*_):
     logging.info('Pulling latest code from COVID19-ISRAEL github repo')
-    logging.info('COVID19_ISRAEL_REPOSITORY=%s' % os.environ['COVID19_ISRAEL_REPOSITORY'])
-    logging.info('branch = master')
+    logging.info('COVID19_ISRAEL_REPOSITORY=%s' % os.environ.get('COVID19_ISRAEL_REPOSITORY'))
+    logging.info('pulling from origin/master')
     if utils.subprocess_call_log(['git', 'pull', 'origin', 'master'], cwd='../COVID19-ISRAEL') != 0:
         raise Exception('Failed to git pull')
-    return Flow()
+    sha1 = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd='../COVID19-ISRAEL').decode().strip()
+    return Flow(
+        iter([{'sha1': sha1}]),
+        update_resource(-1, name='github_pull_covid19_israel', path='github_pull_covid19_israel.csv', **{'dpp:streaming': True}),
+        printer(),
+        dump_to_path('data/github_pull_covid19_israel')
+    )
 
 
 if __name__ == "__main__":

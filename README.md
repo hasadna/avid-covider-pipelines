@@ -170,10 +170,11 @@ Set the repository env var:
 export COVID19_ISRAEL_REPOSITORY=GitHubUser/GitHubRepo
 ```
 
-Create the persistent volume:
+Create persistent volumes:
 
 ```
 mkdir -p .covid19-israel-volume
+mkdir -p data
 ```
 
 Run the pipelines server:
@@ -187,6 +188,7 @@ docker run -it \
   -e GOOGLE_SERVICE_ACCOUNT_FILE=/secrets/secret_service_account \
   -e GOOGLE_API_KEY_FILE=/secrets/google_api_key.txt \
   -v `pwd`/.covid19-israel-volume:/COVID19-ISRAEL \
+  -v `pwd`/data:/pipelines/data \
   -p 5000:5000 \
   avid-covider-pipelines server
 ```
