@@ -6,7 +6,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - run: |
+    - env:
+        DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+      run: |
         docker build -t avid-covider-pipelines . &&\
         if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
           docker tag avid-covider-pipelines avidcovider/pipelines:latest &&\
