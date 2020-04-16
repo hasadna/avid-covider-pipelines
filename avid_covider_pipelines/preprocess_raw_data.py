@@ -1,5 +1,6 @@
 import logging
-from dataflows import Flow, printer, dump_to_path, set_type, update_resource, load, sort_rows
+from dataflows import Flow, printer, set_type, update_resource, load, sort_rows
+from avid_covider_pipelines.utils import dump_to_path
 from avid_covider_pipelines.utils import load_if_exists
 from avid_covider_pipelines import github_pull_covid19_israel, run_covid19_israel
 import datetime

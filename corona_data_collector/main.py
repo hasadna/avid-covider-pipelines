@@ -6,7 +6,10 @@ from datetime import datetime, timedelta
 import psycopg2
 
 from corona_data_collector.DBToFileWriter import DBToFileWriter
-from corona_data_collector.config import db_settings, query_batch_size, use_gps_finder, supported_questions_version, destination_archive
+from corona_data_collector.config import (
+    db_settings, query_batch_size, use_gps_finder, supported_questions_version, destination_archive,
+    DictObject
+)
 
 
 def run_query(settings, min_date, max_date, num_of_records=100):
@@ -54,9 +57,11 @@ def get_process_arguments(parameters=None):
         parser.add_option('-f', action='store', dest='file_path', default='')
         opts, args = parser.parse_args()
     else:
-        opts, args = object(), object()
-        opts.source = parameters.get('source', 'db')
-        opts.file_path = parameters.get('file_path', '')
+        opts = DictObject(
+            source=parameters.get('source', 'db'),
+            file_path=parameters.get('file_path', '')
+        )
+        args = DictObject()
     if opts.source not in ('db', 'file'):
         raise Exception('source (-s) argument must be either "file" or "db"')
     if opts.source == 'file' and opts.file_path == '':
@@ -70,7 +75,7 @@ def main(parameters=None):
     month = yesterday.month
     from_date = datetime(2020, month, day, 00, 00, 00)
     to_date = datetime(2020, month, day, 23, 59, 59)
-    db_to_file_writer = DBToFileWriter(f'corona_bot_answers_{day}_{month}_2020.csv')
+    db_to_file_writer = DBToFileWriter(os.path.join(os.path.dirname(__file__), f'corona_bot_answers_{day}_{month}_2020.csv'))
     options, arguments = get_process_arguments(parameters)
     if options.source == 'file':
         print(f'Loading data from {options.file_path}')

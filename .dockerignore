@@ -4,3 +4,6 @@ README.md
 LICENSE
 .*
 data
+corona_data_collector/keys.py
+corona_data_collector/certs
+corona_data_collector/corona_bot_answers_*.csv

@@ -1,4 +1,5 @@
-from dataflows import Flow, update_resource, printer, dump_to_path
+from dataflows import Flow, update_resource, printer
+from avid_covider_pipelines.utils import dump_to_path
 import os
 import logging
 from avid_covider_pipelines import utils

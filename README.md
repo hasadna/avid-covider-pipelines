@@ -177,16 +177,35 @@ mkdir -p .covid19-israel-volume
 mkdir -p data
 ```
 
+Add secret files for corona_data_collector to CDC_SECRETS_PATH:
+
+```
+export CDC_SECRETS_PATH=/path/to/corona_data_collector_secrets
+ls -lah $CDC_SECRETS_PATH/certs/client-cert.pem $SECRETS_PATH/certs/client-key.pem $SECRETS_PATH/certs/server-ca.pem
+```
+
+Secret environment variables required for corona_data_collector:
+
+```
+export CORONA_DATA_COLLECTOR_DB_PASS=
+export CORONA_DATA_COLLECTOR_GPS_URL_KEY=
+export CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN=
+```
+
 Run the pipelines server:
 
 ```
 docker build -t avid-covider-pipelines . &&\
 docker run -it \
   -v $SECRETS_PATH:/secrets \
+  -v $CDC_SECRETS_PATH:/cdc_secrets \
   -e COVID19_ISRAEL_PRIVATE_KEY_FILE=/secrets/covid19_israel_github_private_key \
   -e COVID19_ISRAEL_REPOSITORY \
   -e GOOGLE_SERVICE_ACCOUNT_FILE=/secrets/secret_service_account \
   -e GOOGLE_API_KEY_FILE=/secrets/google_api_key.txt \
+  -e CORONA_DATA_COLLECTOR_DB_PASS -e CORONA_DATA_COLLECTOR_GPS_URL_KEY -e CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN \
+  -e CORONA_DATA_COLLECTOR_SECRETS_PATH=/cdc_secrets \
+  -e CORONA_DATA_COLLECTOR_GPS_PATH=/pipelines/data/corona_data_collector/gps_data.json \
   -v `pwd`/.covid19-israel-volume:/COVID19-ISRAEL \
   -v `pwd`/data:/pipelines/data \
   -p 5000:5000 \

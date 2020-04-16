@@ -1,7 +1,9 @@
 import logging
 import subprocess
 import os
+import stat
 from dataflows import Flow, load, update_resource
+from dataflows.processors.dumpers.to_path import PathDumper
 
 
 def subprocess_call_log(*args, log_file=None, **kwargs):
@@ -26,3 +28,11 @@ def load_if_exists(load_source, name, not_exists_rows, *args, **kwargs):
         return Flow(load(load_source, name, *args, **kwargs))
     else:
         return Flow(iter(not_exists_rows), update_resource(-1, name=name))
+
+
+class dump_to_path(PathDumper):
+
+    def write_file_to_output(self, filename, path):
+        path = super(dump_to_path, self).write_file_to_output(filename, path)
+        os.chmod(path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+        return path

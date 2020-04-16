@@ -1,23 +1,42 @@
+import os
+
+
+class DictObject():
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
 try:
     from corona_data_collector import keys
 except ImportError:
     import os
-    keys = object()
-    keys.db_pass = os.environ['CORONA_DATA_COLLECTOR_DB_PASS']
-    keys.gps_url_key = os.environ['CORONA_DATA_COLLECTOR_GPS_URL_KEY']
-    keys.destination_archive = os.environ['CORONA_DATA_COLLECTOR_DESTINATION_ARCHIVE']
-    keys.destination_output = os.environ['CORONA_DATA_COLLECTOR_DESTINATION_OUTPUT']
-    keys.telegram_token = os.environ['CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN']
-
+    keys = DictObject(
+        db_pass=os.environ['CORONA_DATA_COLLECTOR_DB_PASS'],
+        gps_url_key=os.environ['CORONA_DATA_COLLECTOR_GPS_URL_KEY'],
+        telegram_token=os.environ['CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN'],
+        destination_archive='./data/corona_data_collector/destination_archive',
+        destination_output='./data/corona_data_collector/destination_output'
+    )
 
 db_settings = {
     "host": "35.230.137.198",
     "port": 5432,
     "username": "readonly",
     "password": keys.db_pass,
-    "sslrootcert": './certs/server-ca.pem',
-    "sslcert": './certs/client-cert.pem',
-    "sslkey": './certs/client-key.pem',
+    "sslrootcert": os.path.join(
+        os.environ.get('CORONA_DATA_COLLECTOR_SECRETS_PATH', os.path.dirname(__file__)),
+        'certs/server-ca.pem'
+    ),
+    "sslcert": os.path.join(
+        os.environ.get('CORONA_DATA_COLLECTOR_SECRETS_PATH', os.path.dirname(__file__)),
+        'certs/client-cert.pem'
+    ),
+    "sslkey": os.path.join(
+        os.environ.get('CORONA_DATA_COLLECTOR_SECRETS_PATH', os.path.dirname(__file__)),
+        'certs/client-key.pem'
+    ),
 }
 answer_titles = {
     'id': 'id',
@@ -146,7 +165,8 @@ values_to_convert = {
         'true': 1
     }
 }
-gps_source_file = './gps_data.json'
+gps_source_file = os.environ.get('CORONA_DATA_COLLECTOR_GPS_PATH',
+                                 os.path.join(os.path.dirname(__file__), 'gps_data.json'))
 gps_url = 'https://maps.googleapis.com/maps/api/geocode/json'
 gps_url_key = keys.gps_url_key
 use_gps_finder = True
