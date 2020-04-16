@@ -40,7 +40,7 @@ def flow(parameters, *_):
             mtimes[path] = os.path.getmtime(path)
             sizes[path] = os.path.getsize(path)
             hashes[path] = get_hash(path)
-    if utils.subprocess_call_log(['python', '-u', '-m', parameters['module']], cwd='../COVID19-ISRAEL') != 0:
+    if utils.subprocess_call_log(['python', '-u', '-m', parameters['module']], log_file=parameters.get('log_file'), cwd='../COVID19-ISRAEL') != 0:
         raise Exception('Failed to run COVID19-ISRAEL module %s' % parameters['module'])
     resource_name = parameters.get('resource_name', 'covid19_israel_updated_files')
     dump_to_path_name = parameters.get('dump_to_path', 'data/run_covid19_israel/last_updated_files/%s' % parameters['module'])
