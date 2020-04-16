@@ -6,8 +6,7 @@ RUN apt-get update &&\
          psycopg2==2.8.5 datapackage-pipelines[speedup]==2.1.15 datapackage-pipelines-github==0.0.4 \
          datapackage-pipelines-sourcespec-registry==0.0.9 datapackage-pipelines-aws==0.0.23 &&\
     mkdir -p /var/redis && chmod 775 /var/redis && chown redis.redis /var/redis &&\
-    ln -s `which python3` /usr/bin/python && mkdir -p /var/run/dpp &&\
-    python3 -m pip install 'werkzeug<1.0'
+    ln -s `which python3` /usr/bin/python && mkdir -p /var/run/dpp
 COPY dpp/ /dpp/
 ENV DPP_NUM_WORKERS=4
 ENV DPP_REDIS_HOST=127.0.0.1
