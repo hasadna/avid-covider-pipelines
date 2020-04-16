@@ -32,7 +32,6 @@ def get_updated_files(mtimes, sizes, hashes):
 
 def flow(parameters, *_):
     logging.info('Running COVID19-ISRAEL module %s' % parameters['module'])
-    raise Exception('failure!')
     mtimes = {}
     sizes = {}
     hashes = {}
@@ -42,12 +41,15 @@ def flow(parameters, *_):
             sizes[path] = os.path.getsize(path)
             hashes[path] = get_hash(path)
     if utils.subprocess_call_log(['python', '-u', '-m', parameters['module']], cwd='../COVID19-ISRAEL') != 0:
-        raise Exception('Failed to run module %s' % parameters['module'])
+        raise Exception('Failed to run COVID19-ISRAEL module %s' % parameters['module'])
+    resource_name = parameters.get('resource_name', 'covid19_israel_updated_files')
+    dump_to_path_name = parameters.get('dump_to_path', 'data/run_covid19_israel/last_updated_files/%s' % parameters['module'])
+    printer_num_rows = parameters.get('printer_num_rows', 999)
     return Flow(
         get_updated_files(mtimes, sizes, hashes),
-        update_resource(-1, name='covid19_israel_updated_files', path='covid19_israel_updated_files.csv', **{'dpp:streaming': True}),
-        printer(num_rows=999),
-        dump_to_path('data/run_covid19_israel/last_updated_files/%s' % parameters['module'])
+        update_resource(-1, name=resource_name, path='%s.csv' % resource_name, **{'dpp:streaming': True}),
+        *([printer(num_rows=printer_num_rows)] if printer_num_rows > 0 else []),
+        *([dump_to_path(dump_to_path_name)] if dump_to_path_name else [])
     )
 
 

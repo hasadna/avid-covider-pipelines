@@ -5,7 +5,7 @@ from avid_covider_pipelines import utils
 import subprocess
 
 
-def flow(*_):
+def flow(parameters, *_):
     logging.info('Pulling latest code from COVID19-ISRAEL github repo')
     logging.info('COVID19_ISRAEL_REPOSITORY=%s' % os.environ.get('COVID19_ISRAEL_REPOSITORY'))
     logging.info('pulling from origin/master')
@@ -18,10 +18,10 @@ def flow(*_):
         iter([{'sha1': sha1}]),
         update_resource(-1, name='github_pull_covid19_israel', path='github_pull_covid19_israel.csv', **{'dpp:streaming': True}),
         printer(),
-        dump_to_path('data/github_pull_covid19_israel')
+        dump_to_path(parameters.get('dump_to_path', 'data/github_pull_covid19_israel'))
     )
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    flow().process()
+    flow({}).process()
