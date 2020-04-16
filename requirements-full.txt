@@ -17,6 +17,6 @@ Rtree==0.8.3
 
 # corona_data_collector requirements
 
-python-telegram-bot==12.6.1
+python-telegram-bot==12.5
 telegram==0.0.1
 psycopg2==2.8.5
