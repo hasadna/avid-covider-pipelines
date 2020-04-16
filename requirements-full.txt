@@ -14,3 +14,9 @@ tqdm==4.45.0
 googlemaps==4.2.0
 xlrd==1.2.0
 Rtree==0.8.3
+
+# corona_data_collector requirements
+
+python-telegram-bot==12.6.1
+telegram==0.0.1
+psycopg2==2.8.5
