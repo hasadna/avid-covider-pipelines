@@ -1,7 +1,7 @@
 from dataflows import Flow, update_resource, printer, dump_to_path
 import os
 import logging
-from common import utils
+from avid_covider_pipelines import utils
 import subprocess
 
 

@@ -1,5 +1,5 @@
 from dataflows import Flow, update_resource, printer, dump_to_path
-from common import utils
+from avid_covider_pipelines import utils
 from glob import glob
 import logging
 import sys
@@ -32,6 +32,7 @@ def get_updated_files(mtimes, sizes, hashes):
 
 def flow(parameters, *_):
     logging.info('Running COVID19-ISRAEL module %s' % parameters['module'])
+    raise Exception('failure!')
     mtimes = {}
     sizes = {}
     hashes = {}
