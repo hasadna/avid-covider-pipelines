@@ -1,6 +1,7 @@
 -r requirements.txt
 
 git+git://github.com/frictionlessdata/datapackage-pipelines.git@8cefe5874e38f81d3701485ee24628dc655648f6#egg=datapackage-pipelines[speedup]
+werkzeug<1.0
 
 # requirements-preprocess
 
