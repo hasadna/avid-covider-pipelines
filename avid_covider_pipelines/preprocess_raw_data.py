@@ -6,23 +6,23 @@ import datetime
 
 
 def flow(*_):
+    run_row = {'start_time': datetime.datetime.now()}
     last_run_row = Flow(load_if_exists('data/preprocess_raw_data/last_run/datapackage.json', 'last_run', [{}])).results()[0][0][0]
     last_run_sha1 = last_run_row.get('COVID19-ISRAEL_github_sha1')
     last_run_time = last_run_row.get('start_time')
     if last_run_time and (datetime.datetime.now() - last_run_time).total_seconds() < 120:
         logging.info('last run was less then 120 seconds ago, not running')
-        return Flow(iter([]))
+        return Flow(iter([run_row]), update_resource(-1, **{'dpp_streaming': True}))
     new_sha1 = github_pull_covid19_israel.flow({
         'dump_to_path': 'data/preprocess_raw_data/last_github_pull'
     }).results()[0][0][0]['sha1']
+    run_row['COVID19-ISRAEL_github_sha1'] = new_sha1
     if last_run_time and (datetime.datetime.now() - last_run_time).total_seconds() < 60*60*24:
         if last_run_sha1 == new_sha1:
             logging.info("No change detected in COVID19-ISRAEL GitHub, not running")
-            return Flow(iter([]))
+            return Flow(iter([run_row]), update_resource(-1, **{'dpp:streaming': True}))
     else:
         logging.info('Last run was more then 24 hours ago, will re-run regardless of change in GitHub')
-    run_row = {'COVID19-ISRAEL_github_sha1': new_sha1,
-               'start_time': datetime.datetime.now()}
     try:
         run_covid19_israel.flow({
             'module': 'src.utils.get_raw_data',
