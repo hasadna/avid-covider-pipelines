@@ -1,21 +1,5 @@
-github_pull_covid19_israel:
+preprocess_raw_data:
   schedule:
     crontab: "* * * * *"
   pipeline:
-    - flow: common.github_pull_covid19_israel
-
-get_raw_data:
-  dependencies:
-    - datapackage: ./data/github_pull_covid19_israel/datapackage.json
-  pipeline:
-    - flow: common.run_covid19_israel
-      parameters:
-        module: src.utils.get_raw_data
-
-preprocess_raw_data:
-  dependencies:
-    - pipeline: ./get_raw_data
-  pipeline:
-    - flow: common.run_covid19_israel
-      parameters:
-        module: src.utils.preprocess_raw_data
+    - flow: avid_covider_pipelines.preprocess_raw_data
