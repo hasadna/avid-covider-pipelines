@@ -3,7 +3,7 @@ RUN apt-get update &&\
     apt-get install -y build-essential python3-dev python3-setuptools python3-pip python3-wheel \
                        libxml2-dev libxslt-dev redis libpq5 libpq-dev libleveldb1v5 libleveldb-dev &&\
     python3 -m pip install \
-         psycopg2==2.8.5 datapackage-pipelines[speedup]==2.1.15 datapackage-pipelines-github==0.0.4 \
+         psycopg2==2.8.5 datapackage-pipelines-github==0.0.4 \
          datapackage-pipelines-sourcespec-registry==0.0.9 datapackage-pipelines-aws==0.0.23 &&\
     mkdir -p /var/redis && chmod 775 /var/redis && chown redis.redis /var/redis &&\
     ln -s `which python3` /usr/bin/python && mkdir -p /var/run/dpp
