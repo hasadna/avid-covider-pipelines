@@ -87,9 +87,9 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
                 load('%s/runs_history/datapackage.json' % output_dir),
             ).datastream().res_iter:
                 for row in resource:
-                    yield {k: row[k] for k in run_fields}
+                    yield {k: row.get(k, '') for k in run_fields}
         if run_row:
-            yield {k: run_row[k] for k in run_fields}
+            yield {k: run_row.get(k, '') for k in run_fields}
 
     Flow(
         _get_runs_history(),
