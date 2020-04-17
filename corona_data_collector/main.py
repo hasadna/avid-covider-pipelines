@@ -70,6 +70,7 @@ def get_process_arguments(parameters=None):
 
 
 def main(parameters=None):
+    output_data = {}
     yesterday = datetime.now() - timedelta(days=1)
     day = yesterday.day
     month = yesterday.month
@@ -93,8 +94,9 @@ def main(parameters=None):
             db_to_file_writer.log_database_data()
     print('Adding GPS coordinates to records selected')
     db_to_file_writer.add_gps_coordinates(use_gps_finder)
-    db_to_file_writer.clear_output_files()
+    output_data['destination_filename'] = db_to_file_writer.clear_output_files()
     print('Operation cycle completed successfully')
+    return output_data
 
 
 if __name__ == '__main__':

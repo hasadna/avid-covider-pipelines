@@ -1,11 +1,11 @@
-preprocess_raw_data:
-  schedule:
-    crontab: "* * * * *"
-  pipeline:
-    - flow: avid_covider_pipelines.preprocess_raw_data
-
 corona_data_collector:
   schedule:
     crontab: "5 0 * * *"
   pipeline:
     - flow: avid_covider_pipelines.corona_data_collector_flow
+
+preprocess_raw_data:
+  schedule:
+    crontab: "* * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.preprocess_raw_data
