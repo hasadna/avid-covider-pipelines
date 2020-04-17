@@ -39,12 +39,12 @@ class dump_to_path(PathDumper):
         return path
 
 
-def keep_last_runs_history(output_dir, run_callback):
+def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_kwargs):
     run_row = {'start_time': datetime.datetime.now()}
     last_run_row = Flow(
         load_if_exists('%s/last_run/datapackage.json' % output_dir, 'last_run', [{}])
     ).results()[0][0][0]
-    run_row = run_callback(last_run_row, run_row)
+    run_row = run_callback(last_run_row, run_row, *callback_args, **callback_kwargs)
     if run_row:
         Flow(
             iter([run_row]),

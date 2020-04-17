@@ -1,6 +1,6 @@
 corona_data_collector:
   schedule:
-    crontab: "5 0 * * *"
+    crontab: "0 2 * * *"
   pipeline:
     - flow: avid_covider_pipelines.corona_data_collector_flow
 
@@ -9,3 +9,5 @@ preprocess_raw_data:
     crontab: "* * * * *"
   pipeline:
     - flow: avid_covider_pipelines.preprocess_raw_data
+      parameters:
+        run_scheduled_on_hour: 3

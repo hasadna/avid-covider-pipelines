@@ -18,7 +18,7 @@ RUN_MODULES = [
 ]
 
 
-def preprocess_raw_data(last_run_row, run_row):
+def preprocess_raw_data(last_run_row, run_row, parameters):
     last_run_sha1 = last_run_row.get('COVID19-ISRAEL_github_sha1')
     last_run_time = last_run_row.get('start_time')
     if last_run_time and (datetime.datetime.now() - last_run_time).total_seconds() < 120:
@@ -27,13 +27,18 @@ def preprocess_raw_data(last_run_row, run_row):
     new_sha1 = github_pull_covid19_israel.flow({
         'dump_to_path': '%s/last_github_pull' % OUTPUT_DIR
     }).results()[0][0][0]['sha1']
-    if (
-            last_run_time and (
-            datetime.datetime.now() - last_run_time).total_seconds() < 60 * 60 * 24
-            and last_run_sha1 == new_sha1
-    ):
-        logging.info("No change detected in COVID19-ISRAEL GitHub, not running")
-        return None
+    if last_run_sha1 and last_run_time and last_run_sha1 == new_sha1:
+        logging.info("No change detected in COVID19-ISRAEL GitHub")
+        now = datetime.datetime.now()
+        if (
+                parameters.get('run_scheduled_on_hour')
+                and now.hour == int(parameters['run_scheduled_on_hour'])
+                and (now - last_run_time).total_seconds() > 60 * 60 * 2
+        ):
+            logging.info("Hour is 3am and last run time is more then 2 hours ago")
+            logging.info("Running the daily scheduled task")
+        else:
+            return None
     run_row['COVID19-ISRAEL_github_sha1'] = new_sha1
     for module in RUN_MODULES:
         try:
@@ -52,10 +57,10 @@ def preprocess_raw_data(last_run_row, run_row):
     return run_row
 
 
-def flow(*_):
-    return keep_last_runs_history(OUTPUT_DIR, preprocess_raw_data)
+def flow(parameters, *_):
+    return keep_last_runs_history(OUTPUT_DIR, preprocess_raw_data, parameters)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    flow().process()
+    flow({}).process()
