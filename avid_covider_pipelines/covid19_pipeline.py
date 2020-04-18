@@ -5,7 +5,7 @@ import os
 from dataflows import Flow, load
 
 
-OUTPUT_DIR = 'data/preprocess_raw_data'
+OUTPUT_DIR = 'data/covid19_pipeline'
 RUN_MODULES = [
     {
         'id': 'get_raw_data',
@@ -15,14 +15,27 @@ RUN_MODULES = [
         'id': 'preprocess_raw_data',
         'module': 'src.utils.preprocess_raw_data',
     },
+    {
+        'id': 'lamas_features',
+        'module': 'src.utils.lamas_features',
+        'args': ['--if-not-exists']
+    },
+    {
+        'id': 'dashboard_generate_cache',
+        'module': 'Dashboard.generate_cache.py',
+    },
+    {
+        'id': 'figures_plotly_top_bottom_cities',
+        'module': 'src.figures.plotly_top_bottom_cities',
+    },
 ]
 
 
 def dump_last_run_logs(last_run_time):
     logging.info("Dumping last run logs (last_run_time=%s)" % last_run_time)
     for module in RUN_MODULES:
-        log_file = 'data/preprocess_raw_data/log_files/%s/%s.log' % (
-            module['id'], last_run_time.strftime('%Y%m%dT%H%M%S'))
+        log_file = '%s/log_files/%s/%s.log' % (
+            OUTPUT_DIR, module['id'], last_run_time.strftime('%Y%m%dT%H%M%S'))
         logging.info('log_file=%s' % log_file)
         if os.path.exists(log_file):
             with open(log_file) as f:
@@ -31,7 +44,7 @@ def dump_last_run_logs(last_run_time):
     return None
 
 
-def preprocess_raw_data(last_run_row, run_row, parameters):
+def covid19_pipeline(last_run_row, run_row, parameters):
     last_run_sha1 = last_run_row.get('COVID19-ISRAEL_github_sha1')
     last_run_time = last_run_row.get('start_time')
     logging.info('last_run_sha1=%s last_run_time=%s' % (last_run_sha1, last_run_time))
@@ -70,13 +83,14 @@ def preprocess_raw_data(last_run_row, run_row, parameters):
     run_row['cdc_filehash'] = cdc_filehash
     for module in RUN_MODULES:
         try:
-            os.makedirs('data/preprocess_raw_data/log_files/%s' % module['id'], exist_ok=True)
+            os.makedirs('%s/log_files/%s' % (OUTPUT_DIR, module['id']), exist_ok=True)
             run_covid19_israel.flow({
                 'module': module['module'],
+                'args': module.get('args'),
                 'resource_name': '%s_last_updated_files' % module['id'],
-                'dump_to_path': 'data/preprocess_raw_data/last_updated_files/%s' % module['id'],
-                'log_file': 'data/preprocess_raw_data/log_files/%s/%s.log' % (
-                module['id'], run_row['start_time'].strftime('%Y%m%dT%H%M%S'))
+                'dump_to_path': '%s/last_updated_files/%s' % (OUTPUT_DIR, module['id']),
+                'log_file': '%s/log_files/%s/%s.log' % (
+                    OUTPUT_DIR, module['id'], run_row['start_time'].strftime('%Y%m%dT%H%M%S'))
             }).process()
             run_row['%s_success' % module['id']] = 'yes'
         except Exception:
@@ -86,7 +100,7 @@ def preprocess_raw_data(last_run_row, run_row, parameters):
 
 
 def flow(parameters, *_):
-    return keep_last_runs_history(OUTPUT_DIR, preprocess_raw_data, parameters)
+    return keep_last_runs_history(OUTPUT_DIR, covid19_pipeline, parameters)
 
 
 if __name__ == '__main__':

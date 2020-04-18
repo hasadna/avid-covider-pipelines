@@ -4,8 +4,11 @@ import sys
 
 
 def run_covid19_israel(parameters):
-    if utils.subprocess_call_log(['python', '-u', '-m', parameters['module']], log_file=parameters.get('log_file'), cwd='../COVID19-ISRAEL') != 0:
-        raise Exception('Failed to run COVID19-ISRAEL module %s' % parameters['module'])
+    args = parameters.get('args')
+    if not args:
+        args = []
+    if utils.subprocess_call_log(['python', '-u', '-m', parameters['module'], *args], log_file=parameters.get('log_file'), cwd='../COVID19-ISRAEL') != 0:
+        raise Exception('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
 
 
 def flow(parameters, *_):
@@ -21,8 +24,8 @@ def flow(parameters, *_):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print('usage:\n  %s <MODULE_NAME>\n' % sys.argv[0])
+        print('usage:\n  %s <MODULE_NAME> [args..]\n' % sys.argv[0])
         print('for example:\n  %s src.utils.get_raw_data' % sys.argv[0])
         exit(1)
     logging.basicConfig(level=logging.DEBUG)
-    flow({'module': sys.argv[1]}).process()
+    flow({'module': sys.argv[1], 'args': sys.argv[2:]}).process()

@@ -16,7 +16,7 @@ ENV LANG=C.UTF-8
 EXPOSE 5000
 WORKDIR /pipelines/
 
-RUN apt-get update && apt-get install -y libspatialindex-c4v5 git
+RUN apt-get update && apt-get install -y libspatialindex-c4v5 git orca
 COPY requirements-full.txt /pipelines/
 COPY requirements.txt /pipelines/
 RUN python3 -m pip install -r requirements-full.txt
