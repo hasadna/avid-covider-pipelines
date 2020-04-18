@@ -1,7 +1,6 @@
 import logging
 from avid_covider_pipelines.utils import keep_last_runs_history
 from avid_covider_pipelines import github_pull_covid19_israel, run_covid19_israel
-import datetime
 import os
 from dataflows import Flow, load
 
@@ -19,6 +18,19 @@ RUN_MODULES = [
 ]
 
 
+def dump_last_run_logs(last_run_time):
+    logging.info("Dumping last run logs (last_run_time=%s)" % last_run_time)
+    for module in RUN_MODULES:
+        log_file = 'data/preprocess_raw_data/log_files/%s/%s.log' % (
+            module['id'], last_run_time.strftime('%Y%m%dT%H%M%S'))
+        logging.info('log_file=%s' % log_file)
+        if os.path.exists(log_file):
+            with open(log_file) as f:
+                for line in f:
+                    logging.info(line.strip())
+    return None
+
+
 def preprocess_raw_data(last_run_row, run_row, parameters):
     last_run_sha1 = last_run_row.get('COVID19-ISRAEL_github_sha1')
     last_run_time = last_run_row.get('start_time')
@@ -26,9 +38,9 @@ def preprocess_raw_data(last_run_row, run_row, parameters):
     last_run_cdc_filename = last_run_row.get('cdc_filename')
     last_run_cdc_filehash = last_run_row.get('cdc_filehash')
     logging.info('last_run_cdc_filename=%s last_run_cdc_filehash=%s' % (last_run_cdc_filename, last_run_cdc_filehash))
-    if last_run_time and (datetime.datetime.now() - last_run_time).total_seconds() < 120:
+    if last_run_time and (run_row['start_time'] - last_run_time).total_seconds() < 120:
         logging.info('last run was less then 120 seconds ago, not running')
-        return None
+        return dump_last_run_logs(last_run_time)
     new_sha1 = github_pull_covid19_israel.flow({
         'dump_to_path': '%s/last_github_pull' % OUTPUT_DIR
     }).results()[0][0][0]['sha1']
@@ -46,7 +58,7 @@ def preprocess_raw_data(last_run_row, run_row, parameters):
             logging.info("No change detected in corona data collector filename")
             if last_run_cdc_filehash == cdc_filehash:
                 logging.info("No change detected in corona data collector file hash")
-                return None
+                return dump_last_run_logs(last_run_time)
             else:
                 logging.info('Change detected in corona data collector file hash')
         else:
@@ -64,7 +76,7 @@ def preprocess_raw_data(last_run_row, run_row, parameters):
                 'resource_name': '%s_last_updated_files' % module['id'],
                 'dump_to_path': 'data/preprocess_raw_data/last_updated_files/%s' % module['id'],
                 'log_file': 'data/preprocess_raw_data/log_files/%s/%s.log' % (
-                module['id'], datetime.datetime.now().strftime('%Y%m%dT%H%M%S'))
+                module['id'], run_row['start_time'].strftime('%Y%m%dT%H%M%S'))
             }).process()
             run_row['%s_success' % module['id']] = 'yes'
         except Exception:
