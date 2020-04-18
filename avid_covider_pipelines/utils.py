@@ -14,6 +14,7 @@ HASH_BLOCKSIZE = 65536
 HASH_IGNORE_FILENAME_ENDSWITH = [
     '.ipynb',
     '.py',
+    '.pyc',
     '.css',
     '.bmp',
     '.zip',
