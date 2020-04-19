@@ -7,6 +7,6 @@ export GIT_SSH_COMMAND="ssh -i $COVID19_ISRAEL_PRIVATE_KEY_FILE -o UserKnownHost
 ! [ -e /COVID19-ISRAEL/.git ] &&\
   git clone "git@github.com:${COVID19_ISRAEL_REPOSITORY}.git" /COVID19-ISRAEL
 
-( cd /COVID19-ISRAEL && git pull origin master && python3 -m pip install -r requirements-preprocess.txt )
+( cd /COVID19-ISRAEL && git pull origin master && python3 -m pip install -r requirements-pipelines.txt )
 
 /dpp/docker/run.sh "$@"

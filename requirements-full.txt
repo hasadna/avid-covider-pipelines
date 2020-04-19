@@ -3,7 +3,7 @@
 git+git://github.com/frictionlessdata/datapackage-pipelines.git@8cefe5874e38f81d3701485ee24628dc655648f6#egg=datapackage-pipelines[speedup]
 werkzeug<1.0
 
-# requirements-preprocess
+# COVID19-ISRAEL/requirements-pipelines.txt
 
 google-api-python-client==1.8.0
 google-auth-httplib2==0.0.3
@@ -14,6 +14,15 @@ tqdm==4.45.0
 googlemaps==4.2.0
 xlrd==1.2.0
 Rtree==0.8.3
+requests==2.23.0
+plotly==4.6.0
+branca==0.4.0
+scipy==1.4.1
+joblib==0.14.1
+numpy==1.18.2
+sklearn==0.0
+folium==0.10.1
+psutil==5.7.0
 
 # corona_data_collector requirements
 

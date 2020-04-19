@@ -152,7 +152,11 @@ Deployment:
 
 Run the docker container from Dockerfile with the above environment variables and paths
 
-For testing, place all files under a single path:
+#### Testing The full pipelines system
+
+##### Initial installation (should be done once) 
+
+Place secret files under a single path:
 
 ```
 export SECRETS_PATH=/path/to/all/secrets
@@ -167,7 +171,7 @@ ls -lah $SECRETS_PATH/covid19_israel_github_private_key $SECRETS_PATH/secret_ser
 Set the repository env var:
 
 ```
-export COVID19_ISRAEL_REPOSITORY=GitHubUser/GitHubRepo
+echo 'export COVID19_ISRAEL_REPOSITORY=GitHubUser/GitHubRepo' > $SECRETS_PATH/.env
 ```
 
 Create persistent volumes:
@@ -181,20 +185,25 @@ Add secret files for corona_data_collector to CDC_SECRETS_PATH:
 
 ```
 export CDC_SECRETS_PATH=/path/to/corona_data_collector_secrets
-ls -lah $CDC_SECRETS_PATH/certs/client-cert.pem $SECRETS_PATH/certs/client-key.pem $SECRETS_PATH/certs/server-ca.pem
+ls -lah $CDC_SECRETS_PATH/certs/client-cert.pem $CDC_SECRETS_PATH/certs/client-key.pem $CDC_SECRETS_PATH/certs/server-ca.pem
 ```
 
 Secret environment variables required for corona_data_collector:
 
 ```
+echo "
+export CDC_SECRETS_PATH=$CDC_SECRETS_PATH
 export CORONA_DATA_COLLECTOR_DB_PASS=
 export CORONA_DATA_COLLECTOR_GPS_URL_KEY=
 export CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN=
+" >> $SECRETS_PATH/.env
 ```
 
-Run the pipelines server:
+##### Running
 
 ```
+export SECRETS_PATH=/path/to/all/secrets &&\
+source $SECRETS_PATH/.env &&\
 docker build -t avid-covider-pipelines . &&\
 docker run -it \
   -v $SECRETS_PATH:/secrets \
