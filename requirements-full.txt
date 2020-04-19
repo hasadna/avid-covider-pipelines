@@ -2,6 +2,7 @@
 
 git+git://github.com/frictionlessdata/datapackage-pipelines.git@8cefe5874e38f81d3701485ee24628dc655648f6#egg=datapackage-pipelines[speedup]
 werkzeug<1.0
+ruamel.yaml==0.16.10
 
 # COVID19-ISRAEL/requirements-pipelines.txt
 
@@ -23,6 +24,7 @@ numpy==1.18.2
 sklearn==0.0
 folium==0.10.1
 psutil==5.7.0
+pyarrow==0.16.0
 
 # corona_data_collector requirements
 
