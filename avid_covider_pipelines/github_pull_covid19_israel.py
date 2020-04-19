@@ -33,6 +33,17 @@ def flow(parameters, *_):
                 raise Exception('Failed to git pull')
         sha1 = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd='../COVID19-ISRAEL').decode().strip()
     # sha1 = subprocess.check_output(['cat', '/pipelines/data/fake-sha1'], cwd='../COVID19-ISRAEL').decode().strip()
+    if parameters.get('change-run-covid'):
+        with open('avid_covider_pipelines/run_covid19_israel.py', 'r') as f:
+            lines = f.readlines()
+        with open('avid_covider_pipelines/run_covid19_israel.py', 'w') as f:
+            for i, line in enumerate(lines):
+                if i == 0:
+                    if line.startswith('COVID19_ISRAEL_GITHUB_SHA1 = '):
+                        line = 'COVID19_ISRAEL_GITHUB_SHA1 = "%s"\n' % sha1
+                    else:
+                        f.write('COVID19_ISRAEL_GITHUB_SHA1 = "%s"\n' % sha1)
+                f.write(line)
     return Flow(
         iter([{'sha1': sha1}]),
         update_resource(-1, name='github_pull_covid19_israel', path='github_pull_covid19_israel.csv', **{'dpp:streaming': True}),

@@ -25,6 +25,7 @@ class Generator(GeneratorBase):
                 pipeline.setdefault('dependencies', []).append(dependency)
             if not source_pipeline.get("output-dir"):
                 source_pipeline["output-dir"] = "data/%s" % pipeline_id
+            source_pipeline['raise-exceptions'] = True
             pipeline['pipeline'] = [
                 {
                     "flow": "avid_covider_pipelines.run_covid19_israel",

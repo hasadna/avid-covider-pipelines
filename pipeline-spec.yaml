@@ -5,6 +5,7 @@ github_pull_covid19_israel:
     - flow: avid_covider_pipelines.github_pull_covid19_israel
       parameters:
         dump_to_path: data/github_pull_covid19_israel
+        change-run-covid: true
 
 
 corona_data_collector:
@@ -14,6 +15,7 @@ corona_data_collector:
     - flow: avid_covider_pipelines.corona_data_collector_flow
       parameters:
         output-dir: data/corona_data_collector
+        raise-exceptions: true
 
 
 covid19_israel_files_list:

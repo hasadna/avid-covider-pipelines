@@ -4,7 +4,7 @@ import os
 from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash
 
 
-def corona_data_collector_main(last_run_row, run_row, output_dir):
+def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
     updated_file_hashes = {}
 
     def _run_callback():
@@ -13,6 +13,8 @@ def corona_data_collector_main(last_run_row, run_row, output_dir):
             for k, v in main({'source': 'db'}).items():
                 run_row[k] = v
         except Exception as e:
+            if parameters.get('raise-exceptions'):
+                raise
             logging.exception(str(e))
             run_row['exception'] = str(e)
         else:
@@ -40,15 +42,18 @@ def corona_data_collector_main(last_run_row, run_row, output_dir):
         else:
             destination_file_hash = get_hash(run_row['destination_filename'])
 
+    if run_row['exception'] and parameters.get('raise-exceptions'):
+        raise Exception(run_row['exception'])
+
     run_row['destination_file_hash'] = destination_file_hash
     return run_row
 
 
 def flow(parameters, *_):
     output_dir = parameters.get('output-dir', 'data/corona_data_collector')
-    return keep_last_runs_history(output_dir, corona_data_collector_main, output_dir)
+    return keep_last_runs_history(output_dir, corona_data_collector_main, output_dir, parameters)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    flow({}).process()
+    flow({'raise-exceptions': True}).process()
