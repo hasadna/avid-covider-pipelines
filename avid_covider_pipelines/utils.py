@@ -66,7 +66,7 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
     run_row = run_callback(last_run_row, run_row, *callback_args, **callback_kwargs)
     if run_row:
         Flow(
-            iter([run_row]),
+            iter([{k: v for k, v in run_row.items() if k != 'start_time'}]),
             update_resource(-1, name='last_run', path='last_run.csv', **{'dpp:streaming': True}),
             dump_to_path('%s/last_run' % output_dir)
         ).process()
@@ -98,10 +98,21 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
         dump_to_path('%s/runs_history' % output_dir)
     ).process()
 
+    def _printer(rows):
+        logging.info('--- last runs ---')
+        for i, row in enumerate(rows):
+            if i < 10:
+                logging.info('%s:' % row['start_time'])
+                for k in sorted(row.keys()):
+                    if k == 'start_time': continue
+                    if row[k] is None or row[k] == '': continue
+                    logging.info('  %s: %s' % (k, row[k]))
+            yield row
+
     return Flow(
         load('%s/runs_history/datapackage.json' % output_dir),
         sort_rows('{start_time}', reverse=True),
-        printer(num_rows=10)
+        _printer
     )
 
 

@@ -26,6 +26,7 @@ def flow(parameters, *_):
         if utils.subprocess_call_log(['git', 'pull', 'origin', 'master'], cwd='../COVID19-ISRAEL') != 0:
             raise Exception('Failed to git pull')
     sha1 = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd='../COVID19-ISRAEL').decode().strip()
+    # sha1 = subprocess.check_output(['cat', '/pipelines/data/fake-sha1'], cwd='../COVID19-ISRAEL').decode().strip()
     return Flow(
         iter([{'sha1': sha1}]),
         update_resource(-1, name='github_pull_covid19_israel', path='github_pull_covid19_israel.csv', **{'dpp:streaming': True}),
