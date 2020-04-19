@@ -28,8 +28,11 @@ def predownload_data():
                             auth=(os.environ["AVIDCOVIDER_PIPELINES_USER"], os.environ["AVIDCOVIDER_PIPELINES_PASSWORD"]),
                             stream=True,
                         ) as fileres:
+                            fileres.raise_for_status()
                             with open(filename, 'wb') as f:
-                                shutil.copyfileobj(fileres.raw, f)
+                                for chunk in fileres.iter_content(chunk_size=8192):
+                                    if chunk:  # filter out keep-alive new chunks
+                                        f.write(chunk)
     else:
         logging.info("missing AVIDCOVIDER env vars - not predownloading")
 
