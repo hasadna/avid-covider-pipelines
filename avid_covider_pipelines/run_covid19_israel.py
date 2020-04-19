@@ -7,11 +7,13 @@ import os
 
 
 def run_covid19_israel(parameters, run_row):
+    run_row['github_sha1'] = globals().get('COVID19_ISRAEL_GITHUB_SHA1', '_')
     args = parameters.get('args')
     if not args:
         args = []
     cmd = ['python', '-u', '-m', parameters['module'], *args]
     # cmd = ['echo'] + cmd
+    # cmd = ['bash', '-c', 'echo %s && false' % cmd]
     log_files_dir = os.path.join(parameters['output-dir'], 'log_files')
     os.makedirs(log_files_dir, exist_ok=True)
     if utils.subprocess_call_log(
@@ -20,17 +22,17 @@ def run_covid19_israel(parameters, run_row):
             cwd='../COVID19-ISRAEL'
     ) != 0:
         run_row['error'] = 'yes'
-        if parameters.get('raise-exceptions'):
-            raise Exception('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
+        logging.error('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
     else:
         run_row['error'] = 'no'
 
 
 def flow(parameters, *_):
+    logging.info('COVID19_ISRAEL_GITHUB_SHA1 = %s' % globals().get('COVID19_ISRAEL_GITHUB_SHA1', '_'))
     logging.info('Running COVID19-ISRAEL module %s with args %s' % (parameters['module'], parameters.get('args')))
     output_dir = parameters['output-dir']
 
-    def _run_callback(last_run_row, run_row):
+    def _last_runs_run_callback(last_run_row, run_row):
         if parameters.get('datapackage-dependencies'):
             hasher = hashlib.sha256()
             for datapackage in parameters['datapackage-dependencies']:
@@ -39,18 +41,21 @@ def flow(parameters, *_):
             run_row['datapackage-dependencies-hash'] = hasher.hexdigest()
         else:
             run_row['datapackage-dependencies-hash'] = ''
-        utils.hash_updated_files(
-            '../COVID19-ISRAEL',
-            '%s/last_updated_files' % output_dir,
-            run_covid19_israel,
-            printer_num_rows=parameters.get('printer_num_rows', 10),
-            run_callback_args=[parameters, run_row]
-        ).process()
-        return run_row
+        run_covid19_israel(parameters, run_row)
+        return run_row, 'failed to run COVID19-ISRAEL module' if run_row['error'] == 'yes' and parameters.get('raise-exceptions') else None
 
-    return utils.keep_last_runs_history(
-        output_dir, _run_callback
+    def _hash_updated_files_run_callback():
+        utils.keep_last_runs_history(
+            output_dir, _last_runs_run_callback
+        ).process()
+
+    return utils.hash_updated_files(
+        '../COVID19-ISRAEL',
+        '%s/last_updated_files' % output_dir,
+        _hash_updated_files_run_callback,
+        printer_num_rows=parameters.get('printer_num_rows', 10),
     )
+
 
 
 if __name__ == "__main__":

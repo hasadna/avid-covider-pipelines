@@ -66,7 +66,7 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
     last_run_row = Flow(
         load_if_exists('%s/last_run/datapackage.json' % output_dir, 'last_run', [{}])
     ).results()[0][0][0]
-    run_row = run_callback(last_run_row, run_row, *callback_args, **callback_kwargs)
+    run_row, raise_exception_msg = run_callback(last_run_row, run_row, *callback_args, **callback_kwargs)
     if run_row:
         Flow(
             iter([{k: v for k, v in run_row.items() if k != 'start_time'}]),
@@ -112,11 +112,16 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
                     logging.info('  %s: %s' % (k, row[k]))
             yield row
 
-    return Flow(
+    flow = Flow(
         load('%s/runs_history/datapackage.json' % output_dir),
         sort_rows('{start_time}', reverse=True),
         _printer
     )
+    if raise_exception_msg:
+        flow.process()
+        raise Exception(raise_exception_msg)
+    else:
+        return flow
 
 
 def get_hash(path):
@@ -174,7 +179,17 @@ def hash_updated_files(
     run_callback(*run_callback_args, **run_callback_kwargs)
     return Flow(
         get_updated_files(hash_directory, glob_pattern, recursive, mtimes, sizes, hashes, updated_files_callback),
-        update_resource(-1, name='updated_files', path='updated_files.csv', **{'dpp:streaming': True}),
+        update_resource(-1, name='updated_files', path='updated_files.csv', schema={'fields': [
+            {'name': 'path', 'type': 'string'}, {'name': 'hash', 'type': 'string'}
+        ]}, **{'dpp:streaming': True}),
         *([printer(num_rows=printer_num_rows)] if printer_num_rows > 0 else []),
         *([dump_to_path(dump_to_path_name)] if dump_to_path_name else [])
     )
+
+
+def get_github_sha():
+    if os.path.exists('GITHUB_SHA'):
+        with open('GITHUB_SHA') as f:
+            return f.read().strip()
+    else:
+        return '_'

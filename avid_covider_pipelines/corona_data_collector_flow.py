@@ -1,7 +1,7 @@
 import logging
 from corona_data_collector.main import main
 import os
-from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash
+from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash, get_github_sha
 
 
 def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
@@ -13,8 +13,6 @@ def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
             for k, v in main({'source': 'db'}).items():
                 run_row[k] = v
         except Exception as e:
-            if parameters.get('raise-exceptions'):
-                raise
             logging.exception(str(e))
             run_row['exception'] = str(e)
         else:
@@ -42,11 +40,9 @@ def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
         else:
             destination_file_hash = get_hash(run_row['destination_filename'])
 
-    if run_row['exception'] and parameters.get('raise-exceptions'):
-        raise Exception(run_row['exception'])
-
     run_row['destination_file_hash'] = destination_file_hash
-    return run_row
+    run_row['github_sha'] = get_github_sha()
+    return run_row, run_row['exception'] if run_row['exception'] and parameters.get('raise-exceptions') else None
 
 
 def flow(parameters, *_):
