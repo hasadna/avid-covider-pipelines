@@ -1,10 +1,10 @@
 import logging
 from corona_data_collector.main import main
 import os
-from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash, get_github_sha
+from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash, get_github_sha, dump_to_path
 from glob import glob
 import datetime
-from dataflows import update_resource, dump_to_path, Flow
+from dataflows import update_resource, Flow
 
 
 def store_destination_output_package(output_dir):
