@@ -22,6 +22,7 @@ def predownload_data():
                     filename = os.path.join("..", "COVID19-ISRAEL", row['name'])
                     if not os.path.exists(filename):
                         logging.info("Downloading file " + filename)
+                        os.makedirs(os.path.dirname(filename), exist_ok=True)
                         with requests.get(
                             url=os.environ["AVIDCOVIDER_PIPELINES_URL"] + "/COVID19-ISRAEL/" + row['name'],
                             auth=(os.environ["AVIDCOVIDER_PIPELINES_USER"], os.environ["AVIDCOVIDER_PIPELINES_PASSWORD"]),
