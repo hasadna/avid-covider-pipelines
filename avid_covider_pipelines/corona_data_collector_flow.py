@@ -2,6 +2,27 @@ import logging
 from corona_data_collector.main import main
 import os
 from avid_covider_pipelines.utils import keep_last_runs_history, hash_updated_files, get_hash, get_github_sha
+from glob import glob
+import datetime
+from dataflows import update_resource, dump_to_path, Flow
+
+
+def store_destination_output_package(output_dir):
+
+    def _files_list():
+        for filename in glob(os.path.join(output_dir, "destination_output", "*")):
+            if os.path.isfile(filename):
+                yield {
+                    "name": os.path.relpath(filename, os.path.join(output_dir, "destination_output")),
+                    "size": os.path.getsize(filename),
+                    "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+                }
+
+    Flow(
+        _files_list(),
+        update_resource(-1, name='files_list', path='files_list.csv'),
+        dump_to_path(os.path.join(output_dir, "destination_output")),
+    ).process()
 
 
 def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
@@ -42,6 +63,10 @@ def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):
 
     run_row['destination_file_hash'] = destination_file_hash
     run_row['github_sha'] = get_github_sha()
+
+    if not run_row['exception']:
+        store_destination_output_package(output_dir)
+
     return run_row, run_row['exception'] if run_row['exception'] and parameters.get('raise-exceptions') else None
 
 
