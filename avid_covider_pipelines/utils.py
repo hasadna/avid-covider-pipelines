@@ -23,6 +23,9 @@ HASH_IGNORE_FILENAME_ENDSWITH = [
 HASH_IGNORE_FILENAME_CONTAINS = [
     'credentials',
     'google_api_key',
+    'venv/',
+    'requirments',
+    'requirements'
 ]
 
 

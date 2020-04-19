@@ -14,3 +14,12 @@ corona_data_collector:
     - flow: avid_covider_pipelines.corona_data_collector_flow
       parameters:
         output-dir: data/corona_data_collector
+
+
+covid19_israel_files_list:
+  schedule:
+    crontab: "* * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.covid19_israel_files_list
+      parameters:
+        dump_to_path: data/covid19_israel_files_list
