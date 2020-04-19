@@ -1,0 +1,30 @@
+get_raw_data:
+  dependencies:
+    - corona_data_collector
+    - github_pull_covid19_israel
+  module: src.utils.get_raw_data
+
+
+preprocess_raw_data:
+  dependencies:
+    - get_raw_data
+  module: src.utils.preprocess_raw_data
+
+
+lamas_features:
+  dependencies:
+    - preprocess_raw_data
+  module: src.utils.lamas_features
+  args: ["--if-not-exists"]
+
+
+dashboard_generate_cache:
+  dependencies:
+    - lamas_features
+  module: Dashboard.generate_cache
+
+
+figures_plotly_top_bottom_cities:
+  dependencies:
+    - dashboard_generate_cache
+  module: src.figures.plotly_top_bottom_cities

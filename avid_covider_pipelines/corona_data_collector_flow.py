@@ -10,7 +10,7 @@ def corona_data_collector_main(last_run_row, run_row, output_dir):
     def _run_callback():
         os.makedirs('%s/destination_output' % output_dir, exist_ok=True)
         try:
-            for k, v in xmain({'source': 'db'}).items():
+            for k, v in main({'source': 'db'}).items():
                 run_row[k] = v
         except Exception as e:
             logging.exception(str(e))
