@@ -1,5 +1,5 @@
 from dataflows import Flow, update_resource, printer
-from avid_covider_pipelines.utils import dump_to_path
+from avid_covider_pipelines.utils import dump_to_path, get_hash
 import os
 import logging
 from glob import glob
@@ -48,7 +48,8 @@ def files_list(git_filenames=None):
         yield {
             "name": rel_filename,
             "size": os.path.getsize(filename),
-            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename)),
+            'hash': get_hash(filename)
         }
 
 
@@ -60,7 +61,8 @@ def git_files_list(git_filenames):
         yield {
             "name": rel_filename,
             "size": os.path.getsize(filename),
-            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename)),
+            'hash': get_hash(filename)
         }
 
 
