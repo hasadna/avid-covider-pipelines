@@ -79,9 +79,14 @@ def get_process_arguments(parameters=None):
 
 def main(parameters=None):
     output_data = {}
-    yesterday = datetime.now() - timedelta(days=1)
-    day = yesterday.day
-    month = yesterday.month
+    if parameters.get('day') or parameters.get('month'):
+        day = parameters['day']
+        month = parameters['month']
+    else:
+        yesterday = datetime.now() - timedelta(days=1)
+        day = yesterday.day
+        month = yesterday.month
+    print('day=%s month=%s' % (day, month))
     from_date = datetime(2020, month, day, 00, 00, 00)
     to_date = datetime(2020, month, day, 23, 59, 59)
     db_to_file_writer = DBToFileWriter(os.path.join(os.path.dirname(__file__), f'corona_bot_answers_{day}_{month}_2020.csv'))

@@ -79,7 +79,7 @@ class DBToFileWriter:
     def __init__(self, target_filename):
         self.target_filename = target_filename
         write_answer_keys(self.target_filename)
-        self.bot = telegram.Bot(token=telegram_token)
+        # self.bot = telegram.Bot(token=telegram_token)
 
     def log_database_data(self):
             fixed_row = ''
@@ -106,8 +106,8 @@ class DBToFileWriter:
                 f'last id: {self.resultSet[- 1]["id"]}. Number of records retrieved but could not be evaluated: '
                 f'{self.broken_records}'
                 print(message)
-                self.bot.send_message(chat_id=telegram_chat_id, text=message,
-                                      parse_mode=telegram.ParseMode.HTML)
+                # self.bot.send_message(chat_id=telegram_chat_id, text=message,
+                #                       parse_mode=telegram.ParseMode.HTML)
 
     def add_gps_coordinates(self, use_web_finder=False):
         try:
@@ -120,8 +120,8 @@ class DBToFileWriter:
                 file_with_coords.writelines(data_with_coords)
             message = f'Data with GPS coordinates was written to {self.filename_with_coords}'
             print(message)
-            self.bot.send_message(chat_id=telegram_chat_id, text=message,
-                                  parse_mode=telegram.ParseMode.HTML)
+            # self.bot.send_message(chat_id=telegram_chat_id, text=message,
+            #                       parse_mode=telegram.ParseMode.HTML)
         except Exception as err:
             print('failed to load coordinates', err)
 

@@ -16,6 +16,18 @@ corona_data_collector:
       parameters:
         output-dir: data/corona_data_collector
         raise-exceptions: true
+        with-history: true
+
+
+corona_data_collector_latest:
+  schedule:
+    crontab: "30 * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.corona_data_collector_flow
+      parameters:
+        output-dir: data/corona_data_collector_latest
+        raise-exceptions: true
+        with-history: false
 
 
 covid19_israel_files_list:
