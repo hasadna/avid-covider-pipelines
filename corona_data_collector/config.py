@@ -118,10 +118,6 @@ keys_to_convert = {
     'symptoms_tiredness_or_fatigue': 'symptoms_fatigue'
 }
 
-known_invalid_values_to_convert = {
-    'general_feeling': ['לא', 'לא, המצב דומה']
-}
-
 values_to_convert = {
     'sex': {
         'male': 0,

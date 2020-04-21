@@ -1,7 +1,7 @@
 import os
 import shutil
 import telegram
-from corona_data_collector.config import answer_titles, values_to_convert, known_invalid_values_to_convert, keys_to_convert, destination_output, \
+from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, destination_output, \
     telegram_token, \
     telegram_chat_id
 from corona_data_collector.gps_generator import GPSGenerator
@@ -63,13 +63,13 @@ def convert_values(db_row, stats=None):
             db_row.pop(convert_key)
     for key, value in db_row.items():
         if key in values_to_convert:
+            value = str(value)
             if value in values_to_convert[key]:
                 db_row[key] = values_to_convert[key][value]
             elif stats:
-                if value in known_invalid_values_to_convert.get(key, []):
-                    stats['invalid_values_to_convert_%s__%s' % (key, value)] += 1
-                else:
-                    raise Exception('convert_values: missing values_to_convert key="%s" value="%s"' % (key, value))
+                statkey = 'invalid_values_to_convert_%s__%s' % (key, value)
+                stats[statkey] += 1
+                return None
             else:
                 print('convert_values: missing values_to_convert key="%s" value="%s"' % (key, value))
                 return None

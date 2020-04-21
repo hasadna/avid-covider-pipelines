@@ -6,6 +6,7 @@ import os
 from corona_data_collector.gps_generator import get_coords_from_web
 import json
 from collections import defaultdict
+import atexit
 
 
 def get_coords(stats, kv, street, city, is_street=True):
@@ -73,7 +74,11 @@ def add_gps_coordinates(stats, kv, parameters):
         row['lng'] = lng
         row['address_street_accurate'] = accurate
 
-    Flow(
+    def _dump_stats(rows):
+        yield from rows
+        logging.info(str(dict(stats)))
+
+    return Flow(
         load(os.path.join(parameters['load'], 'datapackage.json')),
         *([filter_rows(lambda row: row['id'] >= parameters['min_id'])] if parameters.get('min_id') else []),
         filter_rows(lambda row: isinstance(row['data'], dict) and 'street' in row['data'] and 'city_town' in row['data']),
@@ -81,10 +86,10 @@ def add_gps_coordinates(stats, kv, parameters):
         add_field('lng', 'number', 0),
         add_field('address_street_accurate', 'number', 0),
         _add_gps_coordinates,
+        _dump_stats,
         update_resource(-1, name="db_data_with_coords", path="db_data_with_coords.csv", **{"dpp:streaming": True}),
         dump_to_path(parameters['dump_to_path'])
-    ).process()
-    logging.info(str(dict(stats)))
+    )
 
 
 def flow(parameters, *_):
@@ -92,16 +97,13 @@ def flow(parameters, *_):
         raise Exception("Please install levelDB package, otherwise this flow is extremely slow")
     stats = defaultdict(int)
     kv = kvfile.KVFile()
+    atexit.register(save_cache, parameters, kv)
     if os.path.exists(os.path.join(parameters['dump_to_path'], "gps_data", "datapackage.json")):
         load_cache_from_package(parameters, stats, kv)
     elif parameters.get('gps_data'):
         load_cache_from_json(parameters, stats, kv)
     logging.info('cache loaded successfully')
-    try:
-        add_gps_coordinates(stats, kv, parameters)
-    finally:
-        save_cache(parameters, kv)
-    return Flow(iter([{"ok": "yes"}]), update_resource(-1, **{"dpp:streaming": True}))
+    return add_gps_coordinates(stats, kv, parameters)
 
 
 if __name__ == "__main__":
