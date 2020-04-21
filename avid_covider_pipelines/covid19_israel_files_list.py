@@ -1,16 +1,47 @@
 from dataflows import Flow, update_resource, printer
-from avid_covider_pipelines.utils import dump_to_path, is_ignore_hash_filename
+from avid_covider_pipelines.utils import dump_to_path
 import os
 import logging
 from glob import glob
 import datetime
+import subprocess
+
+
+IGNORE_FILENAME_STARTSWITH = [
+    'venv',
+]
+IGNORE_FILENAME_CONTAINS = [
+    'credentials',
+    'google_api_key',
+]
+IGNORE_FILENAME_ENDSWITH = [
+    '.pyc',
+]
+
+
+def is_ignore_filename(filename):
+    for v in IGNORE_FILENAME_STARTSWITH:
+        if filename.startswith(v):
+            return True
+    for v in IGNORE_FILENAME_CONTAINS:
+        if v in filename:
+            return True
+    for v in IGNORE_FILENAME_ENDSWITH:
+        if filename.endswith(v):
+            return True
+    return False
 
 
 def files_list():
+    output = subprocess.check_output(["git", "ls-tree", "-r", "HEAD", "--name-only"], cwd="../COVID19-ISRAEL")
+    git_filenames = set((line.strip() for line in output.decode().split("\n") if len(line.strip()) > 0))
     for filename in glob("../COVID19-ISRAEL/**", recursive=True):
-        if os.path.isfile(filename) and not is_ignore_hash_filename(filename):
+        if os.path.isfile(filename):
+            rel_filename = os.path.relpath(filename, "../COVID19-ISRAEL/")
+            if rel_filename in git_filenames: continue
+            if is_ignore_filename(rel_filename): continue
             yield {
-                "name": os.path.relpath(filename, "../COVID19-ISRAEL/"),
+                "name": rel_filename,
                 "size": os.path.getsize(filename),
                 "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
             }
@@ -21,11 +52,13 @@ def flow(parameters, *_):
     return Flow(
         files_list(),
         update_resource(-1, name='files_list', path='files_list.csv', **{"dpp:streaming": True}),
-        dump_to_path(parameters.get('dump_to_path', "data/covid19_israel_files_list")),
+        dump_to_path(parameters['dump_to_path']),
         printer(num_rows=5)
     )
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    flow({}).process()
+    flow({
+        "dump_to_path": "data/covid19_israel_files_list"
+    }).process()
