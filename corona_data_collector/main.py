@@ -2,6 +2,7 @@ import optparse
 import json
 import os
 from datetime import datetime, timedelta
+import tempfile
 
 import psycopg2
 
@@ -89,27 +90,28 @@ def main(parameters=None):
     print('day=%s month=%s' % (day, month))
     from_date = datetime(2020, month, day, 00, 00, 00)
     to_date = datetime(2020, month, day, 23, 59, 59)
-    db_to_file_writer = DBToFileWriter(os.path.join(os.path.dirname(__file__), f'corona_bot_answers_{day}_{month}_2020.csv'))
-    options, arguments = get_process_arguments(parameters)
-    if options.source == 'file':
-        print(f'Loading data from {options.file_path}')
-        with open(options.file_path, "r") as data_source_file:
-            db_to_file_writer.resultSet = json.load(data_source_file)
-        db_to_file_writer.log_database_data()
-        source_filename = options.file_path.split('/')[-1]
-        os.rename(options.file_path, f'{destination_archive}/{source_filename}')
-    elif options.source == 'db':
-        collected_rows = run_query(db_settings, from_date, to_date, query_batch_size)
-        if collected_rows is not None and len(collected_rows) > 0:
-            print(f'Number of DB rows collected: {len(collected_rows)}')
-            db_to_file_writer.resultSet = collected_rows
-            from_date = collected_rows[-1]['created']
+    with tempfile.TemporaryDirectory() as tempdir:
+        db_to_file_writer = DBToFileWriter(os.path.join(tempdir, f'corona_bot_answers_{day}_{month}_2020.csv'))
+        options, arguments = get_process_arguments(parameters)
+        if options.source == 'file':
+            print(f'Loading data from {options.file_path}')
+            with open(options.file_path, "r") as data_source_file:
+                db_to_file_writer.resultSet = json.load(data_source_file)
             db_to_file_writer.log_database_data()
-    print('Adding GPS coordinates to records selected')
-    db_to_file_writer.add_gps_coordinates(use_gps_finder)
-    output_data['destination_filename'] = db_to_file_writer.clear_output_files()
-    print('Operation cycle completed successfully')
-    return output_data
+            source_filename = options.file_path.split('/')[-1]
+            os.rename(options.file_path, f'{destination_archive}/{source_filename}')
+        elif options.source == 'db':
+            collected_rows = run_query(db_settings, from_date, to_date, query_batch_size)
+            if collected_rows is not None and len(collected_rows) > 0:
+                print(f'Number of DB rows collected: {len(collected_rows)}')
+                db_to_file_writer.resultSet = collected_rows
+                from_date = collected_rows[-1]['created']
+                db_to_file_writer.log_database_data()
+        print('Adding GPS coordinates to records selected')
+        db_to_file_writer.add_gps_coordinates(use_gps_finder)
+        output_data['destination_filename'] = db_to_file_writer.clear_output_files()
+        print('Operation cycle completed successfully')
+        return output_data
 
 
 if __name__ == '__main__':
