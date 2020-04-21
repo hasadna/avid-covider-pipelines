@@ -7,14 +7,19 @@ import psycopg2
 
 from corona_data_collector.DBToFileWriter import DBToFileWriter
 from corona_data_collector.config import (
-    db_settings, query_batch_size, use_gps_finder, supported_questions_version, destination_archive,
-    DictObject
+    db_settings, query_batch_size, use_gps_finder, destination_archive,
+    DictObject, process_max_rows
 )
+from corona_data_collector.questionare_versions import questionare_versions
 
 
 def run_query(settings, min_date, max_date, num_of_records=100):
     connection = None
     cursor = None
+    supported_versions = ''
+    for version in questionare_versions.keys():
+        supported_versions += f'\'{version}\','
+    supported_versions = supported_versions[:-1]
     try:
         fetched_rows = []
         connection = psycopg2.connect(host=settings['host'], user=settings['username'], password=settings['password'],
@@ -22,16 +27,19 @@ def run_query(settings, min_date, max_date, num_of_records=100):
                                       sslcert=settings['sslcert'], sslkey=settings['sslkey'], database="reports")
         cursor = connection.cursor()
         collected_all_records = False
-        while not collected_all_records:
+        collected_records_sum = 0
+        while not collected_all_records and collected_records_sum <= process_max_rows:
             cursor.execute(
-                f'SELECT * FROM reports '
-                f'where created > \'{min_date}\' and created < \'{max_date}\''
-                f' limit {num_of_records}'
+                f"SELECT * FROM reports "
+                f"where created > '{min_date}' and created < '{max_date}'"
+                f" and data->>'version' in ({supported_versions})"
+                f" limit {num_of_records}"
             )
             records = cursor.fetchall()
             if len(records) == 0:
                 collected_all_records = True
             else:
+                collected_records_sum += len(records)
                 for record in records:
                     if record[2] is not None and len(record[2]) > 0:
                         data_dict = record[2]
