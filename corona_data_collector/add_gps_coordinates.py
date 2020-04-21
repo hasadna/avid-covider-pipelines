@@ -76,6 +76,7 @@ def add_gps_coordinates(stats, kv, parameters):
     Flow(
         load(os.path.join(parameters['load'], 'datapackage.json')),
         *([filter_rows(lambda row: row['id'] >= parameters['min_id'])] if parameters.get('min_id') else []),
+        filter_rows(lambda row: isinstance(row['data'], dict) and 'street' in row['data'] and 'city_town' in row['data']),
         add_field('lat', 'number', 0),
         add_field('lng', 'number', 0),
         add_field('address_street_accurate', 'number', 0),
