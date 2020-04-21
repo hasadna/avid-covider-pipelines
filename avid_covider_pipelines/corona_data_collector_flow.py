@@ -74,14 +74,15 @@ class StderrWriter:
         self.f.flush()
 
 
-def run_log_main(parameters, run_row, echo_log, *args, **kwargs):
+def run_log_main(parameters, run_row, echo_log, main_parameters):
     output_dir = parameters.get('output-dir', 'data/corona_data_collector')
+    destination_output = os.path.join(output_dir, 'destination_output')
     log_files_dir = os.path.join(output_dir, "log_files")
     os.makedirs(log_files_dir, exist_ok=True)
     with open(os.path.join(log_files_dir, '%s.log' % run_row['start_time'].strftime('%Y%m%dT%H%M%S')), "a") as f:
         with contextlib.redirect_stderr(StderrWriter(f)):
             with contextlib.redirect_stdout(StdoutWriter(f, echo_log)):
-                return main(*args, **kwargs)
+                return main({"destination_output": destination_output, **main_parameters})
 
 
 def corona_data_collector_main(last_run_row, run_row, output_dir, parameters):

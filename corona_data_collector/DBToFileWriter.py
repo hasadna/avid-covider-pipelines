@@ -136,9 +136,11 @@ class DBToFileWriter:
             value_to_return = last_line_array[created_index]
         return value_to_return
 
-    def clear_output_files(self):
+    def clear_output_files(self, _destination_output=None):
+        if not _destination_output:
+            _destination_output = destination_output
         os.remove(self.target_filename)
-        destination_filename = os.path.join(destination_output, os.path.basename(self.filename_with_coords))
-        os.makedirs(destination_output, exist_ok=True)
+        destination_filename = os.path.join(_destination_output, os.path.basename(self.filename_with_coords))
+        os.makedirs(_destination_output, exist_ok=True)
         shutil.move(self.filename_with_coords, destination_filename)
         return destination_filename

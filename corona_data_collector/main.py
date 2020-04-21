@@ -109,7 +109,7 @@ def main(parameters=None):
                 db_to_file_writer.log_database_data()
         print('Adding GPS coordinates to records selected')
         db_to_file_writer.add_gps_coordinates(use_gps_finder)
-        output_data['destination_filename'] = db_to_file_writer.clear_output_files()
+        output_data['destination_filename'] = db_to_file_writer.clear_output_files(parameters.get('destination_output'))
         print('Operation cycle completed successfully')
         return output_data
 
