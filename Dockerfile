@@ -27,7 +27,7 @@ COPY requirements-full.txt /pipelines/
 COPY requirements.txt /pipelines/
 RUN python3 -m pip install -r requirements-full.txt
 COPY . /pipelines
-RUN python3 -m pip install -e /pipelines/datapackage_pipelines_covid19israel/
+RUN python3 -m pip install -e .
 ARG GITHUB_SHA=_
 RUN echo "${GITHUB_SHA}" > /pipelines/GITHUB_SHA
 ENTRYPOINT ["/pipelines/entrypoint.sh"]

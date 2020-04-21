@@ -16,3 +16,13 @@ add_gps_coordinates:
         gps_data: ../data/corona_data_collector/gps_data.json
         load: ../data/corona_data_collector/load_from_db
         dump_to_path: ../data/corona_data_collector/add_gps_coordinates
+
+
+export_corona_bot_answers:
+  dependencies:
+    - pipeline: ./corona_data_collector/add_gps_coordinates
+  pipeline:
+    - flow: export_corona_bot_answers
+      parameters:
+        load: ../data/corona_data_collector/add_gps_coordinates
+        dump_to_path: ../data/corona_data_collector/export_corona_bot_answers
