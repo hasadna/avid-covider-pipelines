@@ -29,6 +29,11 @@ def store_destination_output_package(destination_output):
         for filename in glob(os.path.join(destination_output, "*")):
             if os.path.isfile(filename):
                 name = os.path.relpath(filename, destination_output)
+                if not name.startswith("_wip__"): continue
+                new_filename = filename.replace("_wip__", "")
+                os.rename(filename, new_filename)
+                filename = new_filename
+                name = name.replace("_wip__", "")
                 size = os.path.getsize(filename)
                 hash = get_hash(filename)
                 last_row = last_package.get(name)
@@ -99,7 +104,7 @@ def export_corona_bot_answers(parameters):
             if cur_csv['writer']:
                 cur_csv['file'].close()
             cur_csv['day'], cur_csv['month'], cur_csv['year'] = day, month, year
-            cur_csv['filename'] = os.path.join(parameters['destination_output'], "corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year))
+            cur_csv['filename'] = os.path.join(parameters['destination_output'], "_wip__corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year))
             csv_filenames.add(cur_csv['filename'])
             cur_csv['file'] = open(cur_csv['filename'], "w")
             cur_csv['writer'] = csv.DictWriter(cur_csv['file'], output_keys + ["lat", "lng", "address_street_accurate"])
