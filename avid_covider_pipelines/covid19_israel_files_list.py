@@ -32,25 +32,45 @@ def is_ignore_filename(filename):
     return False
 
 
-def files_list():
+def get_git_filenames():
     output = subprocess.check_output(["git", "ls-tree", "-r", "HEAD", "--name-only"], cwd="../COVID19-ISRAEL")
-    git_filenames = set((line.strip() for line in output.decode().split("\n") if len(line.strip()) > 0))
+    return set((line.strip() for line in output.decode().split("\n") if len(line.strip()) > 0))
+
+
+def files_list(git_filenames=None):
+    if not git_filenames:
+        git_filenames = get_git_filenames()
     for filename in glob("../COVID19-ISRAEL/**", recursive=True):
-        if os.path.isfile(filename):
-            rel_filename = os.path.relpath(filename, "../COVID19-ISRAEL/")
-            if rel_filename in git_filenames: continue
-            if is_ignore_filename(rel_filename): continue
-            yield {
-                "name": rel_filename,
-                "size": os.path.getsize(filename),
-                "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
-            }
+        if not os.path.isfile(filename): continue
+        rel_filename = os.path.relpath(filename, "../COVID19-ISRAEL/")
+        if rel_filename in git_filenames: continue
+        if is_ignore_filename(rel_filename): continue
+        yield {
+            "name": rel_filename,
+            "size": os.path.getsize(filename),
+            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+        }
+
+
+def git_files_list(git_filenames):
+    for filename in glob("../COVID19-ISRAEL/**", recursive=True):
+        if not os.path.isfile(filename): continue
+        rel_filename = os.path.relpath(filename, "../COVID19-ISRAEL/")
+        if rel_filename not in git_filenames: continue
+        yield {
+            "name": rel_filename,
+            "size": os.path.getsize(filename),
+            "mtime": datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+        }
 
 
 def flow(parameters, *_):
     logging.info('Generating files list from COVID19-ISRAEL directory')
+    git_filenames = get_git_filenames()
     return Flow(
-        files_list(),
+        git_files_list(git_filenames),
+        update_resource(-1, name='git_files_list', path='git_files_list.csv', **{"dpp:streaming": True}),
+        files_list(git_filenames),
         update_resource(-1, name='files_list', path='files_list.csv', **{"dpp:streaming": True}),
         dump_to_path(parameters['dump_to_path']),
         printer(num_rows=5)

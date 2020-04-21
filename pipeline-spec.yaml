@@ -25,3 +25,12 @@ covid19_israel_files_list:
     - flow: avid_covider_pipelines.covid19_israel_files_list
       parameters:
         dump_to_path: data/covid19_israel_files_list
+
+
+covid19_israel_files_zip:
+  schedule:
+    crontab: "0 * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.covid19_israel_files_zip
+      parameters:
+        dump_to_path: data/covid19_israel_files_zip
