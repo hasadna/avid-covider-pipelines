@@ -16,9 +16,18 @@ ENV LANG=C.UTF-8
 EXPOSE 5000
 WORKDIR /pipelines/
 
-RUN apt-get update && apt-get install -y libspatialindex-c4v5 git
+RUN apt-get update && apt-get install -y libspatialindex-c4v5 git xvfb libgtk2.0-0 libgconf-2-4 chromium-browser
+RUN apt-get install -y curl
+RUN curl -L https://github.com/plotly/orca/releases/download/v1.3.1/orca-1.3.1.AppImage > /usr/local/bin/orca.AppImage &&\
+    chmod +x /usr/local/bin/orca.AppImage &&\
+    echo '#!/bin/bash' > /usr/local/bin/orca &&\
+    echo 'xvfb-run -a /usr/local/bin/orca.AppImage "$@"' >> /usr/local/bin/orca &&\
+    chmod +x /usr/local/bin/orca
 COPY requirements-full.txt /pipelines/
 COPY requirements.txt /pipelines/
 RUN python3 -m pip install -r requirements-full.txt
 COPY . /pipelines
+RUN python3 -m pip install -e /pipelines/datapackage_pipelines_covid19israel/
+ARG GITHUB_SHA=_
+RUN echo "${GITHUB_SHA}" > /pipelines/GITHUB_SHA
 ENTRYPOINT ["/pipelines/entrypoint.sh"]

@@ -1,0 +1,66 @@
+#
+#
+# This file contains pipeline steps which run from the COVID19-ISRAEL private repository
+#
+# You can add additional steps using the same format
+#
+# Each step should have a unique ID
+#
+# Available attributes for each step:
+#
+# dependencies:
+#
+#   list of other step ids which must run before this step
+#   you can refer to other steps in this file
+#   or to the special steps:
+#     corona_data_collector - runs every day at 02:00
+#     github_pull_covid19_israel - will cause your pipeline to run only if there was a change in the COVID19-ISRAEL repository
+#
+#
+# module:
+#
+#   module name in COVID19-ISRAEL repository
+#   example of how a module is run from COVID19-ISRAEL repository:
+#      python3 -m src.utils.get_raw_Data
+#
+#
+# args:
+#
+#   list of additional args to pass to the module invocation
+#   the args are appended to the python3 command
+#   example of how a module is run from COVID19-ISRAEL repository:
+#      python3 -m src.utils.lamas_features --if-not-exists
+#
+#
+
+
+get_raw_data:
+  dependencies:
+    - corona_data_collector
+    - github_pull_covid19_israel
+  module: src.utils.get_raw_data
+
+
+preprocess_raw_data:
+  dependencies:
+    - get_raw_data
+  module: src.utils.preprocess_raw_data
+
+
+lamas_features:
+  dependencies:
+    - preprocess_raw_data
+  module: src.utils.lamas_features
+  args: ["--if-not-exists"]
+
+
+dashboard_generate_cache:
+  dependencies:
+    - lamas_features
+  module: Dashboard.generate_cache
+
+
+figures_plotly_top_bottom_cities:
+  dependencies:
+    - dashboard_generate_cache
+  module: src.figures.plotly_top_bottom_cities

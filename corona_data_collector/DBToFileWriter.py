@@ -138,9 +138,7 @@ class DBToFileWriter:
 
     def clear_output_files(self):
         os.remove(self.target_filename)
-        if not os.path.exists(destination_output):
-            os.makedirs(destination_output)
-        shutil.move(
-            self.filename_with_coords,
-            os.path.join(destination_output, os.path.basename(self.filename_with_coords))
-        )
+        destination_filename = os.path.join(destination_output, os.path.basename(self.filename_with_coords))
+        os.makedirs(destination_output, exist_ok=True)
+        shutil.move(self.filename_with_coords, destination_filename)
+        return destination_filename

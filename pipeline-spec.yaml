@@ -1,11 +1,36 @@
-preprocess_raw_data:
+github_pull_covid19_israel:
   schedule:
     crontab: "* * * * *"
   pipeline:
-    - flow: avid_covider_pipelines.preprocess_raw_data
+    - flow: avid_covider_pipelines.github_pull_covid19_israel
+      parameters:
+        dump_to_path: data/github_pull_covid19_israel
+        change-run-covid: true
+
 
 corona_data_collector:
   schedule:
-    crontab: "5 0 * * *"
+    crontab: "0 2 * * *"
   pipeline:
     - flow: avid_covider_pipelines.corona_data_collector_flow
+      parameters:
+        output-dir: data/corona_data_collector
+        raise-exceptions: true
+
+
+covid19_israel_files_list:
+  schedule:
+    crontab: "* * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.covid19_israel_files_list
+      parameters:
+        dump_to_path: data/covid19_israel_files_list
+
+
+covid19_israel_files_zip:
+  schedule:
+    crontab: "0 * * * *"
+  pipeline:
+    - flow: avid_covider_pipelines.covid19_israel_files_zip
+      parameters:
+        dump_to_path: data/covid19_israel_files_zip
