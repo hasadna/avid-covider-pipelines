@@ -1,30 +1,45 @@
 import os
 import shutil
 import telegram
-from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, destination_output, telegram_token,\
+from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, destination_output, \
+    telegram_token, \
     telegram_chat_id
 from corona_data_collector.gps_generator import GPSGenerator
+from corona_data_collector.questionare_versions import questionare_versions
+
+inverse_converted_keys = {}
+for orig_key, conv_key in keys_to_convert.items():
+    if conv_key not in inverse_converted_keys:
+        inverse_converted_keys[conv_key] = []
+    inverse_converted_keys[conv_key].append(orig_key)
+
+
+def get_default_value(column_name, version):
+    if column_name in questionare_versions[version]:
+        return 0
+    if column_name in inverse_converted_keys:
+        alternative_keys = inverse_converted_keys[column_name]
+        for alt_key in alternative_keys:
+            if alt_key in questionare_versions[version]:
+                return 0
+    return ''
 
 
 def collect_row(row):
     returned_array = []
-    for key, value in answer_titles.items():
-        val = row.get(key, 0)
+    for key, _ in sorted(list(answer_titles.items())):
+        val = row.get(key, get_default_value(key, row['version']))
+        if val is None:
+            val = 0
         if isinstance(val, str):
             val = val.replace(',', ' - ')
         returned_array.append(val)
     return ','.join([str(x) for x in returned_array])
 
 
-def manipulate_values_versions(db_row):
-    if 'exposure_status' in db_row and db_row['exposure_status'] == 'insulation_with_family':
-        db_row['isolated_with_family'] = 1
-    return db_row
-
-
 def write_answer_keys(target_filename, prefix='', suffix='', ):
     answer_keys_line = ''
-    for key, value in answer_titles.items():
+    for key, value in sorted(list(answer_titles.items())):
         if len(answer_keys_line) == 0:
             answer_keys_line = value
         else:
@@ -39,7 +54,6 @@ def write_answer_keys(target_filename, prefix='', suffix='', ):
 
 def convert_values(db_row):
     try:
-        db_row = manipulate_values_versions(db_row)
         for convert_key in keys_to_convert:
             if convert_key in db_row:
                 db_row[keys_to_convert[convert_key]] = db_row[convert_key]
@@ -125,5 +139,6 @@ class DBToFileWriter:
     def clear_output_files(self):
         os.remove(self.target_filename)
         destination_filename = os.path.join(destination_output, os.path.basename(self.filename_with_coords))
+        os.makedirs(destination_output, exist_ok=True)
         shutil.move(self.filename_with_coords, destination_filename)
         return destination_filename
