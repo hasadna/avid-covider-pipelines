@@ -1,6 +1,6 @@
 export_corona_bot_answers:
   schedule:
-    crontab: "45 2,10,18,22 * * *"
+    crontab: "0 2,10,18,22 * * *"
   pipeline:
     - flow: load_from_db
       parameters:

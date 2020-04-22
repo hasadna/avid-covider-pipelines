@@ -76,6 +76,7 @@ def flow(parameters, *_):
     atexit.register(_close_csv)
 
     def _filter_questionnare_versions(row):
+        stats['rows_supported_and_not_supported_version'] += 1
         if row['data']['version'] in questionare_versions.keys():
             stats['rows_supported_version'] += 1
             return True

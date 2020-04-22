@@ -28,6 +28,7 @@ COPY requirements.txt /pipelines/
 RUN python3 -m pip install -r requirements-full.txt
 COPY . /pipelines
 RUN python3 -m pip install -e .
+RUN sed -i 's/count % 100 ==/count % 100000 ==/' /usr/local/lib/python3.6/dist-packages/datapackage_pipelines/lib/internal/sink.py
 ARG GITHUB_SHA=_
 RUN echo "${GITHUB_SHA}" > /pipelines/GITHUB_SHA
 ENTRYPOINT ["/pipelines/entrypoint.sh"]

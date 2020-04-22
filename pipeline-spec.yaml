@@ -8,28 +8,6 @@ github_pull_covid19_israel:
         change-run-covid: true
 
 
-#corona_data_collector:
-#  schedule:
-#    crontab: "0 2 * * *"
-#  pipeline:
-#    - flow: avid_covider_pipelines.corona_data_collector_flow
-#      parameters:
-#        output-dir: data/corona_data_collector
-#        raise-exceptions: true
-#        with-history: true
-#
-#
-#corona_data_collector_latest:
-#  schedule:
-#    crontab: "30 * * * *"
-#  pipeline:
-#    - flow: avid_covider_pipelines.corona_data_collector_flow
-#      parameters:
-#        output-dir: data/corona_data_collector_latest
-#        raise-exceptions: true
-#        with-history: false
-
-
 covid19_israel_files_list:
   schedule:
     crontab: "* * * * *"
@@ -41,7 +19,7 @@ covid19_israel_files_list:
 
 covid19_israel_files_zip:
   schedule:
-    crontab: "0 * * * *"
+    crontab: "0 4 * * *"
   pipeline:
     - flow: avid_covider_pipelines.covid19_israel_files_zip
       parameters:

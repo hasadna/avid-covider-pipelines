@@ -4,7 +4,6 @@ import logging
 import os
 import requests
 import csv
-import shutil
 import codecs
 
 
