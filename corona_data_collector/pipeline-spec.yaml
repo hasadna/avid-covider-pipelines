@@ -1,29 +1,14 @@
-load_from_db:
+export_corona_bot_answers:
   schedule:
     crontab: "45 2,10,18,22 * * *"
   pipeline:
     - flow: load_from_db
       parameters:
         dump_to_path: ../data/corona_data_collector/load_from_db
-
-
-add_gps_coordinates:
-  dependencies:
-    - pipeline: ./corona_data_collector/load_from_db
-  pipeline:
     - flow: add_gps_coordinates
       parameters:
-        gps_data: ../data/corona_data_collector/gps_data.json
-        load: ../data/corona_data_collector/load_from_db
-        dump_to_path: ../data/corona_data_collector/add_gps_coordinates
-
-
-export_corona_bot_answers:
-  dependencies:
-    - pipeline: ./corona_data_collector/add_gps_coordinates
-  pipeline:
+        gps_datapackage_path: ../data/corona_data_collector/add_gps_coordinates/gps_data
     - flow: export_corona_bot_answers
       parameters:
-        load: ../data/corona_data_collector/add_gps_coordinates
-        dump_to_path: ../data/corona_data_collector/export_corona_bot_answers
         destination_output: ../data/corona_data_collector/destination_output
+        dump_to_path: ../data/corona_data_collector/export_corona_bot_answers

@@ -10,8 +10,10 @@ def flow(parameters, *_):
 
     def _rows_iterator():
         last_id = None
-        if os.path.exists(os.path.join(parameters['dump_to_path'], "datapackage.json")):
-            for resource in Flow(load(os.path.join(parameters['dump_to_path'], "datapackage.json"))).datastream().res_iter:
+        load_from = parameters['dump_to_path']
+        if load_from and os.path.exists(os.path.join(load_from, "datapackage.json")):
+            logging.info("Loading from last load_from_db package: " + os.path.join(load_from, "datapackage.json"))
+            for resource in Flow(load(os.path.join(load_from, "datapackage.json"))).datastream().res_iter:
                 for row in resource:
                     last_id = row['id']
                     yield row

@@ -15,10 +15,10 @@ except ImportError:
     keys = DictObject(
         db_pass=os.environ['CORONA_DATA_COLLECTOR_DB_PASS'],
         gps_url_key=os.environ['CORONA_DATA_COLLECTOR_GPS_URL_KEY'],
-        telegram_token=os.environ['CORONA_DATA_COLLECTOR_TELEGRAM_TOKEN'],
-        destination_archive='./data/corona_data_collector/destination_archive',
-        destination_output='./data/corona_data_collector/destination_output'
     )
+
+gps_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+gps_url_key = keys.gps_url_key
 
 db_settings = {
     "host": "35.230.137.198",
@@ -38,6 +38,7 @@ db_settings = {
         'certs/client-key.pem'
     ),
 }
+
 answer_titles = {
     'id': 'id',
     'created': 'timestamp',
@@ -164,15 +165,3 @@ values_to_convert = {
         'true': 1
     }
 }
-gps_source_file = os.environ.get('CORONA_DATA_COLLECTOR_GPS_PATH',
-                                 os.path.join(os.path.dirname(__file__), 'gps_data.json'))
-gps_url = 'https://maps.googleapis.com/maps/api/geocode/json'
-gps_url_key = keys.gps_url_key
-use_gps_finder = True
-query_batch_size = 10000
-process_max_rows = 1000000
-query_from_date = '2020-04-02 00:00:00'
-destination_archive = keys.destination_archive
-destination_output = keys.destination_output
-telegram_token = keys.telegram_token
-telegram_chat_id = '@covid19datacollector'

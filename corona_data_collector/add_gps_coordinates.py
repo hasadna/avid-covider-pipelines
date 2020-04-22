@@ -33,8 +33,8 @@ def get_coords(stats, kv, street, city, is_street=True):
 
 
 def load_cache_from_package(parameters, stats, kv):
-    logging.info("Loading coordinates cache from datapackage")
-    for resource in Flow(load(os.path.join(parameters['dump_to_path'], "gps_data", "datapackage.json"), strip=False)).datastream().res_iter:
+    logging.info("Loading coordinates cache from datapackage " + parameters['gps_datapackage_path'])
+    for resource in Flow(load(os.path.join(parameters['gps_datapackage_path'], "datapackage.json"), strip=False)).datastream().res_iter:
         for row in resource:
             stats['loaded_from_package_cache'] += 1
             kv.set(row['k'], row['v'])
@@ -57,39 +57,50 @@ def load_cache_from_json(parameters, stats, kv):
 
 
 def save_cache(parameters, kv):
-    logging.info('Saving cache')
+    logging.info('Saving cache to ' + parameters['gps_datapackage_path'])
     Flow(
         ({"k": k, "v": v} for k, v in kv.items()),
         update_resource(-1, name="gps_data", path="gps_data.csv", **{"dpp:streaming": True}),
-        dump_to_path(os.path.join(parameters['dump_to_path'], "gps_data"))
+        dump_to_path(parameters['gps_datapackage_path'])
     ).process()
 
 
 def add_gps_coordinates(stats, kv, parameters):
     logging.info('adding gps coordinates')
 
-    def _add_gps_coordinates(row):
-        lat, lng, accurate = get_coords(stats, kv, row['data']['street'], row['data']['city_town'])
-        row['lat'] = lat
-        row['lng'] = lng
-        row['address_street_accurate'] = accurate
-
-    def _dump_stats(rows):
-        yield from rows
+    def _add_gps_coordinates(rows):
+        for row in rows:
+            lat, lng, accurate = get_coords(stats, kv, row['data']['street'], row['data']['city_town'])
+            yield {
+                **row,
+                "lat": lat,
+                "lng": lng,
+                "address_street_accurate": accurate
+            }
         logging.info(str(dict(stats)))
 
-    return Flow(
-        load(os.path.join(parameters['load'], 'datapackage.json')),
-        *([filter_rows(lambda row: row['id'] >= parameters['min_id'])] if parameters.get('min_id') else []),
+    flow_args = []
+    if parameters.get('load'):
+        flow_args += [
+            load(os.path.join(parameters['load'], 'datapackage.json'))
+        ]
+    if parameters.get('min_id'):
+        flow_args += [
+            filter_rows(lambda row: row['id'] >= parameters['min_id'])
+        ]
+    flow_args += [
         filter_rows(lambda row: isinstance(row['data'], dict) and 'street' in row['data'] and 'city_town' in row['data']),
-        add_field('lat', 'number', 0),
-        add_field('lng', 'number', 0),
-        add_field('address_street_accurate', 'number', 0),
+        add_field('lat', 'number', 0, -1),
+        add_field('lng', 'number', 0, -1),
+        add_field('address_street_accurate', 'number', 0, -1),
         _add_gps_coordinates,
-        _dump_stats,
         update_resource(-1, name="db_data_with_coords", path="db_data_with_coords.csv", **{"dpp:streaming": True}),
-        dump_to_path(parameters['dump_to_path'])
-    )
+    ]
+    if parameters.get('dump_to_path'):
+        flow_args += [
+            dump_to_path(parameters['dump_to_path'])
+        ]
+    return Flow(*flow_args)
 
 
 def flow(parameters, *_):
@@ -98,7 +109,7 @@ def flow(parameters, *_):
     stats = defaultdict(int)
     kv = kvfile.KVFile()
     atexit.register(save_cache, parameters, kv)
-    if os.path.exists(os.path.join(parameters['dump_to_path'], "gps_data", "datapackage.json")):
+    if os.path.exists(os.path.join(parameters['gps_datapackage_path'], "datapackage.json")):
         load_cache_from_package(parameters, stats, kv)
     elif parameters.get('gps_data'):
         load_cache_from_json(parameters, stats, kv)
