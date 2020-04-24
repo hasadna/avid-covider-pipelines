@@ -41,7 +41,8 @@ def main():
     })
     subprocess.check_call(["python3", "-m", "src.utils.preprocess_raw_data"], cwd="../COVID19-ISRAEL", env={
         **os.environ,
-        "GOOGLE_API_KEY_FILE": os.environ["GOOGLE_API_KEY_FILE"]
+        "GOOGLE_API_KEY_FILE": os.environ["GOOGLE_API_KEY_FILE"],
+        "GOOGLE_MAPS_MOCK_GEOCODE": "yes"
     })
     logging.info("Great Success!")
 
