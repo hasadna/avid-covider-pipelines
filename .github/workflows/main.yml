@@ -17,6 +17,8 @@ jobs:
         COVID19_ISRAEL_PRIVATE_KEY: ${{ secrets.COVID19_ISRAEL_PRIVATE_KEY }}
         COVID19_ISRAEL_REPOSITORY: ${{ secrets.COVID19_ISRAEL_REPOSITORY }}
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+        CORONA_DATA_COLLECTOR_DB_PASS: ${{ secrets.CORONA_DATA_COLLECTOR_DB_PASS }}
+        CORONA_DATA_COLLECTOR_GPS_URL_KEY: ${{ secrets.CORONA_DATA_COLLECTOR_GPS_URL_KEY }}
       run: |
         docker pull avidcovider/pipelines:latest &&\
         docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
@@ -31,6 +33,7 @@ jobs:
               -v $SECRETS_PATH:/secrets \
               -e GOOGLE_SERVICE_ACCOUNT_FILE=/secrets/secret_service_account \
               -e GOOGLE_API_KEY_FILE=/secrets/google_api_key.txt \
+              -e CORONA_DATA_COLLECTOR_DB_PASS -e CORONA_DATA_COLLECTOR_GPS_URL_KEY \
               -e AVIDCOVIDER_PIPELINES_DATA_DOMAIN -e AVIDCOVIDER_PIPELINES_AUTH \
               -v `pwd`/.data:/pipelines/data \
               -v `pwd`/.data/COVID19-ISRAEL:/COVID19-ISRAEL \
