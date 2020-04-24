@@ -67,8 +67,8 @@ jobs:
           git add ./values.auto-updated.yaml && git commit -m "automatic update of avid-covider pipelines" &&\
           git push origin master
         fi
-      - uses: actions/upload-artifact@v1
-        if: always()
-        with:
-          name: gpg
-          path: .gpg
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: gpg
+        path: .gpg
