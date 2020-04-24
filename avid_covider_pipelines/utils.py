@@ -8,6 +8,7 @@ import datetime
 from glob import glob
 import hashlib
 import json
+import requests
 
 
 HASH_BLOCKSIZE = 65536
@@ -193,3 +194,12 @@ def get_github_sha():
             return f.read().strip()
     else:
         return '_'
+
+
+def http_stream_download(filename, requests_kwargs):
+    with requests.get(stream=True, **requests_kwargs) as res:
+        res.raise_for_status()
+        with open(filename, 'wb') as f:
+            for chunk in res.iter_content(chunk_size=8192):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)

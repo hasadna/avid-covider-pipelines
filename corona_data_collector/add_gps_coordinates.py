@@ -9,7 +9,9 @@ from collections import defaultdict
 import atexit
 
 
-def get_coords(stats, kv, street, city, is_street=True):
+def get_coords(stats, kv, street, city, is_street=True, get_coords_callback=None):
+    if get_coords_callback is None:
+        get_coords_callback = get_coords_from_web
     key = '%s_%s' % (street, city)
     try:
         value = kv.get(key)
@@ -19,13 +21,13 @@ def get_coords(stats, kv, street, city, is_street=True):
         pass
     logging.info('Getting coords from web: "%s" "%s"' % (street, city))
     stats['getting_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
-    lat, lng, accurate = get_coords_from_web(street, city)
+    lat, lng, accurate = get_coords_callback(street, city)
     value = [float(lat), float(lng), int(accurate)]
     if value[0] in [0, -1]:
         stats['invalid_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
         if is_street and street != city:
             stats['invalid_coords_from_web_trying_is_street'] += 1
-            value = get_coords(stats, kv, city, city, is_street=False)
+            value = get_coords(stats, kv, city, city, is_street=False, get_coords_callback=get_coords_callback)
     else:
         stats['valid_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
     kv.set(key, value)
@@ -57,12 +59,13 @@ def load_cache_from_json(parameters, stats, kv):
 
 
 def save_cache(parameters, kv):
-    logging.info('Saving cache to ' + parameters['gps_datapackage_path'])
-    Flow(
-        ({"k": k, "v": v} for k, v in kv.items()),
-        update_resource(-1, name="gps_data", path="gps_data.csv", **{"dpp:streaming": True}),
-        dump_to_path(parameters['gps_datapackage_path'])
-    ).process()
+    if parameters.get("gps_datapackage_path"):
+        logging.info('Saving cache to ' + parameters['gps_datapackage_path'])
+        Flow(
+            ({"k": k, "v": v} for k, v in kv.items()),
+            update_resource(-1, name="gps_data", path="gps_data.csv", **{"dpp:streaming": True}),
+            dump_to_path(parameters['gps_datapackage_path'])
+        ).process()
 
 
 def add_gps_coordinates(stats, kv, parameters):
@@ -70,7 +73,7 @@ def add_gps_coordinates(stats, kv, parameters):
 
     def _add_gps_coordinates(rows):
         for row in rows:
-            lat, lng, accurate = get_coords(stats, kv, row['data']['street'], row['data']['city_town'])
+            lat, lng, accurate = get_coords(stats, kv, row['data']['street'], row['data']['city_town'], get_coords_callback=parameters.get("get-coords-callback"))
             yield {
                 **row,
                 "lat": lat,
@@ -109,7 +112,7 @@ def flow(parameters, *_):
     stats = defaultdict(int)
     kv = kvfile.KVFile()
     atexit.register(save_cache, parameters, kv)
-    if os.path.exists(os.path.join(parameters['gps_datapackage_path'], "datapackage.json")):
+    if parameters.get("gps_datapackage_path") and os.path.exists(os.path.join(parameters['gps_datapackage_path'], "datapackage.json")):
         load_cache_from_package(parameters, stats, kv)
     elif parameters.get('gps_data'):
         load_cache_from_json(parameters, stats, kv)
