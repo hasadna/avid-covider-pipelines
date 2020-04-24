@@ -26,7 +26,7 @@ jobs:
         echo "${GOOGLE_API_KEY}" > $SECRETS_PATH/google_api_key.txt &&\
         echo "${COVID19_ISRAEL_PRIVATE_KEY}" > $SECRETS_PATH/covid19_israel_private_key &&\
         echo "${GPG_PASSWORD}" > $SECRETS_PATH/gpg_password &&\
-        mkdir .data &&\
+        mkdir -p .data/COVID19-ISRAEL &&\
         docker run \
               -v $SECRETS_PATH:/secrets \
               -e GOOGLE_SERVICE_ACCOUNT_FILE=/secrets/secret_service_account \
@@ -34,20 +34,18 @@ jobs:
               -e AVIDCOVIDER_PIPELINES_DATA_DOMAIN -e AVIDCOVIDER_PIPELINES_AUTH \
               -e COVID19_ISRAEL_REPOSITORY \
               -v `pwd`/.data:/pipelines/data \
+              -v `pwd`/.data/COVID19-ISRAEL:/COVID19-ISRAEL \
               --entrypoint bash avid-covider-pipelines -c "
                     export GIT_SSH_COMMAND="ssh -i /secrets/covid19_israel_private_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" &&\
                     chmod 400 /secrets/covid19_israel_private_key &&\
-                    git clone "git@github.com:${COVID19_ISRAEL_REPOSITORY}.git" /COVID19-ISRAEL &&\
-                    ( cd /COVID19-ISRAEL && python3 -m pip install -r requirements-pipelines.txt ) &&\
-                    python3 -m corona_data_collector.tests.test_flow
-              " >.log 2>&1
+                    ( cd /COVID19-ISRAEL && git clone "git@github.com:${COVID19_ISRAEL_REPOSITORY}.git" . && python3 -m pip install -r requirements-pipelines.txt )
+                    # python3 -m corona_data_collector.tests.test_flow
+              "  # >.log 2>&1
         RES=$?
         tar -czf data.tar.gz .data
-        tar -czf covid19israel.tar.gz .COVID19-ISRAEL
         mkdir .gpg
         cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/log.gpg .log
         cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/data.tar.gz.gpg data.tar.gz
-        cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/covid19israel.tar.gz.gpg covid19israel.tar.gz
         [ "${RES}" != "0" ] && exit $RES
         docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
         echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
