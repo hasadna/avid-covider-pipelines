@@ -18,7 +18,6 @@ jobs:
         COVID19_ISRAEL_REPOSITORY: ${{ secrets.COVID19_ISRAEL_REPOSITORY }}
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
       run: |
-        sudo apt-get update && sudo apt-get install -y gnupg &&\
         docker pull avidcovider/pipelines:latest &&\
         docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
         export SECRETS_PATH=`mktemp -d` &&\
@@ -37,7 +36,7 @@ jobs:
               -e AVIDCOVIDER_PIPELINES_DATA_DOMAIN -e AVIDCOVIDER_PIPELINES_AUTH \
               -v `pwd`/.COVID19-ISRAEL:/COVID19-ISRAEL \
               -v `pwd`/.data:/pipelines/data \
-              --entrypoint bash avidcovider/pipelines:latest -c "
+              --entrypoint bash avid-covider-pipelines -c "
                     ( cd /COVID19-ISRAEL && python3 -m pip install -r requirements-pipelines.txt ) &&\
                     python3 -m corona_data_collector.tests.test_flow
               " >.log 2>&1
