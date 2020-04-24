@@ -19,7 +19,8 @@ jobs:
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
       run: |
         docker pull avidcovider/pipelines:latest &&\
-        docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
+        # docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
+        docker tag avidcovider/pipelines:latest avid-covider-pipelines &&\
         export SECRETS_PATH=`mktemp -d` &&\
         echo "${GOOGLE_SERVICE_ACCOUNT}" > $SECRETS_PATH/secret_service_account &&\
         echo "${GOOGLE_API_KEY}" > $SECRETS_PATH/google_api_key.txt &&\
