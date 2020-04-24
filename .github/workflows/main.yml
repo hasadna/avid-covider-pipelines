@@ -10,9 +10,45 @@ jobs:
         DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
         HASADNA_K8S_DEPLOY_KEY: ${{ secrets.HASADNA_K8S_DEPLOY_KEY }}
+        AVIDCOVIDER_PIPELINES_DATA_DOMAIN: ${{ secrets.AVIDCOVIDER_PIPELINES_DATA_DOMAIN }}
+        AVIDCOVIDER_PIPELINES_AUTH: ${{ secrets.AVIDCOVIDER_PIPELINES_AUTH }}
+        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        COVID19_ISRAEL_PRIVATE_KEY: ${{ secrets.COVID19_ISRAEL_PRIVATE_KEY }}
+        COVID19_ISRAEL_REPOSITORY: ${{ secrets.COVID19_ISRAEL_REPOSITORY }}
+        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
       run: |
+        sudo apt-get update && sudo apt-get install -y gnupg &&\
         docker pull avidcovider/pipelines:latest &&\
         docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
+        export SECRETS_PATH=`mktemp -d` &&\
+        echo "${GOOGLE_SERVICE_ACCOUNT}" > $SECRETS_PATH/secret_service_account &&\
+        echo "${GOOGLE_API_KEY}" > $SECRETS_PATH/google_api_key.txt &&\
+        echo "${COVID19_ISRAEL_PRIVATE_KEY}" > $SECRETS_PATH/covid19_israel_private_key &&\
+        echo "${GPG_PASSWORD}" > $SECRETS_PATH/gpg_password &&\
+        chmod 400 $SECRETS_PATH/covid19_israel_private_key &&\
+        export GIT_SSH_COMMAND="ssh -i $SECRETS_PATH/covid19_israel_private_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" &&\
+        git clone "git@github.com:${COVID19_ISRAEL_REPOSITORY}.git" .COVID19-ISRAEL &&\
+        mkdir .data &&\
+        docker run \
+              -v $SECRETS_PATH:/secrets \
+              -e GOOGLE_SERVICE_ACCOUNT_FILE=/secrets/secret_service_account \
+              -e GOOGLE_API_KEY_FILE=/secrets/google_api_key.txt \
+              -e AVIDCOVIDER_PIPELINES_DATA_DOMAIN -e AVIDCOVIDER_PIPELINES_AUTH \
+              -v `pwd`/.COVID19-ISRAEL:/COVID19-ISRAEL \
+              -v `pwd`/.data:/pipelines/data \
+              --entrypoint bash avidcovider/pipelines:latest -c "
+                    ( cd /COVID19-ISRAEL && python3 -m pip install -r requirements-pipelines.txt ) &&\
+                    python3 -m corona_data_collector.tests.test_flow
+              " >.log 2>&1
+        RES=$?
+        tar -czf data.tar.gz .data
+        tar -czf covid19israel.tar.gz .COVID19-ISRAEL
+        mkdir .gpg
+        cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/log.gpg .log
+        cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/data.tar.gz.gpg data.tar.gz
+        cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/covid19israel.tar.gz.gpg covid19israel.tar.gz
+        [ "${RES}" != "0" ] && exit $RES
         docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
         echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
         docker push "avidcovider/pipelines:${GITHUB_SHA}" &&\
@@ -31,3 +67,8 @@ jobs:
           git add ./values.auto-updated.yaml && git commit -m "automatic update of avid-covider pipelines" &&\
           git push origin master
         fi
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: gpg
+          path: .gpg
