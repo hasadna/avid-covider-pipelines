@@ -27,7 +27,7 @@ jobs:
         echo "${COVID19_ISRAEL_PRIVATE_KEY}" > $SECRETS_PATH/covid19_israel_private_key &&\
         echo "${GPG_PASSWORD}" > $SECRETS_PATH/gpg_password &&\
         chmod 400 $SECRETS_PATH/covid19_israel_private_key &&\
-        export GIT_SSH_COMMAND="ssh -i $SECRETS_PATH/covid19_israel_private_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -vvv" &&\
+        export GIT_SSH_COMMAND="ssh -i $SECRETS_PATH/covid19_israel_private_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o IdentitiesOnly=yes" &&\
         git clone "git@github.com:${COVID19_ISRAEL_REPOSITORY}.git" .COVID19-ISRAEL &&\
         mkdir .data &&\
         docker run \
