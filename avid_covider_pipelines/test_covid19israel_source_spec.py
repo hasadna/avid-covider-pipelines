@@ -37,6 +37,7 @@ def predownload_data():
 
 
 def run_pipeline(source_spec, id):
+    logging.info('running pipeline "%s"' % id)
     pipeline = source_spec[id]
     run_covid19_israel.flow({
         **{
@@ -45,8 +46,11 @@ def run_pipeline(source_spec, id):
         },
         **pipeline
     }).process()
-    for dependant in pipeline.get('__dependants', []):
+    dependants = pipeline.get('__dependants', [])
+    logging.info('pipeline "%s" completed, running dependants: %s' % (id, dependants))
+    for dependant in dependants:
         run_pipeline(source_spec, dependant)
+    logging.info('completed all dependants for pipeline "%s"' % id)
 
 
 def main():
@@ -64,6 +68,7 @@ def main():
             start_ids.add(id)
     for id in start_ids:
         run_pipeline(source_spec, id)
+    logging.info('all pipelines completed')
 
 
 if __name__ == "__main__":
