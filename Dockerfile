@@ -31,4 +31,5 @@ RUN python3 -m pip install -e .
 RUN sed -i 's/count % 100 ==/count % 100000 ==/' /usr/local/lib/python3.6/dist-packages/datapackage_pipelines/lib/internal/sink.py
 ARG GITHUB_SHA=_
 RUN echo "${GITHUB_SHA}" > /pipelines/GITHUB_SHA
+ENV DISABLE_TQDM=yes
 ENTRYPOINT ["/pipelines/entrypoint.sh"]
