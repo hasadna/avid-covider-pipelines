@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04@sha256:3235326357dfb65f1781dbc4df3b834546d8bf914e82cce58e6e6b676e23ce8f
 RUN apt-get update &&\
     apt-get install -y build-essential python3-dev python3-setuptools python3-pip python3-wheel \
                        libxml2-dev libxslt-dev redis libpq5 libpq-dev libleveldb1v5 libleveldb-dev &&\
@@ -31,4 +31,5 @@ RUN python3 -m pip install -e .
 RUN sed -i 's/count % 100 ==/count % 100000 ==/' /usr/local/lib/python3.6/dist-packages/datapackage_pipelines/lib/internal/sink.py
 ARG GITHUB_SHA=_
 RUN echo "${GITHUB_SHA}" > /pipelines/GITHUB_SHA
+ENV DISABLE_TQDM=yes
 ENTRYPOINT ["/pipelines/entrypoint.sh"]
