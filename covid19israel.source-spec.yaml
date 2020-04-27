@@ -52,3 +52,8 @@ lamas_features:
     - preprocess_raw_data
   module: src.utils.lamas_features
   args: ["--if-not-exists"]
+
+bayesian_correction:
+  dependencies:
+    - lamas_features
+  module: src.bayesian.bayesian_correction
