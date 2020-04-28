@@ -7,15 +7,18 @@ from collections import defaultdict
 from corona_data_collector.DBToFileWriter import convert_values, collect_row
 from corona_data_collector.config import answer_titles
 import csv
-from glob import glob
 import datetime
 import atexit
 import json
 from distutils.version import LooseVersion
+import tempfile
+import stat
 
 
-def store_destination_output_package(destination_output):
+def store_destination_output_package(destination_output, csv_temp_files):
     logging.info("Storing destination output package")
+    os.makedirs(destination_output, exist_ok=True)
+    logging.info("Writing to destination_output dir: " + destination_output)
     last_package = {}
     if os.path.exists(os.path.join(destination_output, "datapackage.json")):
 
@@ -29,22 +32,18 @@ def store_destination_output_package(destination_output):
         ).process()
 
     def _files_list():
-        for filename in glob(os.path.join(destination_output, "*")):
-            if os.path.isfile(filename):
-                name = os.path.relpath(filename, destination_output)
-                if not name.startswith("_wip__"): continue
-                new_filename = filename.replace("_wip__", "")
-                os.rename(filename, new_filename)
-                filename = new_filename
-                name = name.replace("_wip__", "")
-                size = os.path.getsize(filename)
-                hash = get_hash(filename)
-                last_row = last_package.get(name)
-                if last_row and hash == last_row.get('hash') and size == last_row['size']:
-                    mtime = last_row['mtime']
-                else:
-                    mtime = datetime.datetime.fromtimestamp(os.path.getmtime(filename))
-                yield {"name": name, "size": size, "mtime": mtime, "hash": hash}
+        for temp_filepath, name in csv_temp_files.items():
+            target_filepath = os.path.join(destination_output, name)
+            os.rename(temp_filepath, target_filepath)
+            os.chmod(target_filepath, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+            size = os.path.getsize(target_filepath)
+            hash = get_hash(target_filepath)
+            last_row = last_package.get(name)
+            if last_row and hash == last_row.get('hash') and size == last_row['size']:
+                mtime = last_row['mtime']
+            else:
+                mtime = datetime.datetime.fromtimestamp(os.path.getmtime(target_filepath))
+            yield {"name": name, "size": size, "mtime": mtime, "hash": hash}
 
     Flow(
         _files_list(),
@@ -58,8 +57,6 @@ def flow(parameters, *_):
     output_keys = []
     for k in sorted(answer_titles.keys()):
         output_keys.append(answer_titles[k])
-    os.makedirs(parameters['destination_output'], exist_ok=True)
-    logging.info("Writing to destination_output dir: " + parameters['destination_output'])
     cur_csv = {
         'day': None,
         'month': None,
@@ -68,7 +65,7 @@ def flow(parameters, *_):
         'file': None,
         'writer': None
     }
-    csv_filenames = set()
+    csv_temp_files = {}
     last_questionare_version = questionare_versions.get_last_version()
 
     def _close_csv():
@@ -76,7 +73,13 @@ def flow(parameters, *_):
             cur_csv['file'].close()
             cur_csv['writer'] = None
 
-    atexit.register(_close_csv)
+    def _close_all_csv():
+        _close_csv()
+        for filename in csv_temp_files:
+            if os.path.exists(filename):
+                os.unlink(filename)
+
+    atexit.register(_close_all_csv)
 
     def _filter_questionnare_versions(row):
         if not row.get("version") or not json.loads(row['version']):
@@ -137,10 +140,10 @@ def flow(parameters, *_):
             if cur_csv['writer']:
                 cur_csv['file'].close()
             cur_csv['day'], cur_csv['month'], cur_csv['year'] = day, month, year
-            cur_csv['filename'] = os.path.join(parameters['destination_output'], "_wip__corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year))
-            logging.info("Writing to %s" % cur_csv['filename'])
-            csv_filenames.add(cur_csv['filename'])
-            cur_csv['file'] = open(cur_csv['filename'], "w")
+            cur_csv['file'] = tempfile.NamedTemporaryFile("w", delete=False)
+            cur_csv['filename'] = cur_csv['file'].name
+            logging.info("Writing to temp file for %s_%s_%s" % (day, month, year))
+            csv_temp_files[cur_csv['filename']] = "corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year)
             cur_csv['writer'] = csv.DictWriter(cur_csv['file'], output_keys + ["lat", "lng", "address_street_accurate"])
             cur_csv['writer'].writeheader()
         cur_csv['writer'].writerow(row['output_row'])
@@ -169,7 +172,7 @@ def flow(parameters, *_):
             logging.info('--- additional stats  (unsupported=%s) ---' % parameters.get("unsupported", False))
             for k, v in stats.items():
                 logging.info("%s = %s" % (k, v))
-            store_destination_output_package(parameters['destination_output'])
+            store_destination_output_package(parameters['destination_output'], csv_temp_files)
             if total_invalid_values > 10000:
                 raise Exception("Too many invalid values rows: " + str(total_invalid_values))
         else:

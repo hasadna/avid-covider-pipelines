@@ -1,5 +1,5 @@
 import os
-from dataflows import Flow, load
+from dataflows import Flow
 import tempfile
 from corona_data_collector import add_gps_coordinates, export_corona_bot_answers, load_from_db, download_gdrive_data
 import logging
@@ -13,8 +13,6 @@ AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 
 
 def main():
-    logging.info("Skipping tests..")
-    exit(0)
     with tempfile.TemporaryDirectory() as tempdir:
         with open(os.path.join(tempdir, ".netrc"), "w") as f:
             f.write("machine %s\nlogin %s\npassword %s\n" % (DOMAIN, AUTH_USER, AUTH_PASSWORD))
