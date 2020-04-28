@@ -13,6 +13,7 @@ import json
 from distutils.version import LooseVersion
 import tempfile
 import stat
+import shutil
 
 
 def store_destination_output_package(destination_output, csv_temp_files):
@@ -34,7 +35,7 @@ def store_destination_output_package(destination_output, csv_temp_files):
     def _files_list():
         for temp_filepath, name in csv_temp_files.items():
             target_filepath = os.path.join(destination_output, name)
-            os.rename(temp_filepath, target_filepath)
+            shutil.move(temp_filepath, target_filepath)
             os.chmod(target_filepath, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
             size = os.path.getsize(target_filepath)
             hash = get_hash(target_filepath)
