@@ -1,3 +1,6 @@
+import sys
+from distutils.version import LooseVersion
+
 
 questionare_versions = {
     '0.1.0': {'age', 'chronic_cancer', 'chronic_diabetes', 'chronic_hypertension',
@@ -242,7 +245,7 @@ questionare_versions = {
               'symptoms_nausea_and_vomiting', 'symptoms_smell_taste_loss', 'symptoms_sore_throat',
               'symptoms_tiredness_or_fatigue', 'temperature', 'toplevel_symptoms_cough', 'toplevel_symptoms_pains',
               'version'},
-    '2.7.1': {'age', 'alias', 'city_town', 'covid19_check_date','covid19_check_result','dateFirstReport',              'diagnosed_location', 'engagementSource',
+    '2.7.*': {'age', 'alias', 'city_town', 'covid19_check_date','covid19_check_result','dateFirstReport',              'diagnosed_location', 'engagementSource',
               'exposure_status', 'general_feeling', 'insulation_exposure_date', 'insulation_patient_number',
               'insulation_reason', 'insulation_returned_from_abroad_date', 'insulation_start_date', 'layout', 'locale',
               'medical_staff_member', 'met_above_18', 'met_under_18', 'notificationsEnabled', 'numPreviousReports',
@@ -256,3 +259,37 @@ questionare_versions = {
               'symptoms_tiredness_or_fatigue', 'temperature', 'toplevel_symptoms_cough', 'toplevel_symptoms_pains',
               'version'},
 }
+
+
+def get_version_columns(target_version):
+    target_version = LooseVersion(target_version).version
+    for version, columns in questionare_versions.items():
+        version = LooseVersion(version).version
+        if (
+            target_version[0] == version[0] and target_version[1] == version[1]
+            and (version[2] == "*" or target_version[2] == version[2])
+        ):
+            return columns
+    raise KeyError("Could not find version " + str(target_version))
+
+
+def get_last_version():
+    version = sorted(map(LooseVersion, questionare_versions.keys()))[-1].version
+    return "%s.%s.%s" % (version[0], version[1], "0" if version[2] == "*" else version[2])
+
+
+def is_supported_version(target_version):
+    try:
+        get_version_columns(target_version)
+        return True
+    except KeyError:
+        return False
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "--get-version-columns":
+        print(get_version_columns(sys.argv[2]))
+    elif sys.argv[1] == "--get-last-version":
+        print(get_last_version())
+    elif sys.argv[1] == "--is-supported-version":
+        print(is_supported_version(sys.argv[2]))

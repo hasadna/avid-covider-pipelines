@@ -1,8 +1,8 @@
-from dataflows import Flow, update_resource, load, filter_rows
+from dataflows import Flow, update_resource, load
 import logging
 from avid_covider_pipelines.utils import dump_to_path, get_hash
 import os
-from corona_data_collector.questionare_versions import questionare_versions
+from corona_data_collector import questionare_versions
 from collections import defaultdict
 from corona_data_collector.DBToFileWriter import convert_values, collect_row
 from corona_data_collector.config import answer_titles
@@ -11,7 +11,7 @@ from glob import glob
 import datetime
 import atexit
 import json
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 
 
 def store_destination_output_package(destination_output):
@@ -69,7 +69,7 @@ def flow(parameters, *_):
         'writer': None
     }
     csv_filenames = set()
-    last_questionare_version = str(sorted(map(StrictVersion, questionare_versions.keys()))[-1])
+    last_questionare_version = questionare_versions.get_last_version()
 
     def _close_csv():
         if cur_csv['file']:
@@ -83,7 +83,7 @@ def flow(parameters, *_):
             if not parameters.get("unsupported"):
                 stats["rows_with_invalid_version"] += 1
             return False
-        is_supported_version = json.loads(row['version']) in questionare_versions.keys()
+        is_supported_version = questionare_versions.is_supported_version(json.loads(row['version']))
         if parameters.get("unsupported"):
             if is_supported_version:
                 return False
@@ -105,7 +105,7 @@ def flow(parameters, *_):
         except TypeError:
             logging.info(row)
             raise
-        stats[data_dict["version"]] += 1
+        stats["v__" + data_dict["version"]] += 1
         data_dict["id"] = row["__id"]
         data_dict["created"] = row["__created"].isoformat()
         data_dict["lat"] = row["lat"]
@@ -159,6 +159,13 @@ def flow(parameters, *_):
                     v = stats.pop(k)
                     logging.info("%s = %s : %s" % (*k.replace('invalid_values_to_convert_', '').split("__"), str(v)))
                     total_invalid_values += int(v)
+            logging.info("--- version stats (unsupported=%s) ---" % parameters.get("unsupported", False))
+            version_stats = {}
+            for k in list(stats.keys()):
+                if k.startswith("v__"):
+                    version_stats[k.replace("v__", "")] = stats.pop(k)
+            for version in sorted(map(LooseVersion, version_stats.keys())):
+                logging.info("%s = %s" % (version, version_stats[str(version)]))
             logging.info('--- additional stats  (unsupported=%s) ---' % parameters.get("unsupported", False))
             for k, v in stats.items():
                 logging.info("%s = %s" % (k, v))

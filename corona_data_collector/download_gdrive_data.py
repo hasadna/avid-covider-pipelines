@@ -1,7 +1,6 @@
 import logging
 from dataflows import Flow, printer, load, dump_to_path, update_resource
 from dataflows.base.schema_validator import ignore
-from avid_covider_pipelines.utils import get_parameters_from_pipeline_spec
 import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -15,7 +14,7 @@ def get_client():
         os.environ["GOOGLE_SERVICE_ACCOUNT_FILE"],
         scopes=['https://www.googleapis.com/auth/drive.readonly']
     )
-    return build('drive', 'v3', credentials=creds)
+    return build('drive', 'v3', credentials=creds, cache_discovery=False)
 
 
 def list_files(client, folder_id: str, extra_q=None, prefix=None):
@@ -99,7 +98,8 @@ def flow(parameters, *_):
         data_flow_args += [
             load(os.path.join(files_dump_to_path, "files", file_row["name"]),
                  strip=False, infer_strategy=load.INFER_STRINGS, deduplicate_headers=True,
-                 cast_strategy=load.CAST_TO_STRINGS, on_error=ignore, limit_rows=parameters.get("limit_rows")),
+                 cast_strategy=load.CAST_TO_STRINGS, on_error=ignore, limit_rows=parameters.get("limit_rows"),
+                 encoding="utf-8"),
             update_resource(-1, name=file_row["resource_name"], path=file_row["name"], **{"dpp:streaming": True})
         ]
     if data_dump_to_path:

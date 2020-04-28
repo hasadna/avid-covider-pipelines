@@ -1,5 +1,5 @@
 from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert
-from corona_data_collector.questionare_versions import questionare_versions
+from corona_data_collector.questionare_versions import get_version_columns
 
 
 inverse_converted_keys = {}
@@ -10,12 +10,12 @@ for orig_key, conv_key in keys_to_convert.items():
 
 
 def get_default_value(column_name, version):
-    if column_name in questionare_versions[version]:
+    if column_name in get_version_columns(version):
         return 0
     if column_name in inverse_converted_keys:
         alternative_keys = inverse_converted_keys[column_name]
         for alt_key in alternative_keys:
-            if alt_key in questionare_versions[version]:
+            if alt_key in get_version_columns(version):
                 return 0
     return ''
 

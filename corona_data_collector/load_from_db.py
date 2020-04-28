@@ -52,7 +52,7 @@ def flow(parameters, *_):
             all_data_keys.add(k)
             row[k] = v
         kv.set("{:0>12}".format(id), row)
-        if id % 10000 == 0:
+        if id % 100000 == 0:
             logging.info("Loaded id: %s" % id)
         if parameters.get("limit_rows") and stats['loaded from db'] > parameters["limit_rows"]:
             break

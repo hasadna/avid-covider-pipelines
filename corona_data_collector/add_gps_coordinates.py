@@ -1,4 +1,4 @@
-from dataflows import Flow, update_resource, load, add_field, filter_rows
+from dataflows import Flow, update_resource, load, add_field
 import logging
 from avid_covider_pipelines.utils import dump_to_path
 import kvfile
