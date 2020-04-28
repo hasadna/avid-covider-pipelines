@@ -100,7 +100,7 @@ def flow(parameters, *_):
             load(os.path.join(files_dump_to_path, "files", file_row["name"]),
                  strip=False, infer_strategy=load.INFER_STRINGS, deduplicate_headers=True,
                  cast_strategy=load.CAST_TO_STRINGS, on_error=ignore, limit_rows=parameters.get("limit_rows")),
-            update_resource(-1, name=file_row["resource_name"], path=file_row["resource_name"] + ".csv", **{"dpp:streaming": True})
+            update_resource(-1, name=file_row["resource_name"], path=file_row["name"], **{"dpp:streaming": True})
         ]
     if data_dump_to_path:
         data_flow_args += [
