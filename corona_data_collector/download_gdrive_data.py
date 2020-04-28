@@ -1,5 +1,6 @@
 import logging
-from dataflows import Flow, printer, load, dump_to_path, update_resource
+from dataflows import Flow, printer, load, update_resource
+from avid_covider_pipelines.utils import dump_to_path
 from dataflows.base.schema_validator import ignore
 import os
 from google.oauth2 import service_account
