@@ -79,7 +79,7 @@ def flow(parameters, *_):
     atexit.register(_close_csv)
 
     def _filter_questionnare_versions(row):
-        if not row.get("version"):
+        if not row.get("version") or not json.loads(row['version']):
             if not parameters.get("unsupported"):
                 stats["rows_with_invalid_version"] += 1
             return False
