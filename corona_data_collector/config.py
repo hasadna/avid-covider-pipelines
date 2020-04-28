@@ -165,3 +165,7 @@ values_to_convert = {
         'true': 1
     }
 }
+for field, values in values_to_convert.items():
+    values_to_convert[field] = {
+        k.lower(): v for k, v in values.items()
+    }

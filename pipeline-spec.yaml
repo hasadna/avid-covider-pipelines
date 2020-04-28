@@ -24,3 +24,57 @@ covid19_israel_files_zip:
     - flow: avid_covider_pipelines.covid19_israel_files_zip
       parameters:
         dump_to_path: data/covid19_israel_files_zip
+
+
+corona_data_collector:
+  schedule:
+    crontab: "0 2,10,18,22 * * *"
+  pipeline:
+    - flow: corona_data_collector.download_gdrive_data
+      parameters:
+#        limit_rows: 200
+        files_dump_to_path: data/corona_data_collector/gdrive_data
+        # COVID19 WS > Data > Analysis Raw Data
+        google_drive_csv_folder_id: 1pzAyk-uXy__bt1tCX4rpTiPZNmrehTOz
+        # the source id (google / hebrew_google..) should match the sources in load_from_db file_sources
+        file_sources:
+          COVID-19-English.csv: google
+          COVID-19-Russian.csv: google
+          COVID-19-Hebrew.csv: hebrew_google
+          maccabi-2020-04-22.csv: maccabi
+    - flow: corona_data_collector.load_from_db
+#      parameters:
+#        limit_rows: 200
+#        where: "id > 600000 and id < 622250"
+    - flow: corona_data_collector.add_gps_coordinates
+      parameters:
+        source_fields: {
+          "db": {
+            "street": "street",
+            "city_town": "city",
+          },
+          "google": {
+            "Street": "street",
+            "Город проживания": "street",
+            "City": "city",
+            "Улица": "city",
+          },
+          "hebrew_google": {
+            "עיר / ישוב מגורים": "city",
+            "עיר / יישוב מגורים": "city",
+            "רחוב מגורים": "street",
+          },
+          "maccabi": {
+            "yishuv": "city",
+          }
+        }
+        dump_to_path: data/corona_data_collector/with_gps_data
+        # gps_data: data/corona_data_collector/gps_data.json
+        gps_datapackage_path: data/corona_data_collector/gps_data_cache
+    - flow: corona_data_collector.export_corona_bot_answers
+      parameters:
+        destination_output: data/corona_data_collector/corona_bot_answers
+    - flow: corona_data_collector.export_corona_bot_answers
+      parameters:
+        unsupported: true
+        destination_output: data/corona_data_collector/corona_bot_answers_unsupported

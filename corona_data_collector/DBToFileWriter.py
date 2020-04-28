@@ -20,10 +20,10 @@ def get_default_value(column_name, version):
     return ''
 
 
-def collect_row(row, return_array=False):
+def collect_row(row, return_array=False, force_version=None):
     returned_array = []
     for key, _ in sorted(list(answer_titles.items())):
-        val = row.get(key, get_default_value(key, row['version']))
+        val = row.get(key, get_default_value(key, force_version if force_version else row['version']))
         if val is None:
             val = 0
         if isinstance(val, str):
@@ -43,7 +43,7 @@ def convert_values(db_row, stats=None):
             db_row.pop(convert_key)
     for key, value in db_row.items():
         if key in values_to_convert:
-            value = str(value)
+            value = str(value).lower()
             if value in values_to_convert[key]:
                 db_row[key] = values_to_convert[key][value]
             elif stats:

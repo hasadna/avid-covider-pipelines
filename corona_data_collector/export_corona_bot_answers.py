@@ -10,6 +10,8 @@ import csv
 from glob import glob
 import datetime
 import atexit
+import json
+from distutils.version import StrictVersion
 
 
 def store_destination_output_package(destination_output):
@@ -67,6 +69,7 @@ def flow(parameters, *_):
         'writer': None
     }
     csv_filenames = set()
+    last_questionare_version = str(sorted(map(StrictVersion, questionare_versions.keys()))[-1])
 
     def _close_csv():
         if cur_csv['file']:
@@ -76,8 +79,18 @@ def flow(parameters, *_):
     atexit.register(_close_csv)
 
     def _filter_questionnare_versions(row):
-        stats['rows_supported_and_not_supported_version'] += 1
-        if row['data']['version'] in questionare_versions.keys():
+        if not row.get("version"):
+            if not parameters.get("unsupported"):
+                stats["rows_with_invalid_version"] += 1
+            return False
+        is_supported_version = json.loads(row['version']) in questionare_versions.keys()
+        if parameters.get("unsupported"):
+            if is_supported_version:
+                return False
+            else:
+                stats["rows_included"] += 1
+                return True
+        elif is_supported_version:
             stats['rows_supported_version'] += 1
             return True
         else:
@@ -86,22 +99,35 @@ def flow(parameters, *_):
 
     def _get_row(row):
         # print(row)
-        data_dict = {**row['data']}
-        data_dict['id'] = row['id']
-        data_dict['created'] = row['created'].isoformat()
+        try:
+            data_dict = {k: json.loads(v) for k, v in row.items()
+                         if k not in ["__id", "__created", "lat", "lng", "address_street_accurate"]}
+        except TypeError:
+            logging.info(row)
+            raise
+        stats[data_dict["version"]] += 1
+        data_dict["id"] = row["__id"]
+        data_dict["created"] = row["__created"].isoformat()
+        data_dict["lat"] = row["lat"]
+        data_dict["lng"] = row["lng"]
+        data_dict["address_street_accurate"] = row["address_street_accurate"]
         # print(data_dict)
         fixed_row = convert_values(data_dict, stats)
         if fixed_row is None:
             return None
         # print(fixed_row)
-        collected_row = collect_row(fixed_row, return_array=True)
+        if parameters.get("unsupported"):
+            force_version = last_questionare_version
+        else:
+            force_version = None
+        collected_row = collect_row(fixed_row, return_array=True, force_version=force_version)
         if len(collected_row) != len(answer_titles):
             raise Exception('skipped row: %s' % collected_row)
         output_row = dict(zip(output_keys, collected_row))
         output_row['lat'] = str(row['lat'])
         output_row['lng'] = str(row['lng'])
         output_row['address_street_accurate'] = str(row['address_street_accurate'])
-        return {"output_row": output_row, "created": row['created']}
+        return {"output_row": output_row, "created": row['__created']}
 
     def _dump_row(row):
         if row is None:
@@ -112,30 +138,35 @@ def flow(parameters, *_):
                 cur_csv['file'].close()
             cur_csv['day'], cur_csv['month'], cur_csv['year'] = day, month, year
             cur_csv['filename'] = os.path.join(parameters['destination_output'], "_wip__corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year))
-            logging.info("Writing to _wip__corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year))
+            logging.info("Writing to %s" % cur_csv['filename'])
             csv_filenames.add(cur_csv['filename'])
             cur_csv['file'] = open(cur_csv['filename'], "w")
             cur_csv['writer'] = csv.DictWriter(cur_csv['file'], output_keys + ["lat", "lng", "address_street_accurate"])
             cur_csv['writer'].writeheader()
-        output_row = row['output_row']
-        cur_csv['writer'].writerow(output_row)
-        return output_row
+        cur_csv['writer'].writerow(row['output_row'])
 
     def _process_rows(rows):
-        for row in rows:
-            _row = _dump_row(_get_row(row))
-            if _row is not None:
-                yield {**_row}
-        _close_csv()
-        logging.info('--- num rows with invalid values to convert ---')
-        for k in list(stats.keys()):
-            if k.startswith('invalid_values_to_convert_'):
-                v = stats.pop(k)
-                logging.info("%s = %s : %s" % (*k.replace('invalid_values_to_convert_', '').split("__"), str(v)))
-        logging.info('--- additional stats ---')
-        for k, v in stats.items():
-            logging.info("%s = %s" % (k, v))
-        store_destination_output_package(parameters['destination_output'])
+        if rows.res.name == "db_data":
+            for row in rows:
+                yield row
+                if _filter_questionnare_versions(row):
+                    _dump_row(_get_row(row))
+            _close_csv()
+            logging.info('--- num rows with invalid values to convert (unsupported=%s) ---' % parameters.get("unsupported", False))
+            total_invalid_values = 0
+            for k in list(stats.keys()):
+                if k.startswith('invalid_values_to_convert_'):
+                    v = stats.pop(k)
+                    logging.info("%s = %s : %s" % (*k.replace('invalid_values_to_convert_', '').split("__"), str(v)))
+                    total_invalid_values += int(v)
+            logging.info('--- additional stats  (unsupported=%s) ---' % parameters.get("unsupported", False))
+            for k, v in stats.items():
+                logging.info("%s = %s" % (k, v))
+            store_destination_output_package(parameters['destination_output'])
+            if total_invalid_values > 10000:
+                raise Exception("Too many invalid values rows: " + str(total_invalid_values))
+        else:
+            yield from rows
 
     flow_args = []
     if parameters.get('load'):
@@ -143,17 +174,8 @@ def flow(parameters, *_):
             load(os.path.join(parameters['load'], 'datapackage.json'))
         ]
     flow_args += [
-        filter_rows(_filter_questionnare_versions),
-        _process_rows,
-        update_resource(-1, name="corona_bot_answers", path="corona_bot_answers.csv", **{"dpp:streaming": True}),
+        _process_rows
     ]
-    if parameters.get("dump_to_path"):
-        flow_args += [
-            update_resource(-1, schema={"fields": [
-                {"name": field, "type": "string"} for field in output_keys + ["lat", "lng", "address_street_accurate"]
-            ]}),
-            dump_to_path(parameters["dump_to_path"])
-        ]
     return Flow(*flow_args)
 
 
@@ -161,6 +183,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     flow({
         'load': 'data/corona_data_collector/add_gps_coordinates',
-        'dump_to_path': 'data/corona_data_collector/export_corona_bot_answers',
         "destination_output": "data/corona_data_collector/destination_output"
     }).process()

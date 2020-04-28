@@ -9,6 +9,7 @@ from glob import glob
 import hashlib
 import json
 import requests
+from ruamel import yaml
 
 
 HASH_BLOCKSIZE = 65536
@@ -203,3 +204,10 @@ def http_stream_download(filename, requests_kwargs):
             for chunk in res.iter_content(chunk_size=8192):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
+
+
+def get_parameters_from_pipeline_spec(filename, pipeline_id, flow_name):
+    with open(filename) as f:
+        for step in yaml.safe_load(f)[pipeline_id]['pipeline']:
+            if step.get('flow') == flow_name:
+                return step.get('parameters', {})
