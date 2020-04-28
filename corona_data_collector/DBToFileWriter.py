@@ -43,15 +43,17 @@ def convert_values(db_row, stats=None):
             db_row.pop(convert_key)
     for key, value in db_row.items():
         if key in values_to_convert:
-            value = str(value).lower()
-            if value in values_to_convert[key]:
-                db_row[key] = values_to_convert[key][value]
+            str_value = str(value).lower()
+            if str_value in values_to_convert[key]:
+                db_row[key] = values_to_convert[key][str_value]
+            elif value is None:
+                continue
             elif stats:
-                statkey = 'invalid_values_to_convert_%s__%s' % (key, value)
+                statkey = 'invalid_values_to_convert_%s__%s' % (key, str_value)
                 stats[statkey] += 1
                 return None
             else:
-                print('convert_values: missing values_to_convert key="%s" value="%s"' % (key, value))
+                print('convert_values: missing values_to_convert key="%s" value="%s"' % (key, str_value))
                 return None
         if type(db_row[key]) == bool:
             db_row[key] = int(db_row[key])
