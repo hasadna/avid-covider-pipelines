@@ -1,4 +1,4 @@
-from dataflows import Flow, update_resource, load, add_field, filter_rows
+from dataflows import Flow, update_resource, load, add_field
 import logging
 from avid_covider_pipelines.utils import dump_to_path
 import kvfile
@@ -9,9 +9,17 @@ from collections import defaultdict
 import atexit
 
 
-def get_coords(stats, kv, street, city, is_street=True, get_coords_callback=None):
+def get_coords(stats, kv, inputs, is_street=True, get_coords_callback=None):
     if get_coords_callback is None:
         get_coords_callback = get_coords_from_web
+    street, city = inputs.get("street"), inputs.get("city")
+    if not street and not city:
+        return 0, 0, 0
+    elif not street:
+        is_street = False
+        street = ""
+    elif not city:
+        city = ""
     key = '%s_%s' % (street, city)
     try:
         value = kv.get(key)
@@ -23,11 +31,11 @@ def get_coords(stats, kv, street, city, is_street=True, get_coords_callback=None
     stats['getting_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
     lat, lng, accurate = get_coords_callback(street, city)
     value = [float(lat), float(lng), int(accurate)]
-    if value[0] in [0, -1]:
+    if value[0] in [0, -1] or value[1] in [0, -1]:
         stats['invalid_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
         if is_street and street != city:
             stats['invalid_coords_from_web_trying_is_street'] += 1
-            value = get_coords(stats, kv, city, city, is_street=False, get_coords_callback=get_coords_callback)
+            value = get_coords(stats, kv, {"street": city, "city": city}, is_street=False, get_coords_callback=get_coords_callback)
     else:
         stats['valid_coords_from_web' + ('_is_street' if is_street else '_not_is_street')] += 1
     kv.set(key, value)
@@ -72,32 +80,46 @@ def add_gps_coordinates(stats, kv, parameters):
     logging.info('adding gps coordinates')
 
     def _add_gps_coordinates(rows):
+        logging.info("resource name = " + rows.res.name)
+        if rows.res.name == "db_data":
+            source = "db"
+        else:
+            source = rows.res.name.split("__")[0]
+        fields = parameters["source_fields"][source]
         for row in rows:
-            lat, lng, accurate = get_coords(stats, kv, row['data']['street'], row['data']['city_town'], get_coords_callback=parameters.get("get-coords-callback"))
+            inputs = {}
+            for k, v in row.items():
+                input = fields.get(k.strip())
+                if input and v and v.strip():
+                    if input in inputs:
+                        logging.warning("duplicate input %s, %s: %s" % (source, input, row))
+                    elif source == "db":
+                        inputs[input] = json.loads(v)
+                    else:
+                        inputs[input] = v
+            lat, lng, accurate = get_coords(stats, kv, inputs, get_coords_callback=parameters.get("get-coords-callback"))
             yield {
                 **row,
-                "lat": lat,
-                "lng": lng,
-                "address_street_accurate": accurate
+                "lat": str(lat),
+                "lng": str(lng),
+                **({"address_street_accurate": str(accurate)} if source == "db" else {})
             }
         logging.info(str(dict(stats)))
 
     flow_args = []
-    if parameters.get('load'):
+    if parameters.get('load_db_data'):
         flow_args += [
-            load(os.path.join(parameters['load'], 'datapackage.json'))
+            load(os.path.join(parameters['load_db_data'], 'datapackage.json'))
         ]
-    if parameters.get('min_id'):
+    if parameters.get('load_gdrive_data'):
         flow_args += [
-            filter_rows(lambda row: row['id'] >= parameters['min_id'])
+            load(os.path.join(parameters['load_gdrive_data'], 'datapackage.json'))
         ]
     flow_args += [
-        filter_rows(lambda row: isinstance(row['data'], dict) and 'street' in row['data'] and 'city_town' in row['data']),
-        add_field('lat', 'number', 0, -1),
-        add_field('lng', 'number', 0, -1),
-        add_field('address_street_accurate', 'number', 0, -1),
+        add_field('lat', 'string', default="0"),
+        add_field('lng', 'string', default="0"),
+        add_field('address_street_accurate', 'string', default="0", resources="db_data"),
         _add_gps_coordinates,
-        update_resource(-1, name="db_data_with_coords", path="db_data_with_coords.csv", **{"dpp:streaming": True}),
     ]
     if parameters.get('dump_to_path'):
         flow_args += [
@@ -123,8 +145,29 @@ def flow(parameters, *_):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     flow({
-        'min_id': 600000,
-        'load': 'data/corona_data_collector/load_from_db',
+        "load_db_data": "data/corona_data_collector/load_from_db",
+        "load_gdrive_data": "data/download_gdrive_files/data",
+        "source_fields": {
+            "db": {
+                "street": "street",
+                "city_town": "city",
+            },
+            "google": {
+                "Street": "street",
+                "Город проживания": "street",
+                "City": "city",
+                "Улица": "city",
+            },
+            "hebrew_google": {
+                "עיר / ישוב מגורים": "city",
+                "עיר / יישוב מגורים": "city",
+                "רחוב מגורים": "street",
+            },
+            "maccabi": {
+                "yishuv": "city",
+            }
+        },
         'dump_to_path': 'data/corona_data_collector/add_gps_coordinates',
-        'gps_data': 'data/corona_data_collector/gps_data.json'
+        # 'gps_data': 'data/corona_data_collector/gps_data.json'
+        "gps_datapackage_path": "data/corona_data_collector/add_gps_coordinates/gps_data",
     }).process()
