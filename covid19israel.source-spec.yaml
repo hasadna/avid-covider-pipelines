@@ -57,3 +57,4 @@ bayesian_correction:
   dependencies:
     - lamas_features
   module: src.bayesian.bayesian_correction
+  args: ["--recompute"]
