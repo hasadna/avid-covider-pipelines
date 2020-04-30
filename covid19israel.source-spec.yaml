@@ -53,8 +53,24 @@ lamas_features:
   module: src.utils.lamas_features
   args: ["--if-not-exists"]
 
+
 bayesian_correction:
   dependencies:
     - lamas_features
   module: src.bayesian.bayesian_correction
   args: ["--recompute"]
+
+
+maps_generate_daily_summary:
+  dependencies:
+    - bayesian_correction
+  module: src.utils.maps.generate_daily_summary
+#  external_sharing_packages:
+#    - package_path: out/external_sharing/HASADNA/datapackage.json
+#      publish_targets:
+#        - github_repo: hasadna/avid-covider-raw-data
+#          deploy_key: hasadna_avid_covider_raw_data
+#          files:
+#            daily_summary: "input/{POSTERIOR_DATE}.csv"
+#            cities_geojson: "geo/cities.geojson"
+#            neighborhoods_geojson: "geo/neighborhoods.geojson"

@@ -28,7 +28,7 @@ covid19_israel_files_zip:
 
 corona_data_collector:
   schedule:
-    crontab: "0 2,10,18,22 * * *"
+    crontab: "0 2 * * *"
   pipeline:
     - flow: corona_data_collector.download_gdrive_data
       parameters:
