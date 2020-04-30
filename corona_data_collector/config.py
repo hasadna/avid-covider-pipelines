@@ -102,6 +102,10 @@ answer_titles = {
     'notificationsEnabled': 'notifications enabled',
     'covid19_check_date': 'covid19_check_date',
     'covid19_check_result':  'covid19_check_result',
+    "main_age": "main_age",
+    "main_uid": "main_uid",
+    "uid": "uid",
+    "num_aliases": "num_aliases",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)

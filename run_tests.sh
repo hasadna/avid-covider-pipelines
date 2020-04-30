@@ -9,9 +9,5 @@ for FILE in `ls corona_data_collector/tests/test_*.py`; do
   fi
 done
 
-echo Running test_flow module
-
-! python3 -m corona_data_collector.tests.test_flow && echo FAILED! exit 1
-
 echo Great Success
 exit 0
