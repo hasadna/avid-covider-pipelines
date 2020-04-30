@@ -1,4 +1,4 @@
-from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert
+from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert
 from corona_data_collector.questionare_versions import get_version_columns
 
 
@@ -41,6 +41,10 @@ def convert_values(db_row, stats=None):
         if convert_key in db_row:
             db_row[keys_to_convert[convert_key]] = db_row[convert_key]
             db_row.pop(convert_key)
+    for key in insulation_status_keys_to_convert:
+        if db_row.get(key):
+            db_row["insulation_status"] = db_row.pop(key)
+            break
     for key, value in db_row.items():
         if key in values_to_convert:
             str_value = str(value).lower()

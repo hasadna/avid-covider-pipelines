@@ -103,10 +103,10 @@ answer_titles = {
     'covid19_check_date': 'covid19_check_date',
     'covid19_check_result':  'covid19_check_result',
 }
+# make sure there aren't any duplicate columns
+assert len(set(answer_titles.values())) == len(answer_titles)
 
 keys_to_convert = {
-    'exposure_status': 'insulation_status',
-    'insulation_reason': 'insulation_status',
     'precondition_chronic_diabetes': 'chronic_diabetes',
     'precondition_chronic_hypertension': 'chronic_hypertension',
     'precondition_chronic_ischemic_heart_disease_or_stroke': 'chronic_ischemic_heart_disease_or_stroke',
@@ -118,6 +118,13 @@ keys_to_convert = {
     'precondition_smoking': 'smoking',
     'symptoms_tiredness_or_fatigue': 'symptoms_fatigue'
 }
+# make sure there aren't any duplicate columns
+assert len(set(keys_to_convert.values())) == len(keys_to_convert)
+
+# both this source fields needs to be converted to "insulation_status" column
+# they are handled in the code by checking for null values in the source columns
+# ordering is important - the more recent column (insulation_reason) has higher priority - in case both are not null
+insulation_status_keys_to_convert = ['insulation_reason', 'exposure_status']
 
 values_to_convert = {
     'sex': {
