@@ -38,7 +38,7 @@ def collect_row(row, return_array=False, force_version=None):
 
 def convert_values(db_row, stats=None):
     for convert_key in keys_to_convert:
-        if convert_key in db_row:
+        if db_row.get(convert_key):
             db_row[keys_to_convert[convert_key]] = db_row[convert_key]
             db_row.pop(convert_key)
     for key in insulation_status_keys_to_convert:
