@@ -23,9 +23,11 @@ def get_default_value(column_name, version):
 def collect_row(row, return_array=False, force_version=None):
     returned_array = []
     for key, _ in sorted(list(answer_titles.items())):
-        val = row.get(key, get_default_value(key, force_version if force_version else row['version']))
+        val = row.get(key)
         if val is None:
-            val = 0
+            val = get_default_value(key, force_version if force_version else row['version'])
+            if val is None:
+                val = 0
         if isinstance(val, str):
             val = val.replace(',', ' - ')
         returned_array.append(val)
