@@ -17,7 +17,7 @@ class Generator(GeneratorBase):
             pipeline = {}
             for source_dependency in source_pipeline.pop('dependencies', []):
                 if source_dependency == 'corona_data_collector':
-                    dependency = {"pipeline": "./corona_data_collector/export_corona_bot_answers"}
+                    dependency = {"pipeline": "./corona_data_collector"}
                 elif source_dependency == 'github_pull_covid19_israel':
                     dependency = {"datapackage": "data/github_pull_covid19_israel/datapackage.json"}
                 else:
