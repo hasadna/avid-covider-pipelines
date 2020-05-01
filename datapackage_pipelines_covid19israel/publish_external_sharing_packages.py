@@ -2,10 +2,9 @@ import os
 import json
 from dataflows import Flow, update_resource, printer
 import tempfile
-import subprocess
 import shutil
 import logging
-from avid_covider_pipelines.utils import get_hash
+from avid_covider_pipelines.utils import get_hash, subprocess_call_log
 
 
 def flow(parameters, *_):
@@ -31,9 +30,9 @@ def flow(parameters, *_):
                     }
                     branch = publish_target.get("branch", "master")
                     repodir = os.path.join(tmpdir, "repo")
-                    subprocess.check_call(["git", "clone", "--depth", "1", "--branch", branch, "git@github.com:hasadna/avid-covider-raw-data.git", repodir], env=gitenv)
-                    subprocess.check_call(["git", "config", "user.name", "avid-covider-pipelines"], cwd=repodir)
-                    subprocess.check_call(["git", "config", "user.email", "avid-covider-pipelines@localhost"], cwd=repodir)
+                    assert subprocess_call_log(["git", "clone", "--depth", "1", "--branch", branch, "git@github.com:hasadna/avid-covider-raw-data.git", repodir], env=gitenv) == 0
+                    assert subprocess_call_log(["git", "config", "user.name", "avid-covider-pipelines"], cwd=repodir) == 0
+                    assert subprocess_call_log(["git", "config", "user.email", "avid-covider-pipelines@localhost"], cwd=repodir) == 0
                     num_added = 0
                     for resource_name, target_path_template in publish_target["files"].items():
                         target_path = target_path_template.format(**package_descriptor)
@@ -44,12 +43,12 @@ def flow(parameters, *_):
                         source_path = os.path.join("..", "COVID19-ISRAEL", resources[resource_name]["path"])
                         logging.info("%s: %s --> %s" % (resource_name, source_path, target_fullpath))
                         shutil.copyfile(source_path, target_fullpath)
-                        subprocess.check_call(["git", "add", target_path], cwd=repodir)
+                        assert subprocess_call_log(["git", "add", target_path], cwd=repodir) == 0
                         num_added += 1
                     if num_added > 0:
                         logging.info("Committing %s changes" % num_added)
-                        subprocess.check_call(["git", "commit", "-m", "automated updated from hasadna/avid-covider-pipelines"], cwd=repodir)
-                        subprocess.check_call(["git", "push", "origin", branch], cwd=repodir, env=gitenv)
+                        assert subprocess_call_log(["git", "commit", "-m", "automated updated from hasadna/avid-covider-pipelines"], cwd=repodir) == 0
+                        assert subprocess_call_log(["git", "push", "origin", branch], cwd=repodir, env=gitenv) == 0
                     else:
                         logging.info("No changes to commit")
             yield {"name": package_descriptor["name"], "datetime": package_descriptor["datetime"], "hash": package_descriptor["hash"]}
