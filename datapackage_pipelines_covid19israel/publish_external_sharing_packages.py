@@ -24,7 +24,7 @@ def flow(parameters, *_):
                     source_deploy_key_file = os.environ["DEPLOY_KEY_FILE_" + publish_target["deploy_key"]]
                     deploy_key_file = os.path.join(tmpdir, "deploy_key")
                     shutil.copyfile(source_deploy_key_file, deploy_key_file)
-                    os.chmod(deploy_key_file, 400)
+                    os.chmod(deploy_key_file, 0o400)
                     gitenv = {
                         **os.environ,
                         "GIT_SSH_COMMAND": "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % deploy_key_file
