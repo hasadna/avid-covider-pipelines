@@ -47,7 +47,7 @@ def flow(parameters, *_):
                         num_added += 1
                     if num_added > 0:
                         logging.info("Committing %s changes" % num_added)
-                        assert subprocess_call_log(["git", "commit", "-m", "automated updated from hasadna/avid-covider-pipelines"], cwd=repodir) == 0
+                        assert subprocess_call_log(["git", "commit", "-m", "automated update from hasadna/avid-covider-pipelines"], cwd=repodir) == 0
                         assert subprocess_call_log(["git", "push", "origin", branch], cwd=repodir, env=gitenv) == 0
                     else:
                         logging.info("No changes to commit")
