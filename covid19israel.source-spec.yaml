@@ -74,3 +74,29 @@ maps_generate_daily_summary:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
             cities_geojson: "geo/cities.geojson"
             neighborhoods_geojson: "geo/neighborhoods.geojson"
+
+
+idf_report_cities_by_week:
+  dependencies:
+    - bayesian_correction
+  module: src.idf_report.cities_by_week
+#  external_sharing_packages:
+#    - package_path: ?????/datapackage.json
+#      publish_targets:
+#        - github_repo: hrossman/Covid19-Survey
+#          deploy_key: hrossman_covid19_survey
+#          files:
+#            ?????
+
+
+idf_report:
+  dependencies:
+    - bayesian_correction
+  module: src.idf_report.idf_report
+#  external_sharing_packages:
+#    - package_path: ?????/datapackage.json
+#      publish_targets:
+#        - github_repo: hrossman/Covid19-Survey
+#          deploy_key: hrossman_covid19_survey
+#          files:
+#            ?????
