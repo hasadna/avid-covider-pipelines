@@ -18,7 +18,7 @@ def flow(parameters, *_):
                 for resource in package_descriptor["resources"]
             }
             for publish_target in package["publish_targets"]:
-                assert "github_repo" in publish_target and "deploy_key" in publish_target and "files" in publish_target
+                assert "github_repo" in publish_target and "deploy_key" in publish_target and ("files" in publish_target or "files_foreach" in publish_target)
                 with tempfile.TemporaryDirectory() as tmpdir:
                     source_deploy_key_file = os.environ["DEPLOY_KEY_FILE_" + publish_target["deploy_key"]]
                     deploy_key_file = os.path.join(tmpdir, "deploy_key")
@@ -30,11 +30,18 @@ def flow(parameters, *_):
                     }
                     branch = publish_target.get("branch", "master")
                     repodir = os.path.join(tmpdir, "repo")
-                    assert subprocess_call_log(["git", "clone", "--depth", "1", "--branch", branch, "git@github.com:hasadna/avid-covider-raw-data.git", repodir], env=gitenv) == 0
+                    assert subprocess_call_log(["git", "clone", "--depth", "1", "--branch", branch, "git@github.com:%s.git" % publish_target["github_repo"], repodir], env=gitenv) == 0
                     assert subprocess_call_log(["git", "config", "user.name", "avid-covider-pipelines"], cwd=repodir) == 0
                     assert subprocess_call_log(["git", "config", "user.email", "avid-covider-pipelines@localhost"], cwd=repodir) == 0
                     num_added = 0
-                    for resource_name, target_path_template in publish_target["files"].items():
+                    files = {**publish_target.get("files", {})}
+                    for metadata_list_key, files_foreach in publish_target.get("files_foreach", {}).items():
+                        for resource_name_template, target_path_template in files_foreach.items():
+                            for foreach_value in package_descriptor.get(metadata_list_key, []):
+                                resource_name = resource_name_template.format(foreach_value=foreach_value, **package_descriptor)
+                                target_path = target_path_template.format(foreach_value=foreach_value, **package_descriptor)
+                                files[resource_name] = target_path
+                    for resource_name, target_path_template in files.items():
                         target_path = target_path_template.format(**package_descriptor)
                         target_fullpath = os.path.join(repodir, target_path)
                         if os.path.exists(target_fullpath) and get_hash(target_fullpath) == resources[resource_name]["hash"]:
@@ -64,20 +71,36 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     flow({
         "packages": [
+            # {
+            #     "package_path": "out/external_sharing/HASADNA/datapackage.json",
+            #     "publish_targets": [
+            #         {
+            #             "github_repo": "hasadna/avid-covider-raw-data",
+            #             "deploy_key": "hasadna_avid_covider_raw_data",
+            #             "branch": "testing",
+            #             "files": {
+            #                 "daily_summary": "input/{POSTERIOR_DATE}.csv",
+            #                 "cities_geojson": "geo/cities.geojson",
+            #                 "neighborhoods_geojson": "geo/neighborhoods.geojson"
+            #             }
+            #         }
+            #     ]
+            #
+            # },
             {
-                "package_path": "out/external_sharing/HASADNA/datapackage.json",
+                "package_path": "out/bayesian/idf/datapackage.json",
                 "publish_targets": [
                     {
-                        "github_repo": "hasadna/avid-covider-raw-data",
-                        "deploy_key": "hasadna_avid_covider_raw_data",
-                        "files": {
-                            "daily_summary": "input/{POSTERIOR_DATE}.csv",
-                            "cities_geojson": "geo/cities.geojson",
-                            "neighborhoods_geojson": "geo/neighborhoods.geojson"
+                        "github_repo": "hrossman/Covid19-Survey",
+                        "deploy_key": "hrossman_covid19_survey",
+                        "branch": "testing",
+                        "files_foreach": {
+                            "min_per_region_lst": {
+                                "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.csv"
+                            }
                         }
                     }
                 ]
-
             }
         ]
     }).process()
