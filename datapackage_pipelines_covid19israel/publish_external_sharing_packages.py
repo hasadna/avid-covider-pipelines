@@ -26,7 +26,7 @@ def flow(parameters, *_):
                     os.chmod(deploy_key_file, 0o400)
                     gitenv = {
                         **os.environ,
-                        "GIT_SSH_COMMAND": "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % deploy_key_file
+                        "GIT_SSH_COMMAND": "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o IdentitiesOnly=yes" % deploy_key_file
                     }
                     branch = publish_target.get("branch", "master")
                     repodir = os.path.join(tmpdir, "repo")
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                         "branch": "testing",
                         "files_foreach": {
                             "min_per_region_lst": {
-                                "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.csv"
+                                "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.html"
                             }
                         }
                     }
