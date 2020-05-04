@@ -12,6 +12,18 @@ DOMAIN = os.environ["AVIDCOVIDER_PIPELINES_DATA_DOMAIN"]
 AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 
 
+def _mock_gender_other(rows):
+    if rows.res.name == "db_data":
+        logging.info("Mocking sex 'other' for ids 640000 to 640100")
+        for row in rows:
+            if 640000 <= int(row["__id"]) <= 640100:
+                row["sex"] = '"other"'
+            yield row
+    else:
+        for row in rows:
+            yield row
+
+
 def main():
     with tempfile.TemporaryDirectory() as tempdir:
         with open(os.path.join(tempdir, ".netrc"), "w") as f:
@@ -38,6 +50,7 @@ def main():
             load_from_db.flow({
                 "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) or (id > 640000 and id < 641000) or (id > 670000)"
             }),
+            _mock_gender_other,
             add_gps_coordinates.flow({
                 "source_fields": {
                     "db": {

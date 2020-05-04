@@ -133,7 +133,8 @@ insulation_status_keys_to_convert = ['insulation_reason', 'exposure_status']
 values_to_convert = {
     'sex': {
         'male': 0,
-        'female': 1
+        'female': 1,
+        'other': 2
     },
     'smoking': {
         'אף פעם': 0,
