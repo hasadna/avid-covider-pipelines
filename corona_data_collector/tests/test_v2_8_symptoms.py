@@ -11,12 +11,14 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_abdominal_pain(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with abdominal_pain = true")
+        logging.info("Mocking version 2.8 for id 600304 with abdominal_pain = true , lack_of_appetite_or_skipping_meals = false")
         data["abdominal_pain"] = True
+        data["lack_of_appetite_or_skipping_meals"] = False
         data["version"] = "2.8.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with abdominal_pain = false")
+        logging.info("Mocking version 2.8 for id 676580 with abdominal_pain = false , lack_of_appetite_or_skipping_meals = true")
         data["abdominal_pain"] = False
+        data["lack_of_appetite_or_skipping_meals"] = True
         data["version"] = "2.8.0"
     return id, created, data
 
@@ -34,7 +36,7 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "abdominal_pain"
+        "__id", "__created", "version", "abdominal_pain", "lack_of_appetite_or_skipping_meals"
     ]),
 ).process()
 Flow(
@@ -44,19 +46,19 @@ Flow(
     load("data/corona_data_collector/destination_output/corona_bot_answers_29_4_2020_with_coords.csv"),
     load("data/corona_data_collector/destination_output/corona_bot_answers_2_5_2020_with_coords.csv"),
     test_corona_bot_answers(
-        lambda row: (str(row["symptom_abdominal_pain"]), str(row["questionare_version"])),
+        lambda row: (str(row["symptom_abdominal_pain"]), str(row["symptom_lack_of_appetite_skipping_meals"]), str(row["questionare_version"])),
         {
-            "94": ["corona_bot_answers_22_3_2020_with_coords", "", "0.1.0"],
-            "180075": ["corona_bot_answers_25_3_2020_with_coords", "", "1.0.1"],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "1", "2.8.0"],
-            "600895": ["corona_bot_answers_20_4_2020_with_coords", "", "2.6.0"],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "0", "2.8.0"],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "", "2.7.4"],
-            "701508": ["corona_bot_answers_2_5_2020_with_coords", "", "2.7.6"],
+            "94": ["corona_bot_answers_22_3_2020_with_coords", "", "", "0.1.0"],
+            "180075": ["corona_bot_answers_25_3_2020_with_coords", "", "", "1.0.1"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "1", "0", "2.8.0"],
+            "600895": ["corona_bot_answers_20_4_2020_with_coords", "", "", "2.6.0"],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "0", "1", "2.8.0"],
+            "676581": ["corona_bot_answers_29_4_2020_with_coords", "", "", "2.7.4"],
+            "701508": ["corona_bot_answers_2_5_2020_with_coords", "", "", "2.7.6"],
         }
     ),
     printer(fields=[
-        "timestamp", "id", "symptom_abdominal_pain", "questionare_version"
+        "timestamp", "id", "symptom_abdominal_pain", "symptom_lack_of_appetite_skipping_meals", "questionare_version"
     ])
 ).process()
 

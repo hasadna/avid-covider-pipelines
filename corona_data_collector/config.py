@@ -85,6 +85,7 @@ answer_titles = {
     'symptoms_smell_taste_loss': 'symptoms_smell_taste_loss',
     'symptoms_other': 'symptoms_other',
     "abdominal_pain": "symptom_abdominal_pain",
+    "lack_of_appetite_or_skipping_meals": "symptom_lack_of_appetite_skipping_meals",
     'exposure_met_people': 'exposure_met_people',
     'flatmates': 'flatmates',
     'flatmates_over_70': 'flatmates_over_70',

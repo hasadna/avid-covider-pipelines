@@ -270,7 +270,7 @@ questionare_versions = {
               'symptoms_dry_cough', 'symptoms_headache', 'symptoms_moist_cough', 'symptoms_muscles_pain',
               'symptoms_nausea_and_vomiting', 'symptoms_smell_taste_loss', 'symptoms_sore_throat',
               'symptoms_tiredness_or_fatigue', 'temperature', 'toplevel_symptoms_cough', 'toplevel_symptoms_pains',
-              'abdominal_pain',
+              'abdominal_pain', "lack_of_appetite_or_skipping_meals",
               'version'},
 }
 
