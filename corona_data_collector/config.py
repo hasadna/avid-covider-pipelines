@@ -111,7 +111,8 @@ answer_titles = {
     "work_outside": "work_outside",
     "work_outside_avg_weekly_hours": "work_outside_avg_weekly_hours",
     "work_outside_city_town": "workplace_city_town",
-    "work_outside_street": "workplace_street"
+    "work_outside_street": "workplace_street",
+    "assisted_living": "assisted_living"
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -181,6 +182,11 @@ values_to_convert = {
     'medical_staff_member': {
         'false': 0,
         'true': 1
+    },
+    "assisted_living": {
+        'false': 0,
+        'true': 1,
+        'no_response': 2
     }
 }
 for field, values in values_to_convert.items():
