@@ -37,7 +37,7 @@ def main():
             "url": "https://%s/data/corona_data_collector/gps_data_cache/gps_data.csv" % DOMAIN})
         Flow(
             download_gdrive_data.flow({
-                "limit_rows": 200,
+                "limit_rows": 50000,
                 "files_dump_to_path": "data/corona_data_collector/gdrive_data",
                 "google_drive_csv_folder_id": "1pzAyk-uXy__bt1tCX4rpTiPZNmrehTOz",
                 "file_sources": {
