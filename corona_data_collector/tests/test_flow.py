@@ -24,6 +24,53 @@ def _mock_gender_other(rows):
             yield row
 
 
+def _mock_version_28(id, created, data):
+    if 640000 <= id <= 640020:
+        logging.info("Mocking version 2.8 for ids 640000 to 640020: "
+                     "assisted_living = no_response , "
+                     "abdominal_pain = true , "
+                     "lack_of_appetite_or_skipping_meals = false , "
+                     "work_outside = no")
+        data["assisted_living"] = "no_response"
+        data["abdominal_pain"] = True
+        data["lack_of_appetite_or_skipping_meals"] = False
+        data["work_outside"] = False
+        data["version"] = "2.8.0"
+    elif 640021 <= id <= 640040:
+        logging.info("Mocking version 2.8 for ids 640021 to 640040: "
+                     "assisted_living = true , "
+                     "abdominal_pain = false , "
+                     "lack_of_appetite_or_skipping_meals = true , "
+                     "work_outside = yes + full details")
+        data["assisted_living"] = True
+        data["abdominal_pain"] = False
+        data["lack_of_appetite_or_skipping_meals"] = True
+        data["work_outside"] = True
+        data["work_outside_avg_weekly_hours"] = 3
+        data["work_outside_city_town"] = "תל אביב"
+        data["work_outside_street"] = "הרצל"
+        data["version"] = "2.8.0"
+    elif 640041 <= id <= 640060:
+        logging.info("Mocking version 2.8 for ids 640041 to 640060: "
+                     "assisted_living = false , "
+                     "work_outside = yes + minimal details")
+        data["assisted_living"] = False
+        data["work_outside"] = True
+        data["work_outside_avg_weekly_hours"] = 55
+        data["version"] = "2.8.0"
+    elif 640061 <= id <= 640080:
+        logging.info("Mocking version 2.8 for ids 640061 to 640080: "
+                     "assisted_living = 'true'")
+        data["assisted_living"] = "true"
+        data["version"] = "2.8.0"
+    elif 640081 <= id <= 640100:
+        logging.info("Mocking version 2.8 for ids 640081 to 640100: "
+                     "assisted_living = 'false'")
+        data["assisted_living"] = "false"
+        data["version"] = "2.8.0"
+    return id, created, data
+
+
 def main():
     with tempfile.TemporaryDirectory() as tempdir:
         with open(os.path.join(tempdir, ".netrc"), "w") as f:
@@ -48,7 +95,8 @@ def main():
                 }
             }),
             load_from_db.flow({
-                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) or (id > 640000 and id < 641000) or (id > 670000)"
+                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) or (id > 640000 and id < 641000) or (id > 670000)",
+                "filter_db_row_callback": _mock_version_28
             }),
             _mock_gender_other,
             add_gps_coordinates.flow({
