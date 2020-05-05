@@ -100,26 +100,8 @@ def main():
             }),
             _mock_gender_other,
             add_gps_coordinates.flow({
-                "source_fields": {
-                    "db": {
-                        "street": "street",
-                        "city_town": "city",
-                    },
-                    "google": {
-                        "Street": "street",
-                        "Город проживания": "street",
-                        "City": "city",
-                        "Улица": "city",
-                    },
-                    "hebrew_google": {
-                        "עיר / ישוב מגורים": "city",
-                        "עיר / יישוב מגורים": "city",
-                        "רחוב מגורים": "street",
-                    },
-                    "maccabi": {
-                        "yishuv": "city",
-                    }
-                },
+                "source_fields": utils.get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["source_fields"],
+                "workplace_source_fields": utils.get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["workplace_source_fields"],
                 "dump_to_path": "data/corona_data_collector/with_gps_data",
                 "gps_datapackage_path": "data/corona_data_collector/gps_data_cache",
                 "get-coords-callback": lambda street, city: (random.uniform(29, 34), random.uniform(34, 36), int(street != city))
