@@ -84,6 +84,7 @@ answer_titles = {
     'symptoms_tiredness_or_fatigue': 'symptoms_tiredness_or_fatigue',
     'symptoms_smell_taste_loss': 'symptoms_smell_taste_loss',
     'symptoms_other': 'symptoms_other',
+    "abdominal_pain": "symptom_abdominal_pain",
     'exposure_met_people': 'exposure_met_people',
     'flatmates': 'flatmates',
     'flatmates_over_70': 'flatmates_over_70',
