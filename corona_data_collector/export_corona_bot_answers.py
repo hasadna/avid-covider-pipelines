@@ -105,7 +105,7 @@ def flow(parameters, *_):
         # print(row)
         try:
             data_dict = {k: json.loads(v) for k, v in row.items()
-                         if k not in ["__id", "__created", "lat", "lng", "address_street_accurate"]}
+                         if k not in ["__id", "__created", "lat", "lng", "address_street_accurate", "workplace_lat", "workplace_lng", "workplace_street_accurate"]}
         except TypeError:
             logging.info(row)
             raise
@@ -115,6 +115,9 @@ def flow(parameters, *_):
         data_dict["lat"] = row["lat"]
         data_dict["lng"] = row["lng"]
         data_dict["address_street_accurate"] = row["address_street_accurate"]
+        data_dict["workplace_lat"] = row.get("workplace_lat")
+        data_dict["workplace_lng"] = row.get("workplace_lng")
+        data_dict["workplace_street_accurate"] = row.get("workplace_street_accurate")
         # print(data_dict)
         fixed_row = convert_values(data_dict, stats)
         if fixed_row is None:
@@ -131,6 +134,9 @@ def flow(parameters, *_):
         output_row['lat'] = str(row['lat'])
         output_row['lng'] = str(row['lng'])
         output_row['address_street_accurate'] = str(row['address_street_accurate'])
+        output_row['workplace_lat'] = str(row.get('workplace_lat', ""))
+        output_row['workplace_lng'] = str(row.get('workplace_lng', ""))
+        output_row['workplace_street_accurate'] = str(row.get('workplace_street_accurate', ""))
         return {"output_row": output_row, "created": row['__created']}
 
     def _dump_row(row):
@@ -145,7 +151,7 @@ def flow(parameters, *_):
             cur_csv['filename'] = cur_csv['file'].name
             logging.info("Writing to temp file for %s_%s_%s" % (day, month, year))
             csv_temp_files[cur_csv['filename']] = "corona_bot_answers_%s_%s_%s_with_coords.csv" % (day, month, year)
-            cur_csv['writer'] = csv.DictWriter(cur_csv['file'], output_keys + ["lat", "lng", "address_street_accurate"])
+            cur_csv['writer'] = csv.DictWriter(cur_csv['file'], output_keys + ["lat", "lng", "address_street_accurate"] + ["workplace_lat", "workplace_lng", "workplace_street_accurate"])
             cur_csv['writer'].writeheader()
         cur_csv['writer'].writerow(row['output_row'])
 

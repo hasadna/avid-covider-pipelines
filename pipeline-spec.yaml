@@ -68,6 +68,12 @@ corona_data_collector:
             "yishuv": "city",
           }
         }
+        workplace_source_fields: {
+          "db": {
+            "work_outside_street": "street",
+            "work_outside_city_town": "city"
+          }
+        }
         dump_to_path: data/corona_data_collector/with_gps_data
         # gps_data: data/corona_data_collector/gps_data.json
         gps_datapackage_path: data/corona_data_collector/gps_data_cache

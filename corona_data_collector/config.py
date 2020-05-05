@@ -108,6 +108,10 @@ answer_titles = {
     "main_uid": "main_uid",
     "uid": "uid",
     "num_aliases": "num_aliases",
+    "work_outside": "work_outside",
+    "work_outside_avg_weekly_hours": "work_outside_avg_weekly_hours",
+    "work_outside_city_town": "workplace_city_town",
+    "work_outside_street": "workplace_street"
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -183,3 +187,12 @@ for field, values in values_to_convert.items():
     values_to_convert[field] = {
         k.lower(): v for k, v in values.items()
     }
+
+
+values_force_integer = ["work_outside_avg_weekly_hours"]
+
+
+default_values = {
+    "work_outside_street": "",
+    "work_outside_city_town": ""
+}

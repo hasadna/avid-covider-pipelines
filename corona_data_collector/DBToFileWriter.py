@@ -1,4 +1,4 @@
-from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert
+from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert, values_force_integer, default_values
 from corona_data_collector.questionare_versions import get_version_columns
 
 
@@ -11,12 +11,12 @@ for orig_key, conv_key in keys_to_convert.items():
 
 def get_default_value(column_name, version):
     if column_name in get_version_columns(version):
-        return 0
+        return default_values.get(column_name, 0)
     if column_name in inverse_converted_keys:
         alternative_keys = inverse_converted_keys[column_name]
         for alt_key in alternative_keys:
             if alt_key in get_version_columns(version):
-                return 0
+                return default_values.get(column_name, 0)
     return ''
 
 
@@ -39,6 +39,12 @@ def collect_row(row, return_array=False, force_version=None):
 
 
 def convert_values(db_row, stats=None):
+    for key in values_force_integer:
+        if key in db_row and db_row[key] is not None:
+            try:
+                db_row[key] = int(db_row[key])
+            except Exception:
+                db_row[key] = 0
     for convert_key in keys_to_convert:
         if db_row.get(convert_key):
             db_row[keys_to_convert[convert_key]] = db_row[convert_key]
