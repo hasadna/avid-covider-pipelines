@@ -273,7 +273,7 @@ questionare_versions = {
               'abdominal_pain', "lack_of_appetite_or_skipping_meals",
               "work_outside", "work_outside_avg_weekly_hours", "work_outside_city_town", "work_outside_street",
               "public_transportation_last_week", "public_transportation_bus", "public_transportation_train", "public_transportation_taxi", "public_transportation_other",
-              "routine_visits_prayer_house", "routine_wears_mask",
+              "routine_visits_prayer_house", "routine_wears_mask", "routine_wears_gloves",
               'version'},
 }
 
