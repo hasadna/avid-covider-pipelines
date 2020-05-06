@@ -11,19 +11,24 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_habits_fields(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with public_transportation_last_week = false , routine_visits_prayer_house = true")
+        logging.info("Mocking version 2.8 for id 600304 with public_transportation_last_week = false , routine_visits_prayer_house = true , routine_wears_mask = always")
         data["public_transportation_last_week"] = False
         data["routine_visits_prayer_house"] = True
+        data["routine_wears_mask"] = "always"
         data["version"] = "2.8.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with public_transportation_last_week = true , public_transportation_bus = true, routine_visits_prayer_house = false")
+        logging.info("Mocking version 2.8 for id 676580 with public_transportation_last_week = true , public_transportation_bus = true, routine_visits_prayer_house = false , routine_wears_mask = no_response")
         data["public_transportation_last_week"] = True
         data["public_transportation_bus"] = True
         data["routine_visits_prayer_house"] = False
+        data["routine_wears_mask"] = "no_response"
         data["version"] = "2.8.0"
     elif id == 676581:
         logging.info("Mocking version 2.8 for id 676581 with routine_visits_prayer_house = no_response")
         data["routine_visits_prayer_house"] = "no_response"
+        data["version"] = "2.8.0"
+    elif id == 701508:
+        logging.info("Mocking version 2.8 for id 701508 without values")
         data["version"] = "2.8.0"
     return id, created, data
 
@@ -43,7 +48,7 @@ Flow(
     printer(fields=[
         "__id", "__created", "version",
         "public_transportation_last_week", "public_transportation_bus", "public_transportation_train", "public_transportation_taxi", "public_transportation_other",
-        "routine_visits_prayer_house",
+        "routine_visits_prayer_house", "routine_wears_mask",
     ]),
 ).process()
 Flow(
@@ -55,23 +60,23 @@ Flow(
     test_corona_bot_answers(
         lambda row: [str(row[k]) for k in [
             "questionare_version", "public_transportation_last_week", "public_transportation_bus", "public_transportation_train", "public_transportation_taxi", "public_transportation_other",
-            "habits_prayer_house"
+            "habits_prayer_house", "last_week_wear_mask"
         ]],
         {
-            #                                                               last weeek      bus      train      taxi      other     prayer_house
-            "94": ["corona_bot_answers_22_3_2020_with_coords",     "0.1.0", "",             "",      "",        "",       "",       ""],
-            "180075": ["corona_bot_answers_25_3_2020_with_coords", "1.0.1", "",             "",      "",        "",       "",       ""],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "1"],
-            "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0", "",             "",      "",        "",       "",       ""],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "1",            "1",     "0",       "0",      "0",      "0"],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "2"],
-            "701508": ["corona_bot_answers_2_5_2020_with_coords",  "2.7.6", "",             "",      "",        "",       "",       ""],
+            #                                                               last weeek      bus      train      taxi      other     prayer_house    wear_mask
+            "94": ["corona_bot_answers_22_3_2020_with_coords",     "0.1.0", "",             "",      "",        "",       "",       "",            ""],
+            "180075": ["corona_bot_answers_25_3_2020_with_coords", "1.0.1", "",             "",      "",        "",       "",       "",            ""],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "1",           "3"],
+            "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0", "",             "",      "",        "",       "",       "",            ""],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "1",            "1",     "0",       "0",      "0",      "0",           "4"],
+            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "2",           "4"],
+            "701508": ["corona_bot_answers_2_5_2020_with_coords",  "2.8.0", "0",            "0",     "0",       "0",      "0",      "2",           "4"],
         }
     ),
     printer(fields=[
         "timestamp", "id", "questionare_version",
         "public_transportation_last_week", "public_transportation_bus", "public_transportation_train", "public_transportation_taxi", "public_transportation_other",
-        "habits_prayer_house"
+        "habits_prayer_house", "last_week_wear_mask"
     ])
 ).process()
 

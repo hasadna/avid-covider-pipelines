@@ -119,6 +119,7 @@ answer_titles = {
     "public_transportation_taxi": "public_transportation_taxi",
     "public_transportation_other": "public_transportation_other",
     "routine_visits_prayer_house": "habits_prayer_house",
+    "routine_wears_mask": "last_week_wear_mask",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -198,6 +199,14 @@ values_to_convert = {
         "false": 0,
         "true": 1,
         "no_response": 2
+    },
+    "routine_wears_mask": {
+        "always": 3,
+        "mostly_yes": 2,
+        "mostly_no": 1,
+        "never": 0,
+        "no_response": 4,
+        "": 4
     }
 }
 for field, values in values_to_convert.items():
@@ -214,4 +223,6 @@ values_force_integer = [
 default_values = {
     "work_outside_street": "",
     "work_outside_city_town": "",
+    "routine_visits_prayer_house": 2,  # no_response
+    "routine_wears_mask": 4  # no_response
 }
