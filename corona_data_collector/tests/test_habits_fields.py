@@ -11,27 +11,27 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_habits_fields(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with public_transportation_last_week = false , routine_visits_prayer_house = true , routine_wears_mask = always , routine_wears_gloves = mostly_yes")
+        logging.info("Mocking version 3.0 for id 600304 with public_transportation_last_week = false , routine_visits_prayer_house = true , routine_wears_mask = always , routine_wears_gloves = mostly_yes")
         data["public_transportation_last_week"] = False
         data["routine_visits_prayer_house"] = True
         data["routine_wears_mask"] = "always"
         data["routine_wears_gloves"] = "mostly_yes"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with public_transportation_last_week = true , public_transportation_bus = true, routine_visits_prayer_house = false , routine_wears_mask = no_response, routine_wears_gloves = mostly_no")
+        logging.info("Mocking version 3.0 for id 676580 with public_transportation_last_week = true , public_transportation_bus = true, routine_visits_prayer_house = false , routine_wears_mask = no_response, routine_wears_gloves = mostly_no")
         data["public_transportation_last_week"] = True
         data["public_transportation_bus"] = True
         data["routine_visits_prayer_house"] = False
         data["routine_wears_mask"] = "no_response"
         data["routine_wears_gloves"] = "mostly_no"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 676581:
-        logging.info("Mocking version 2.8 for id 676581 with routine_visits_prayer_house = no_response")
+        logging.info("Mocking version 3.0 for id 676581 with routine_visits_prayer_house = no_response")
         data["routine_visits_prayer_house"] = "no_response"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 701508:
-        logging.info("Mocking version 2.8 for id 701508 without values")
-        data["version"] = "2.8.0"
+        logging.info("Mocking version 3.0 for id 701508 without values")
+        data["version"] = "3.0.0"
     return id, created, data
 
 
@@ -68,11 +68,11 @@ Flow(
             #                                                               last weeek      bus      train      taxi      other     prayer_house    wear_mask     wear_gloves
             "94": ["corona_bot_answers_22_3_2020_with_coords",     "0.1.0", "",             "",      "",        "",       "",       "",            "",            ""],
             "180075": ["corona_bot_answers_25_3_2020_with_coords", "1.0.1", "",             "",      "",        "",       "",       "",            "",            ""],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "1",           "3",           "2"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "3.0.0", "0",            "0",     "0",       "0",      "0",      "1",           "3",           "2"],
             "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0", "",             "",      "",        "",       "",       "",            "",            ""],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "1",            "1",     "0",       "0",      "0",      "0",           "4",           "1"],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0", "0",            "0",     "0",       "0",      "0",      "2",           "4",           "4"],
-            "701508": ["corona_bot_answers_2_5_2020_with_coords",  "2.8.0", "0",            "0",     "0",       "0",      "0",      "2",           "4",           "4"],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0", "1",            "1",     "0",       "0",      "0",      "0",           "4",           "1"],
+            "676581": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0", "0",            "0",     "0",       "0",      "0",      "2",           "4",           "4"],
+            "701508": ["corona_bot_answers_2_5_2020_with_coords",  "3.0.0", "0",            "0",     "0",       "0",      "0",      "2",           "4",           "4"],
         }
     ),
     printer(fields=[

@@ -26,48 +26,48 @@ def _mock_gender_other(rows):
 
 def _mock_version_28(id, created, data):
     if 640000 <= id <= 640020:
-        logging.info("Mocking version 2.8 for ids 640000 to 640020: "
+        logging.info("Mocking version 3.0 for ids 640000 to 640020: "
                      "assisted_living = no_response , "
-                     "abdominal_pain = true , "
-                     "lack_of_appetite_or_skipping_meals = false , "
+                     "symptoms_abdominal_pain = true , "
+                     "symptoms_lack_of_appetite_or_skipping_meals = false , "
                      "work_outside = no")
         data["assisted_living"] = "no_response"
-        data["abdominal_pain"] = True
-        data["lack_of_appetite_or_skipping_meals"] = False
+        data["symptoms_abdominal_pain"] = True
+        data["symptoms_lack_of_appetite_or_skipping_meals"] = False
         data["work_outside"] = False
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif 640021 <= id <= 640040:
-        logging.info("Mocking version 2.8 for ids 640021 to 640040: "
+        logging.info("Mocking version 3.0 for ids 640021 to 640040: "
                      "assisted_living = true , "
-                     "abdominal_pain = false , "
-                     "lack_of_appetite_or_skipping_meals = true , "
+                     "symptoms_abdominal_pain = false , "
+                     "symptoms_lack_of_appetite_or_skipping_meals = true , "
                      "work_outside = yes + full details")
         data["assisted_living"] = True
-        data["abdominal_pain"] = False
-        data["lack_of_appetite_or_skipping_meals"] = True
+        data["symptoms_abdominal_pain"] = False
+        data["symptoms_lack_of_appetite_or_skipping_meals"] = True
         data["work_outside"] = True
         data["work_outside_avg_weekly_hours"] = 3
         data["work_outside_city_town"] = "תל אביב"
         data["work_outside_street"] = "הרצל"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif 640041 <= id <= 640060:
-        logging.info("Mocking version 2.8 for ids 640041 to 640060: "
+        logging.info("Mocking version 3.0 for ids 640041 to 640060: "
                      "assisted_living = false , "
                      "work_outside = yes + minimal details")
         data["assisted_living"] = False
         data["work_outside"] = True
         data["work_outside_avg_weekly_hours"] = 55
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif 640061 <= id <= 640080:
-        logging.info("Mocking version 2.8 for ids 640061 to 640080: "
+        logging.info("Mocking version 3.0 for ids 640061 to 640080: "
                      "assisted_living = 'true'")
         data["assisted_living"] = "true"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif 640081 <= id <= 640100:
-        logging.info("Mocking version 2.8 for ids 640081 to 640100: "
+        logging.info("Mocking version 3.0 for ids 640081 to 640100: "
                      "assisted_living = 'false'")
         data["assisted_living"] = "false"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     return id, created, data
 
 

@@ -11,15 +11,15 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_smoking_medical_staff(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with smoking = long_past_smoker , medical_staff_member = true")
+        logging.info("Mocking version 3.0 for id 600304 with smoking = long_past_smoker , medical_staff_member = true")
         data["smoking"] = "long_past_smoker"
         data["medical_staff_member"] = True
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with smoking = long_past_smokre , medical_staff_member = false")
+        logging.info("Mocking version 3.0 for id 676580 with smoking = long_past_smokre , medical_staff_member = false")
         data["smoking"] = "long_past_smokre"
         data["medical_staff_member"] = False
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     return id, created, data
 
 
@@ -53,9 +53,9 @@ Flow(
             #                                                                smoking       medical_staff_member
             "94": ["corona_bot_answers_22_3_2020_with_coords",     "0.1.0",  "0",           ""],
             "180075": ["corona_bot_answers_25_3_2020_with_coords", "1.0.1",  "0",           ""],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0",  "1",           "1"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "3.0.0",  "1",           "1"],
             "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0",  "0",           "0"],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",  "1",           "0"],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0",  "1",           "0"],
             "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.7.4",  "1",           "0"],
             "701508": ["corona_bot_answers_2_5_2020_with_coords",  "2.7.6",  "0",           "0"],
         }

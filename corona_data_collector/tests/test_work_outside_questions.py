@@ -11,30 +11,30 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_work_outside(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with work_outside = no")
+        logging.info("Mocking version 3.0 for id 600304 with work_outside = no")
         data["work_outside"] = False
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with work_outside = yes + full details")
+        logging.info("Mocking version 3.0 for id 676580 with work_outside = yes + full details")
         data["work_outside"] = True
         data["routine_workplace_single_location"] = True
         data["work_outside_avg_weekly_hours"] = 3
         data["work_outside_city_town"] = "תל אביב"
         data["work_outside_street"] = "הרצל"
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 676581:
-        logging.info("Mocking version 2.8 for id 676581 with work_outside = yes + minimal details")
+        logging.info("Mocking version 3.0 for id 676581 with work_outside = yes + minimal details")
         data["work_outside"] = True
         data["routine_workplace_single_location"] = False
         data["work_outside_avg_weekly_hours"] = 55
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     elif id == 180075:
-        logging.info("Mocking version 2.8 for id 180075 with work_outside = yes + invalid details")
+        logging.info("Mocking version 3.0 for id 180075 with work_outside = yes + invalid details")
         data["work_outside"] = True
         data["work_outside_avg_weekly_hours"] = "foobar"
         data["work_outside_city_town"] = 55
         data["work_outside_street"] = 44
-        data["version"] = "2.8.0"
+        data["version"] = "3.0.0"
     return id, created, data
 
 
@@ -81,11 +81,11 @@ Flow(
         {
                                                                        #  work_outside    hours    city_town    street    accurate    single_location
             "94": ["corona_bot_answers_22_3_2020_with_coords", "0.1.0",       "",         "",      "",          "",       "0",        ""],
-            "180075": ["corona_bot_answers_25_3_2020_with_coords", "2.8.0",   "1",        "0",     "55",        "44",     "1",        "0"],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0",   "0",        "0",     "",          "",       "0",        "0"],
+            "180075": ["corona_bot_answers_25_3_2020_with_coords", "3.0.0",   "1",        "0",     "55",        "44",     "1",        "0"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "3.0.0",   "0",        "0",     "",          "",       "0",        "0"],
             "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0",   "",         "",      "",          "",       "0",        ""],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "3",     "תל אביב",   "הרצל",   "1",        "1"],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "55",    "",          "",       "0",        "0"],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0",   "1",        "3",     "תל אביב",   "הרצל",   "1",        "1"],
+            "676581": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0",   "1",        "55",    "",          "",       "0",        "0"],
             "701508": ["corona_bot_answers_2_5_2020_with_coords", "2.7.6",    "",          "",     "",          "",       "0",        ""],
         },
         _test_workplace_lat_lng

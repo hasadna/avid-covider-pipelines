@@ -11,15 +11,15 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_abdominal_pain(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 2.8 for id 600304 with abdominal_pain = true , lack_of_appetite_or_skipping_meals = false")
-        data["abdominal_pain"] = True
-        data["lack_of_appetite_or_skipping_meals"] = False
-        data["version"] = "2.8.0"
+        logging.info("Mocking version 3.0 for id 600304 with symptoms_abdominal_pain = true , symptoms_lack_of_appetite_or_skipping_meals = false")
+        data["symptoms_abdominal_pain"] = True
+        data["symptoms_lack_of_appetite_or_skipping_meals"] = False
+        data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 2.8 for id 676580 with abdominal_pain = false , lack_of_appetite_or_skipping_meals = true")
-        data["abdominal_pain"] = False
-        data["lack_of_appetite_or_skipping_meals"] = True
-        data["version"] = "2.8.0"
+        logging.info("Mocking version 3.0 for id 676580 with symptoms_abdominal_pain = false , symptoms_lack_of_appetite_or_skipping_meals = true")
+        data["symptoms_abdominal_pain"] = False
+        data["symptoms_lack_of_appetite_or_skipping_meals"] = True
+        data["version"] = "3.0.0"
     return id, created, data
 
 
@@ -36,7 +36,7 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "abdominal_pain", "lack_of_appetite_or_skipping_meals"
+        "__id", "__created", "version", "symptoms_abdominal_pain", "symptoms_lack_of_appetite_skipping_meals"
     ]),
 ).process()
 Flow(
@@ -50,9 +50,9 @@ Flow(
         {
             "94": ["corona_bot_answers_22_3_2020_with_coords", "", "", "0.1.0"],
             "180075": ["corona_bot_answers_25_3_2020_with_coords", "", "", "1.0.1"],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "1", "0", "2.8.0"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "1", "0", "3.0.0"],
             "600895": ["corona_bot_answers_20_4_2020_with_coords", "", "", "2.6.0"],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "0", "1", "2.8.0"],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "0", "1", "3.0.0"],
             "676581": ["corona_bot_answers_29_4_2020_with_coords", "", "", "2.7.4"],
             "701508": ["corona_bot_answers_2_5_2020_with_coords", "", "", "2.7.6"],
         }
