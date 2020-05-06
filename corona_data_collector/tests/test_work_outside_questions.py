@@ -17,6 +17,7 @@ def _mock_work_outside(id, created, data):
     elif id == 676580:
         logging.info("Mocking version 2.8 for id 676580 with work_outside = yes + full details")
         data["work_outside"] = True
+        data["routine_workplace_single_location"] = True
         data["work_outside_avg_weekly_hours"] = 3
         data["work_outside_city_town"] = "תל אביב"
         data["work_outside_street"] = "הרצל"
@@ -24,6 +25,7 @@ def _mock_work_outside(id, created, data):
     elif id == 676581:
         logging.info("Mocking version 2.8 for id 676581 with work_outside = yes + minimal details")
         data["work_outside"] = True
+        data["routine_workplace_single_location"] = False
         data["work_outside_avg_weekly_hours"] = 55
         data["version"] = "2.8.0"
     elif id == 180075:
@@ -51,7 +53,7 @@ Flow(
     }),
     printer(fields=[
         "__id", "__created", "version", "work_outside", "work_outside_avg_weekly_hours", "work_outside_city_town",
-        "work_outside_street", "workplace_lat", "workplace_lng", "workplace_street_accurate"
+        "work_outside_street", "workplace_lat", "workplace_lng", "workplace_street_accurate", "routine_workplace_single_location"
     ]),
 ).process()
 
@@ -74,22 +76,24 @@ Flow(
             str(row["questionare_version"]), str(row["work_outside"]), str(row["work_outside_avg_weekly_hours"]),
             str(row["workplace_city_town"]), str(row["workplace_street"]),
             str(row["workplace_street_accurate"]),
+            str(row["workplace_single_location"])
         ),
         {
-                                                                       #  work_outside    hours    city_town    street    accurate
-            "94": ["corona_bot_answers_22_3_2020_with_coords", "0.1.0",       "",         "",      "",          "",       "0"     ],
-            "180075": ["corona_bot_answers_25_3_2020_with_coords", "2.8.0",   "1",        "0",     "55",        "44",     "1"     ],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0",   "0",        "0",     "",          "",       "0"     ],
-            "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0",   "",         "",      "",          "",       "0"     ],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "3",     "תל אביב",   "הרצל",   "1"     ],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "55",    "",          "",       "0"     ],
-            "701508": ["corona_bot_answers_2_5_2020_with_coords", "2.7.6",    "",          "",     "",          "",       "0"    ],
+                                                                       #  work_outside    hours    city_town    street    accurate    single_location
+            "94": ["corona_bot_answers_22_3_2020_with_coords", "0.1.0",       "",         "",      "",          "",       "0",        ""],
+            "180075": ["corona_bot_answers_25_3_2020_with_coords", "2.8.0",   "1",        "0",     "55",        "44",     "1",        "0"],
+            "600304": ["corona_bot_answers_20_4_2020_with_coords", "2.8.0",   "0",        "0",     "",          "",       "0",        "0"],
+            "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0",   "",         "",      "",          "",       "0",        ""],
+            "676580": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "3",     "תל אביב",   "הרצל",   "1",        "1"],
+            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.8.0",   "1",        "55",    "",          "",       "0",        "0"],
+            "701508": ["corona_bot_answers_2_5_2020_with_coords", "2.7.6",    "",          "",     "",          "",       "0",        ""],
         },
         _test_workplace_lat_lng
     ),
     printer(fields=[
         "timestamp", "id", "questionare_version", "work_outside", "work_outside_avg_weekly_hours",
-        "workplace_city_town", "workplace_street", "workplace_lat", "workplace_lng", "workplace_street_accurate"
+        "workplace_city_town", "workplace_street", "workplace_lat", "workplace_lng", "workplace_street_accurate",
+        "workplace_single_location"
     ])
 ).process()
 

@@ -112,6 +112,7 @@ answer_titles = {
     "work_outside_avg_weekly_hours": "work_outside_avg_weekly_hours",
     "work_outside_city_town": "workplace_city_town",
     "work_outside_street": "workplace_street",
+    "routine_workplace_single_location": "workplace_single_location",
     "assisted_living": "assisted_living",
     "public_transportation_last_week": "public_transportation_last_week",
     "public_transportation_bus": "public_transportation_bus",
