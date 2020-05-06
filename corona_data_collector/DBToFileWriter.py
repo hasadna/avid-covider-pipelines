@@ -1,4 +1,6 @@
-from corona_data_collector.config import answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert, values_force_integer, default_values
+from corona_data_collector.config import (
+    answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert, values_force_integer, default_values,
+)
 from corona_data_collector.questionare_versions import get_version_columns
 
 
@@ -21,11 +23,12 @@ def get_default_value(column_name, version):
 
 
 def collect_row(row, return_array=False, force_version=None):
+    row_version = force_version if force_version else row['version']
     returned_array = []
     for key, _ in sorted(list(answer_titles.items())):
         val = row.get(key)
         if val is None:
-            val = get_default_value(key, force_version if force_version else row['version'])
+            val = get_default_value(key, row_version)
             if val is None:
                 val = 0
         if isinstance(val, str):
