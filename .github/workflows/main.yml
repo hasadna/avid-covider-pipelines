@@ -52,7 +52,8 @@ jobs:
                     chmod 400 /cdc_secrets/certs/server-ca.pem &&\
                     chmod 400 /cdc_secrets/certs/client-cert.pem &&\
                     chmod 400 /cdc_secrets/certs/client-key.pem &&\
-                    ( cd /COVID19-ISRAEL && git clone --branch get-raw-data-with-geo 'git@github.com:'${COVID19_ISRAEL_REPOSITORY}'.git' . && python3 -m pip install -r requirements-pipelines.txt ) &&\
+                    ( cd /COVID19-ISRAEL && git clone 'git@github.com:'${COVID19_ISRAEL_REPOSITORY}'.git' . && python3 -m pip install -r requirements-pipelines.txt ) &&\
+                    bash run_tests.sh &&\
                     python3 -m corona_data_collector.tests.test_flow
               " >.log 2>&1; then RES=1; else RES=0; fi &&\
         tar -czf data.tar.gz .data &&\

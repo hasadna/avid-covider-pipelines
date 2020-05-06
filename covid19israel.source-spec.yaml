@@ -53,8 +53,61 @@ lamas_features:
   module: src.utils.lamas_features
   args: ["--if-not-exists"]
 
-bayesian_correction:
+
+idf_report_cities_by_week:
   dependencies:
     - lamas_features
-  module: src.bayesian.bayesian_correction
-  args: ["--recompute"]
+  module: src.idf_report.cities_by_week
+  args: ["--cities"]
+  external_sharing_packages:
+    - package_path: out/bayesian/idf/cities_by_week_datapackage.json
+      publish_targets:
+        - github_repo: hrossman/Covid19-Survey
+          deploy_key: hrossman_covid19_survey
+          files:
+            cities_csv: "aggregated_data/{recent_date}_cities_by_week.csv"
+
+
+idf_report_neighborhoods_by_week:
+  dependencies:
+    - lamas_features
+  module: src.idf_report.cities_by_week
+  args: ["--neighborhoods"]
+  external_sharing_packages:
+    - package_path: out/bayesian/idf/neighborhoods_by_week_datapackage.json
+      publish_targets:
+        - github_repo: hrossman/Covid19-Survey
+          deploy_key: hrossman_covid19_survey
+          files:
+            neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
+
+
+maps_generate_daily_summary:
+  dependencies:
+    - idf_report_cities_by_week
+    - idf_report_neighborhoods_by_week
+  module: src.utils.maps.generate_daily_summary
+  external_sharing_packages:
+    - package_path: out/external_sharing/HASADNA/datapackage.json
+      publish_targets:
+        - github_repo: hasadna/avid-covider-raw-data
+          deploy_key: hasadna_avid_covider_raw_data
+          files:
+            daily_summary: "input/{POSTERIOR_DATE}.csv"
+            cities_geojson: "geo/cities.geojson"
+            neighborhoods_geojson: "geo/neighborhoods.geojson"
+
+
+idf_report:
+  dependencies:
+    - idf_report_cities_by_week
+    - idf_report_neighborhoods_by_week
+  module: src.idf_report.idf_report
+  external_sharing_packages:
+    - package_path: out/bayesian/idf/datapackage.json
+      publish_targets:
+        - github_repo: hrossman/Covid19-Survey
+          deploy_key: hrossman_covid19_survey
+          files_foreach:
+            min_per_region_lst:
+              "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.html"
