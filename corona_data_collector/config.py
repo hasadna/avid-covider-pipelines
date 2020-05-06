@@ -158,6 +158,7 @@ values_to_convert = {
         'עישנתי בעבר, לפני יותר מחמש שנים': 1,
         'long past smoke': 1,
         'long_past_smokre': 1,
+        'long_past_smoker': 1,
         'עישנתי בעבר, הפסקתי לפני פחות מחמש שנים': 2,
         'עישנתי בעבר, בחמש השנים האחרונות': 2,
         'short_past_smoker': 2,
