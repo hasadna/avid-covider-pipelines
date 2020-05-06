@@ -46,7 +46,7 @@ Flow(
     load("data/corona_data_collector/destination_output/corona_bot_answers_29_4_2020_with_coords.csv"),
     load("data/corona_data_collector/destination_output/corona_bot_answers_2_5_2020_with_coords.csv"),
     test_corona_bot_answers(
-        lambda row: (str(row["symptom_abdominal_pain"]), str(row["symptom_lack_of_appetite_skipping_meals"]), str(row["questionare_version"])),
+        lambda row: (str(row["symptoms_abdominal_pain"]), str(row["symptoms_lack_of_appetite_skipping_meals"]), str(row["questionare_version"])),
         {
             "94": ["corona_bot_answers_22_3_2020_with_coords", "", "", "0.1.0"],
             "180075": ["corona_bot_answers_25_3_2020_with_coords", "", "", "1.0.1"],
@@ -58,7 +58,7 @@ Flow(
         }
     ),
     printer(fields=[
-        "timestamp", "id", "symptom_abdominal_pain", "symptom_lack_of_appetite_skipping_meals", "questionare_version"
+        "timestamp", "id", "symptoms_abdominal_pain", "symptoms_lack_of_appetite_skipping_meals", "questionare_version"
     ])
 ).process()
 
