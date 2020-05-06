@@ -54,31 +54,9 @@ lamas_features:
   args: ["--if-not-exists"]
 
 
-bayesian_correction:
-  dependencies:
-    - lamas_features
-  module: src.bayesian.bayesian_correction
-  args: ["--recompute"]
-
-
-maps_generate_daily_summary:
-  dependencies:
-    - bayesian_correction
-  module: src.utils.maps.generate_daily_summary
-  external_sharing_packages:
-    - package_path: out/external_sharing/HASADNA/datapackage.json
-      publish_targets:
-        - github_repo: hasadna/avid-covider-raw-data
-          deploy_key: hasadna_avid_covider_raw_data
-          files:
-            daily_summary: "input/{POSTERIOR_DATE}.csv"
-            cities_geojson: "geo/cities.geojson"
-            neighborhoods_geojson: "geo/neighborhoods.geojson"
-
-
 idf_report_cities_by_week:
   dependencies:
-    - bayesian_correction
+    - lamas_features
   module: src.idf_report.cities_by_week
   args: ["--cities"]
   external_sharing_packages:
@@ -92,7 +70,7 @@ idf_report_cities_by_week:
 
 idf_report_neighborhoods_by_week:
   dependencies:
-    - bayesian_correction
+    - lamas_features
   module: src.idf_report.cities_by_week
   args: ["--neighborhoods"]
   external_sharing_packages:
@@ -104,9 +82,26 @@ idf_report_neighborhoods_by_week:
             neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
 
 
+maps_generate_daily_summary:
+  dependencies:
+    - idf_report_cities_by_week
+    - idf_report_neighborhoods_by_week
+  module: src.utils.maps.generate_daily_summary
+  external_sharing_packages:
+    - package_path: out/external_sharing/HASADNA/datapackage.json
+      publish_targets:
+        - github_repo: hasadna/avid-covider-raw-data
+          deploy_key: hasadna_avid_covider_raw_data
+          files:
+            daily_summary: "input/{POSTERIOR_DATE}.csv"
+            cities_geojson: "geo/cities.geojson"
+            neighborhoods_geojson: "geo/neighborhoods.geojson"
+
+
 idf_report:
   dependencies:
-    - bayesian_correction
+    - idf_report_cities_by_week
+    - idf_report_neighborhoods_by_week
   module: src.idf_report.idf_report
   external_sharing_packages:
     - package_path: out/bayesian/idf/datapackage.json
