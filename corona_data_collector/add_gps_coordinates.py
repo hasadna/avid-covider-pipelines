@@ -86,8 +86,12 @@ def add_gps_coordinates(stats, kv, parameters):
         else:
             source = rows.res.name.split("__")[0]
         fields = parameters["source_fields"][source]
+        workplace_fields = parameters.get("workplace_source_fields", {}).get(source)
+        if workplace_fields and source != "db":
+            raise Exception("sorry, wokrplace_fields is only supported for db source")
         for row in rows:
             inputs = {}
+            workplace_inputs = {}
             for k, v in row.items():
                 input = fields.get(k.strip())
                 if input and v and v.strip():
@@ -97,12 +101,28 @@ def add_gps_coordinates(stats, kv, parameters):
                         inputs[input] = json.loads(v)
                     else:
                         inputs[input] = v
+                if workplace_fields:
+                    input = workplace_fields.get(k.strip())
+                    if input and v and v.strip():
+                        if input in workplace_inputs:
+                            logging.warning("duplicate workplace_input %s, %s: %s" % (source, input, row))
+                        elif source == "db":
+                            workplace_inputs[input] = json.loads(v)
+                        else:
+                            workplace_inputs[input] = v
             lat, lng, accurate = get_coords(stats, kv, inputs, get_coords_callback=parameters.get("get-coords-callback"))
+            if workplace_fields:
+                workplace_lat, workplace_lng, workplace_accurate = get_coords(stats, kv, workplace_inputs, get_coords_callback=parameters.get("get-coords-callback"))
             yield {
                 **row,
                 "lat": str(lat),
                 "lng": str(lng),
-                **({"address_street_accurate": str(accurate)} if source == "db" else {})
+                **({"address_street_accurate": str(accurate)} if source == "db" else {}),
+                **({
+                    "workplace_lat": str(workplace_lat),
+                    "workplace_lng": str(workplace_lng),
+                    **({"workplace_street_accurate": str(workplace_accurate)} if source == "db" else {}),
+                } if workplace_fields else {}),
             }
         logging.info(str(dict(stats)))
 
@@ -119,6 +139,9 @@ def add_gps_coordinates(stats, kv, parameters):
         add_field('lat', 'string', default="0"),
         add_field('lng', 'string', default="0"),
         add_field('address_street_accurate', 'string', default="0", resources="db_data"),
+        add_field('workplace_lat', 'string', default="0", resources="db_data"),
+        add_field('workplace_lng', 'string', default="0", resources="db_data"),
+        add_field('workplace_street_accurate', 'string', default="0", resources="db_data"),
         _add_gps_coordinates,
     ]
     if parameters.get('dump_to_path'):

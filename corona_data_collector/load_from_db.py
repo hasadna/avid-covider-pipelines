@@ -42,6 +42,8 @@ def flow(parameters, *_):
         logging.info("Loading all records from DB")
         where = ""
     for id, created, data in engine.execute("select id, created, data from reports%s order by id" % where):
+        if parameters.get("filter_db_row_callback"):
+            id, created, data = parameters["filter_db_row_callback"](id, created, data)
         if not data or not isinstance(data, dict):
             stats['invalid data'] += 1
             continue

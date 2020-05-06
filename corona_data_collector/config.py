@@ -84,6 +84,8 @@ answer_titles = {
     'symptoms_tiredness_or_fatigue': 'symptoms_tiredness_or_fatigue',
     'symptoms_smell_taste_loss': 'symptoms_smell_taste_loss',
     'symptoms_other': 'symptoms_other',
+    "symptoms_abdominal_pain": "symptoms_abdominal_pain",
+    "symptoms_lack_of_appetite_or_skipping_meals": "symptoms_lack_of_appetite_skipping_meals",
     'exposure_met_people': 'exposure_met_people',
     'flatmates': 'flatmates',
     'flatmates_over_70': 'flatmates_over_70',
@@ -106,6 +108,21 @@ answer_titles = {
     "main_uid": "main_uid",
     "uid": "uid",
     "num_aliases": "num_aliases",
+    "routine_workplace_is_outside": "work_outside",
+    "routine_workplace_weekly_hours": "work_outside_avg_weekly_hours",
+    "routine_workplace_city_town": "workplace_city_town",
+    "routine_workplace_street": "workplace_street",
+    "routine_workplace_single_location": "workplace_single_location",
+    "is_assisted_living": "assisted_living",
+    "routine_uses_public_transportation": "public_transportation_last_week",
+    "routine_uses_public_transportation_bus": "public_transportation_bus",
+    "routine_uses_public_transportation_train": "public_transportation_train",
+    "routine_uses_public_transportation_taxi": "public_transportation_taxi",
+    "routine_uses_public_transportation_other": "public_transportation_other",
+    "routine_visits_prayer_house": "habits_prayer_house",
+    "routine_wears_mask": "last_week_wear_mask",
+    "routine_wears_gloves": "last_week_wear_gloves",
+    "routine_last_asked": "routine_last_asked",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -142,6 +159,7 @@ values_to_convert = {
         'עישנתי בעבר, לפני יותר מחמש שנים': 1,
         'long past smoke': 1,
         'long_past_smokre': 1,
+        'long_past_smoker': 1,
         'עישנתי בעבר, הפסקתי לפני פחות מחמש שנים': 2,
         'עישנתי בעבר, בחמש השנים האחרונות': 2,
         'short_past_smoker': 2,
@@ -175,9 +193,49 @@ values_to_convert = {
     'medical_staff_member': {
         'false': 0,
         'true': 1
+    },
+    "is_assisted_living": {
+        'false': 0,
+        'true': 1,
+        'no_response': 2
+    },
+    "routine_visits_prayer_house": {
+        "false": 0,
+        "true": 1,
+        "no_response": 2
+    },
+    "routine_wears_mask": {
+        "always": 3,
+        "mostly_yes": 2,
+        "mostly_no": 1,
+        "never": 0,
+        "no_response": 4,
+        "": 4
+    },
+    "routine_wears_gloves": {
+        "always": 3,
+        "mostly_yes": 2,
+        "mostly_no": 1,
+        "never": 0,
+        "no_response": 4,
+        "": 4
     }
 }
 for field, values in values_to_convert.items():
     values_to_convert[field] = {
         k.lower(): v for k, v in values.items()
     }
+
+
+values_force_integer = [
+    "routine_workplace_weekly_hours",
+]
+
+
+default_values = {
+    "routine_workplace_street": "",
+    "routine_workplace_city_town": "",
+    "routine_visits_prayer_house": 2,  # no_response
+    "routine_wears_mask": 4,  # no_response
+    "routine_wears_gloves": 4,  # no_response
+}
