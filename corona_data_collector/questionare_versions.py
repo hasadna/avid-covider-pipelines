@@ -271,8 +271,8 @@ questionare_versions = {
               'symptoms_nausea_and_vomiting', 'symptoms_smell_taste_loss', 'symptoms_sore_throat',
               'symptoms_tiredness_or_fatigue', 'temperature', 'toplevel_symptoms_cough', 'toplevel_symptoms_pains',
               'symptoms_abdominal_pain', "symptoms_lack_of_appetite_or_skipping_meals",
-              "work_outside", "work_outside_avg_weekly_hours", "work_outside_city_town", "work_outside_street",
-              "public_transportation_last_week", "public_transportation_bus", "public_transportation_train", "public_transportation_taxi", "public_transportation_other",
+              "routine_workplace_is_outside", "routine_workplace_weekly_hours", "routine_workplace_city_town", "routine_workplace_street",
+              "routine_uses_public_transportation", "routine_uses_public_transportation_bus", "routine_uses_public_transportation_train", "routine_uses_public_transportation_taxi", "routine_uses_public_transportation_other",
               "routine_visits_prayer_house", "routine_wears_mask", "routine_wears_gloves", "routine_workplace_single_location",
               'version'},
 }

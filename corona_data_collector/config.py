@@ -108,20 +108,21 @@ answer_titles = {
     "main_uid": "main_uid",
     "uid": "uid",
     "num_aliases": "num_aliases",
-    "work_outside": "work_outside",
-    "work_outside_avg_weekly_hours": "work_outside_avg_weekly_hours",
-    "work_outside_city_town": "workplace_city_town",
-    "work_outside_street": "workplace_street",
+    "routine_workplace_is_outside": "work_outside",
+    "routine_workplace_weekly_hours": "work_outside_avg_weekly_hours",
+    "routine_workplace_city_town": "workplace_city_town",
+    "routine_workplace_street": "workplace_street",
     "routine_workplace_single_location": "workplace_single_location",
-    "assisted_living": "assisted_living",
-    "public_transportation_last_week": "public_transportation_last_week",
-    "public_transportation_bus": "public_transportation_bus",
-    "public_transportation_train": "public_transportation_train",
-    "public_transportation_taxi": "public_transportation_taxi",
-    "public_transportation_other": "public_transportation_other",
+    "is_assisted_living": "assisted_living",
+    "routine_uses_public_transportation": "public_transportation_last_week",
+    "routine_uses_public_transportation_bus": "public_transportation_bus",
+    "routine_uses_public_transportation_train": "public_transportation_train",
+    "routine_uses_public_transportation_taxi": "public_transportation_taxi",
+    "routine_uses_public_transportation_other": "public_transportation_other",
     "routine_visits_prayer_house": "habits_prayer_house",
     "routine_wears_mask": "last_week_wear_mask",
     "routine_wears_gloves": "last_week_wear_gloves",
+    "routine_last_asked": "routine_last_asked",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -193,7 +194,7 @@ values_to_convert = {
         'false': 0,
         'true': 1
     },
-    "assisted_living": {
+    "is_assisted_living": {
         'false': 0,
         'true': 1,
         'no_response': 2
@@ -227,13 +228,13 @@ for field, values in values_to_convert.items():
 
 
 values_force_integer = [
-    "work_outside_avg_weekly_hours",
+    "routine_workplace_weekly_hours",
 ]
 
 
 default_values = {
-    "work_outside_street": "",
-    "work_outside_city_town": "",
+    "routine_workplace_street": "",
+    "routine_workplace_city_town": "",
     "routine_visits_prayer_house": 2,  # no_response
     "routine_wears_mask": 4,  # no_response
     "routine_wears_gloves": 4,  # no_response

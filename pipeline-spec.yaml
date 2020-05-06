@@ -70,8 +70,8 @@ corona_data_collector:
         }
         workplace_source_fields: {
           "db": {
-            "work_outside_street": "street",
-            "work_outside_city_town": "city"
+            "routine_workplace_street": "street",
+            "routine_workplace_city_town": "city"
           }
         }
         dump_to_path: data/corona_data_collector/with_gps_data

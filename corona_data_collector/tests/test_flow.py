@@ -27,46 +27,81 @@ def _mock_gender_other(rows):
 def _mock_version_28(id, created, data):
     if 640000 <= id <= 640020:
         logging.info("Mocking version 3.0 for ids 640000 to 640020: "
-                     "assisted_living = no_response , "
+                     "is_assisted_living = no_response , "
                      "symptoms_abdominal_pain = true , "
                      "symptoms_lack_of_appetite_or_skipping_meals = false , "
-                     "work_outside = no")
-        data["assisted_living"] = "no_response"
+                     "routine_workplace_is_outside = no "
+                     "precondition_smoking = long_past_smoker "
+                     "medical_staff_member = true"
+                     "routine_uses_public_transportation = false , "
+                     "routine_visits_prayer_house = true , "
+                     "routine_wears_mask = always , "
+                     "routine_wears_gloves = mostly_yes , "
+                     "routine_last_asked = 2020-03-29T18:16:48.720Z"
+                     )
+        data["is_assisted_living"] = "no_response"
         data["symptoms_abdominal_pain"] = True
         data["symptoms_lack_of_appetite_or_skipping_meals"] = False
-        data["work_outside"] = False
+        data["routine_workplace_is_outside"] = False
+        data["precondition_smoking"] = "long_past_smoker"
+        data["medical_staff_member"] = True
+        data["routine_uses_public_transportation"] = False
+        data["routine_visits_prayer_house"] = True
+        data["routine_wears_mask"] = "always"
+        data["routine_wears_gloves"] = "mostly_yes"
+        data["routine_last_asked"] = "2020-03-29T18:16:48.720Z"
         data["version"] = "3.0.0"
     elif 640021 <= id <= 640040:
         logging.info("Mocking version 3.0 for ids 640021 to 640040: "
-                     "assisted_living = true , "
+                     "is_assisted_living = true , "
                      "symptoms_abdominal_pain = false , "
                      "symptoms_lack_of_appetite_or_skipping_meals = true , "
-                     "work_outside = yes + full details")
-        data["assisted_living"] = True
+                     "routine_workplace_is_outside = yes + full details "
+                     "precondition_smoking = long_past_smokre "
+                     "medical_staff_member = false"
+                     "routine_uses_public_transportation = true , "
+                     "routine_uses_public_transportation_bus = true, "
+                     "routine_visits_prayer_house = false , "
+                     "routine_wears_mask = no_response, "
+                     "routine_wears_gloves = mostly_no"
+                     )
+        data["is_assisted_living"] = True
         data["symptoms_abdominal_pain"] = False
         data["symptoms_lack_of_appetite_or_skipping_meals"] = True
-        data["work_outside"] = True
-        data["work_outside_avg_weekly_hours"] = 3
-        data["work_outside_city_town"] = "תל אביב"
-        data["work_outside_street"] = "הרצל"
+        data["routine_workplace_is_outside"] = True
+        data["routine_workplace_single_location"] = True
+        data["routine_workplace_weekly_hours"] = 3
+        data["routine_workplace_city_town"] = "תל אביב"
+        data["routine_workplace_street"] = "הרצל"
+        data["precondition_smoking"] = "long_past_smokre"
+        data["medical_staff_member"] = False
+        data["routine_uses_public_transportation"] = True
+        data["routine_uses_public_transportation_bus"] = True
+        data["routine_visits_prayer_house"] = False
+        data["routine_wears_mask"] = "no_response"
+        data["routine_wears_gloves"] = "mostly_no"
         data["version"] = "3.0.0"
     elif 640041 <= id <= 640060:
         logging.info("Mocking version 3.0 for ids 640041 to 640060: "
-                     "assisted_living = false , "
-                     "work_outside = yes + minimal details")
-        data["assisted_living"] = False
-        data["work_outside"] = True
-        data["work_outside_avg_weekly_hours"] = 55
+                     "is_assisted_living = false , "
+                     "routine_workplace_is_outside = yes + minimal details"
+                     "routine_visits_prayer_house = no_response"
+                     )
+        data["is_assisted_living"] = False
+        data["routine_workplace_is_outside"] = True
+        data["routine_workplace_single_location"] = False
+        data["routine_workplace_weekly_hours"] = 55
+        data["routine_visits_prayer_house"] = "no_response"
         data["version"] = "3.0.0"
     elif 640061 <= id <= 640080:
         logging.info("Mocking version 3.0 for ids 640061 to 640080: "
-                     "assisted_living = 'true'")
-        data["assisted_living"] = "true"
+                     "is_assisted_living = 'true'")
+        data["is_assisted_living"] = "true"
         data["version"] = "3.0.0"
     elif 640081 <= id <= 640100:
         logging.info("Mocking version 3.0 for ids 640081 to 640100: "
-                     "assisted_living = 'false'")
-        data["assisted_living"] = "false"
+                     "is_assisted_living = 'false'")
+        data["is_assisted_living"] = "false"
         data["version"] = "3.0.0"
     return id, created, data
 

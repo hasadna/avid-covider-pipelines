@@ -11,24 +11,24 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_assisted_living(id, created, data):
     if id == 180075:
-        logging.info("Mocking version 3.0 for id 600304 with assisted_living = no_response")
-        data["assisted_living"] = "no_response"
+        logging.info("Mocking version 3.0 for id 600304 with is_assisted_living = no_response")
+        data["is_assisted_living"] = "no_response"
         data["version"] = "3.0.0"
     elif id == 600304:
-        logging.info("Mocking version 3.0 for id 600304 with assisted_living = true")
-        data["assisted_living"] = True
+        logging.info("Mocking version 3.0 for id 600304 with is_assisted_living = true")
+        data["is_assisted_living"] = True
         data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 3.0 for id 676580 with assisted_living = false")
-        data["assisted_living"] = False
+        logging.info("Mocking version 3.0 for id 676580 with is_assisted_living = false")
+        data["is_assisted_living"] = False
         data["version"] = "3.0.0"
     elif id == 676581:
-        logging.info("Mocking version 3.0 for id 600304 with assisted_living = 'true'")
-        data["assisted_living"] = "true"
+        logging.info("Mocking version 3.0 for id 600304 with is_assisted_living = 'true'")
+        data["is_assisted_living"] = "true"
         data["version"] = "3.0.0"
     elif id == 701508:
-        logging.info("Mocking version 3.0 for id 676580 with assisted_living = 'false'")
-        data["assisted_living"] = "false"
+        logging.info("Mocking version 3.0 for id 676580 with is_assisted_living = 'false'")
+        data["is_assisted_living"] = "false"
         data["version"] = "3.0.0"
     return id, created, data
 
@@ -46,7 +46,7 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "assisted_living"
+        "__id", "__created", "version", "is_assisted_living"
     ]),
 ).process()
 Flow(

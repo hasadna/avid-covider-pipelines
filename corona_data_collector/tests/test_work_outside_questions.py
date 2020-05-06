@@ -11,29 +11,29 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_work_outside(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 3.0 for id 600304 with work_outside = no")
-        data["work_outside"] = False
+        logging.info("Mocking version 3.0 for id 600304 with routine_workplace_is_outside = no")
+        data["routine_workplace_is_outside"] = False
         data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 3.0 for id 676580 with work_outside = yes + full details")
-        data["work_outside"] = True
+        logging.info("Mocking version 3.0 for id 676580 with routine_workplace_is_outside = yes + full details")
+        data["routine_workplace_is_outside"] = True
         data["routine_workplace_single_location"] = True
-        data["work_outside_avg_weekly_hours"] = 3
-        data["work_outside_city_town"] = "תל אביב"
-        data["work_outside_street"] = "הרצל"
+        data["routine_workplace_weekly_hours"] = 3
+        data["routine_workplace_city_town"] = "תל אביב"
+        data["routine_workplace_street"] = "הרצל"
         data["version"] = "3.0.0"
     elif id == 676581:
-        logging.info("Mocking version 3.0 for id 676581 with work_outside = yes + minimal details")
-        data["work_outside"] = True
+        logging.info("Mocking version 3.0 for id 676581 with routine_workplace_is_outside = yes + minimal details")
+        data["routine_workplace_is_outside"] = True
         data["routine_workplace_single_location"] = False
-        data["work_outside_avg_weekly_hours"] = 55
+        data["routine_workplace_weekly_hours"] = 55
         data["version"] = "3.0.0"
     elif id == 180075:
-        logging.info("Mocking version 3.0 for id 180075 with work_outside = yes + invalid details")
-        data["work_outside"] = True
-        data["work_outside_avg_weekly_hours"] = "foobar"
-        data["work_outside_city_town"] = 55
-        data["work_outside_street"] = 44
+        logging.info("Mocking version 3.0 for id 180075 with routine_workplace_is_outside = yes + invalid details")
+        data["routine_workplace_is_outside"] = True
+        data["routine_workplace_weekly_hours"] = "foobar"
+        data["routine_workplace_city_town"] = 55
+        data["routine_workplace_street"] = 44
         data["version"] = "3.0.0"
     return id, created, data
 
@@ -52,11 +52,10 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "work_outside", "work_outside_avg_weekly_hours", "work_outside_city_town",
-        "work_outside_street", "workplace_lat", "workplace_lng", "workplace_street_accurate", "routine_workplace_single_location"
+        "__id", "__created", "version", "routine_workplace_is_outside", "routine_workplace_weekly_hours", "routine_workplace_city_town",
+        "routine_workplace_street", "workplace_lat", "workplace_lng", "workplace_street_accurate", "routine_workplace_single_location"
     ]),
 ).process()
-
 
 def _test_workplace_lat_lng(row):
     if row["id"] in ["180075", "676580"]:

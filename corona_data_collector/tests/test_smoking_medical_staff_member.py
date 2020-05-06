@@ -11,13 +11,13 @@ logging.basicConfig(level=logging.INFO)
 
 def _mock_smoking_medical_staff(id, created, data):
     if id == 600304:
-        logging.info("Mocking version 3.0 for id 600304 with smoking = long_past_smoker , medical_staff_member = true")
-        data["smoking"] = "long_past_smoker"
+        logging.info("Mocking version 3.0 for id 600304 with precondition_smoking = long_past_smoker , medical_staff_member = true")
+        data["precondition_smoking"] = "long_past_smoker"
         data["medical_staff_member"] = True
         data["version"] = "3.0.0"
     elif id == 676580:
-        logging.info("Mocking version 3.0 for id 676580 with smoking = long_past_smokre , medical_staff_member = false")
-        data["smoking"] = "long_past_smokre"
+        logging.info("Mocking version 3.0 for id 676580 with precondition_smoking = long_past_smokre , medical_staff_member = false")
+        data["precondition_smoking"] = "long_past_smokre"
         data["medical_staff_member"] = False
         data["version"] = "3.0.0"
     return id, created, data
@@ -36,7 +36,7 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "smoking", "medical_staff_member"
+        "__id", "__created", "version", "precondition_smoking", "medical_staff_member"
     ]),
 ).process()
 Flow(

@@ -36,7 +36,7 @@ Flow(
         "destination_output": "data/corona_data_collector/destination_output"
     }),
     printer(fields=[
-        "__id", "__created", "version", "symptoms_abdominal_pain", "symptoms_lack_of_appetite_skipping_meals"
+        "__id", "__created", "version", "symptoms_abdominal_pain", "symptoms_lack_of_appetite_or_skipping_meals"
     ]),
 ).process()
 Flow(
