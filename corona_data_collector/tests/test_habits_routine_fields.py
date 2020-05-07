@@ -58,7 +58,7 @@ TEST_DATA = {
         "routine_visits_prayer_house":              (False, "0"),
         "routine_wears_mask":                       ("always", "3"),
         "routine_wears_gloves":                     ("never", "0"),
-        "routine_last_asked":                       (1588837240349, "2020-05-07T10:40:40.000Z"),
+        "routine_last_asked":                       (1588837240349, "2020-05-07T07:40:40.000Z"),
     },
     # get_db_test_row("3.0.0", "routine_uses_public_transportation", "true", show_fields=[
     #     "routine_uses_public_transportation",  "routine_uses_public_transportation_bus", "routine_uses_public_transportation_train", "routine_uses_public_transportation_taxi", "routine_uses_public_transportation_other"
@@ -73,7 +73,7 @@ TEST_DATA = {
         "routine_visits_prayer_house":              (False, "0"),
         "routine_wears_mask":                       ("always", "3"),
         "routine_wears_gloves":                     ("never", "0"),
-        "routine_last_asked":                       (1588795349500, "2020-05-06T23:02:29.000Z"),
+        "routine_last_asked":                       (1588795349500, "2020-05-06T20:02:29.000Z"),
     },
      # 732802 (taxi=true, train=null, bus=true, other=null)
     732802: {
@@ -86,7 +86,7 @@ TEST_DATA = {
         "routine_visits_prayer_house":              (False, "0"),
         "routine_wears_mask":                       ("mostly_yes", "2"),
         "routine_wears_gloves":                     ("mostly_no", "1"),
-        "routine_last_asked":                       (1588795887517, "2020-05-06T23:11:27.000Z"),
+        "routine_last_asked":                       (1588795887517, "2020-05-06T20:11:27.000Z"),
     },
 }
 

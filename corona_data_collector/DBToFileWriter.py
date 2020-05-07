@@ -47,7 +47,7 @@ def convert_values(db_row, stats=None):
     for key in values_datetime:
         if key in db_row and db_row[key] is not None:
             try:
-                db_row[key] = datetime.datetime.fromtimestamp(int(db_row[key])/1000).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                db_row[key] = datetime.datetime.utcfromtimestamp(int(db_row[key])/1000).strftime("%Y-%m-%dT%H:%M:%S.000Z")
             except Exception:
                 db_row[key] = ""
     for key in values_force_integer:
