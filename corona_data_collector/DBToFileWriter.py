@@ -1,7 +1,9 @@
 from corona_data_collector.config import (
     answer_titles, values_to_convert, keys_to_convert, insulation_status_keys_to_convert, values_force_integer, default_values,
+    values_datetime
 )
 from corona_data_collector.questionare_versions import get_version_columns
+import datetime
 
 
 inverse_converted_keys = {}
@@ -42,6 +44,12 @@ def collect_row(row, return_array=False, force_version=None):
 
 
 def convert_values(db_row, stats=None):
+    for key in values_datetime:
+        if key in db_row and db_row[key] is not None:
+            try:
+                db_row[key] = datetime.datetime.utcfromtimestamp(int(db_row[key])/1000).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            except Exception:
+                db_row[key] = ""
     for key in values_force_integer:
         if key in db_row and db_row[key] is not None:
             try:

@@ -1,69 +1,44 @@
-import random
 import logging
-from corona_data_collector import load_from_db, add_gps_coordinates, export_corona_bot_answers
-from avid_covider_pipelines.utils import get_parameters_from_pipeline_spec
-from dataflows import printer, Flow, load
-from .common import test_corona_bot_answers
+from corona_data_collector.tests.common import get_db_test_row, run_full_db_data_test
 
 
 logging.basicConfig(level=logging.INFO)
 
 
-def _mock_smoking_medical_staff(id, created, data):
-    if id == 600304:
-        logging.info("Mocking version 3.0 for id 600304 with precondition_smoking = long_past_smoker , medical_staff_member = true")
-        data["precondition_smoking"] = "long_past_smoker"
-        data["medical_staff_member"] = True
-        data["version"] = "3.0.0"
-    elif id == 676580:
-        logging.info("Mocking version 3.0 for id 676580 with precondition_smoking = long_past_smokre , medical_staff_member = false")
-        data["precondition_smoking"] = "long_past_smokre"
-        data["medical_staff_member"] = False
-        data["version"] = "3.0.0"
-    return id, created, data
+TEST_FIELDS = {
+    # db field                                           corona_bot_answers field
+    "version":                                           "questionare_version",
+    "precondition_smoking":                              "smoking",
+    "medical_staff_member":                              "medical_staff_member",
+}
+TEST_DATA = {
+    # id in DB:
+    #   "db field": ("value in db", "value_in_corona_bot_answers")
+    94: {
+        "version": ("0.1.0",),
+        "precondition_smoking":     (None, "0"),
+        "medical_staff_member":     (None, ""),
+    },
+    # get_db_test_row("3.0.0", "precondition_smoking", "long_past_smoker")  # 734978
+    734978: {
+        "version": ("3.0.0",),
+        "precondition_smoking":     ("long_past_smoker", "1"),
+        "medical_staff_member":     (None, "0"),
+    },
+    # get_db_test_row("3.0.0", "medical_staff_member", "true")
+    #   734839   (true)
+    734839: {
+        "version": ("3.0.0",),
+        "precondition_smoking":     ("daily_smoker", "3"),
+        "medical_staff_member":     (True, "1"),
+    },
+    #   735051   ("true")
+    735051: {
+        "version": ("3.0.0",),
+        "precondition_smoking":     ("never", "0"),
+        "medical_staff_member":     ("true", "1"),
+    },
+}
 
 
-Flow(
-    load_from_db.flow({
-        "where": "id in (94, 180075, 600304, 600895, 676580, 676581, 701508)",
-        "filter_db_row_callback": _mock_smoking_medical_staff
-    }),
-    add_gps_coordinates.flow({
-        "source_fields": get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["source_fields"],
-        "get-coords-callback": lambda street, city: (random.uniform(29, 34), random.uniform(34, 36), int(street != city))
-    }),
-    export_corona_bot_answers.flow({
-        "destination_output": "data/corona_data_collector/destination_output"
-    }),
-    printer(fields=[
-        "__id", "__created", "version", "precondition_smoking", "medical_staff_member"
-    ]),
-).process()
-Flow(
-    load("data/corona_data_collector/destination_output/corona_bot_answers_22_3_2020_with_coords.csv"),
-    load("data/corona_data_collector/destination_output/corona_bot_answers_25_3_2020_with_coords.csv"),
-    load("data/corona_data_collector/destination_output/corona_bot_answers_20_4_2020_with_coords.csv"),
-    load("data/corona_data_collector/destination_output/corona_bot_answers_29_4_2020_with_coords.csv"),
-    load("data/corona_data_collector/destination_output/corona_bot_answers_2_5_2020_with_coords.csv"),
-    test_corona_bot_answers(
-        lambda row: (
-            str(row[k]) for k in ["questionare_version", "smoking", "medical_staff_member"]
-        ),
-        {
-            #                                                                smoking       medical_staff_member
-            "94": ["corona_bot_answers_22_3_2020_with_coords",     "0.1.0",  "0",           ""],
-            "180075": ["corona_bot_answers_25_3_2020_with_coords", "1.0.1",  "0",           ""],
-            "600304": ["corona_bot_answers_20_4_2020_with_coords", "3.0.0",  "1",           "1"],
-            "600895": ["corona_bot_answers_20_4_2020_with_coords", "2.6.0",  "0",           "0"],
-            "676580": ["corona_bot_answers_29_4_2020_with_coords", "3.0.0",  "1",           "0"],
-            "676581": ["corona_bot_answers_29_4_2020_with_coords", "2.7.4",  "1",           "0"],
-            "701508": ["corona_bot_answers_2_5_2020_with_coords",  "2.7.6",  "0",           "0"],
-        }
-    ),
-    printer(fields=[
-        "timestamp", "id", "questionare_version", "smoking", "medical_staff_member"
-    ])
-).process()
-
-
-logging.info("Great Success!")
+run_full_db_data_test(TEST_FIELDS, TEST_DATA)

@@ -239,3 +239,8 @@ default_values = {
     "routine_wears_mask": 4,  # no_response
     "routine_wears_gloves": 4,  # no_response
 }
+
+
+values_datetime = [
+    "routine_last_asked"
+]
