@@ -13,6 +13,7 @@ class Generator(GeneratorBase):
 
     @classmethod
     def generate_pipeline(cls, source, source_dir):
+        check_covid19_israel_id_paths = {}
         for pipeline_id, source_pipeline in source.items():
             pipeline = {}
             for source_dependency in source_pipeline.pop('dependencies', []):
@@ -25,19 +26,21 @@ class Generator(GeneratorBase):
                 pipeline.setdefault('dependencies', []).append(dependency)
             if not source_pipeline.get("output-dir"):
                 source_pipeline["output-dir"] = "data/%s" % pipeline_id
-            source_pipeline['raise-exceptions'] = True
-            external_sharing_packages = source_pipeline.pop("external_sharing_packages", None)
+            check_covid19_israel_id_paths[pipeline_id] = source_pipeline["output-dir"]
             pipeline['pipeline'] = [
                 {
                     "flow": "avid_covider_pipelines.run_covid19_israel",
                     "parameters": source_pipeline
                 }
             ]
-            if external_sharing_packages:
-                pipeline["pipeline"].append({
-                    "flow": "datapackage_pipelines_covid19israel.publish_external_sharing_packages",
-                    "parameters": {
-                        "packages": external_sharing_packages
-                    }
-                })
             yield os.path.join(source_dir, pipeline_id), pipeline
+        failures_report_pipeline = {
+            "dependencies": [{"pipeline": "./%s" % id} for id in check_covid19_israel_id_paths.keys()],
+            "pipeline": [{
+                "flow": "datapackage_pipelines_covid19israel.check_last_failures",
+                "parameters": {
+                    "check_covid19_israel_id_paths": check_covid19_israel_id_paths
+                }
+            }]
+        }
+        yield os.path.join(source_dir, "covid19_israel_failures_report"), failures_report_pipeline
