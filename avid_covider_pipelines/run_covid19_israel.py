@@ -4,6 +4,7 @@ import sys
 import json
 import hashlib
 import os
+from datapackage_pipelines_covid19israel import publish_external_sharing_packages
 
 
 def run_covid19_israel(parameters, run_row):
@@ -25,6 +26,13 @@ def run_covid19_israel(parameters, run_row):
         logging.error('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
     else:
         run_row['error'] = 'no'
+        external_sharing_packages = parameters.get("external_sharing_packages")
+        if external_sharing_packages:
+            try:
+                publish_external_sharing_packages.flow(external_sharing_packages).process()
+            except Exception:
+                logging.exception("Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args))
+                run_row['error'] = 'yes'
 
 
 def flow(parameters, *_):
@@ -42,20 +50,9 @@ def flow(parameters, *_):
         else:
             run_row['datapackage-dependencies-hash'] = ''
         run_covid19_israel(parameters, run_row)
-        return run_row, 'failed to run COVID19-ISRAEL module' if run_row['error'] == 'yes' and parameters.get('raise-exceptions') else None
+        return run_row, 'failed to run COVID19-ISRAEL module' if run_row['error'] == 'yes' and not parameters.get("skip-failures") else None
 
-    def _hash_updated_files_run_callback():
-        utils.keep_last_runs_history(
-            output_dir, _last_runs_run_callback
-        ).process()
-
-    return utils.hash_updated_files(
-        '../COVID19-ISRAEL',
-        '%s/last_updated_files' % output_dir,
-        _hash_updated_files_run_callback,
-        printer_num_rows=parameters.get('printer_num_rows', 10),
-    )
-
+    return utils.keep_last_runs_history(output_dir, _last_runs_run_callback)
 
 
 if __name__ == "__main__":
@@ -68,6 +65,7 @@ if __name__ == "__main__":
     flow({
         'module': module,
         'args': sys.argv[2:],
-        'raise-exceptions': True,
+        'skip-failures': True,
+        'external_sharing_packages': "FOOBAR",
         'output-dir': 'data/run_covid19_israel/%s' % module
     }).process()

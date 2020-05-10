@@ -32,7 +32,6 @@
 #      python3 -m src.utils.lamas_features --if-not-exists
 #
 #
-#
 # external_sharing_packages:
 #
 #   list of output packages to share to external sources (only if the step completes successfully)
@@ -50,6 +49,12 @@
 #           value: object with the following key/values:
 #             key: key from package, may include {foreach_value} replaced by an item from the list as well as other package metadata
 #             value: target path, may include {foreach_value} as well as other package metadata
+#
+#
+# skip-failures:
+#
+#   if set and is true - if pipeline fails, the dashboard will show it as a success and dependant pipelines will run
+#   at the end of all pipeline steps, there will be an additional step which will show failure with details of which pipelines failed
 
 
 get_raw_data:
@@ -84,6 +89,7 @@ idf_report_cities_by_week:
           deploy_key: hrossman_covid19_survey
           files:
             cities_csv: "aggregated_data/{recent_date}_cities_by_week.csv"
+  skip-failures: true
 
 
 idf_report_neighborhoods_by_week:
@@ -98,6 +104,7 @@ idf_report_neighborhoods_by_week:
           deploy_key: hrossman_covid19_survey
           files:
             neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
+  skip-failures: true
 
 
 maps_generate_daily_summary:
@@ -114,6 +121,7 @@ maps_generate_daily_summary:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
             cities_geojson: "geo/cities.geojson"
             neighborhoods_geojson: "geo/neighborhoods.geojson"
+  skip-failures: true
 
 
 idf_report:
@@ -129,3 +137,4 @@ idf_report:
           files_foreach:
             min_per_region_lst:
               "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.html"
+  skip-failures: true

@@ -42,7 +42,6 @@ def run_pipeline(source_spec, id):
     run_covid19_israel.flow({
         **{
             "output-dir": "data/%s" % id,
-            "raise-exceptions": True
         },
         **pipeline
     }).process()
