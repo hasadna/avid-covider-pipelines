@@ -29,7 +29,7 @@ def run_covid19_israel(parameters, run_row):
         external_sharing_packages = parameters.get("external_sharing_packages")
         if external_sharing_packages:
             try:
-                publish_external_sharing_packages.flow(external_sharing_packages).process()
+                publish_external_sharing_packages.flow({"packages": external_sharing_packages}).process()
             except Exception:
                 logging.exception("Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args))
                 run_row['error'] = 'yes'
