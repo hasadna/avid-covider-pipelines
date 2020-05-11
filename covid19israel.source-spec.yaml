@@ -89,28 +89,12 @@ idf_report_cities_by_week:
           deploy_key: hrossman_covid19_survey
           files:
             cities_csv: "aggregated_data/{recent_date}_cities_by_week.csv"
-  skip-failures: true
-
-
-idf_report_neighborhoods_by_week:
-  dependencies:
-    - lamas_features
-  module: src.idf_report.cities_by_week
-  args: ["--neighborhoods", "--no-cache"]
-  external_sharing_packages:
-    - package_path: out/bayesian/idf/neighborhoods_by_week_datapackage.json
-      publish_targets:
-        - github_repo: hrossman/Covid19-Survey
-          deploy_key: hrossman_covid19_survey
-          files:
-            neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
-  skip-failures: true
+  skip-failures: false
 
 
 maps_generate_daily_summary:
   dependencies:
     - idf_report_cities_by_week
-    - idf_report_neighborhoods_by_week
   module: src.utils.maps.generate_daily_summary
   external_sharing_packages:
     - package_path: out/external_sharing/HASADNA/datapackage.json
@@ -125,7 +109,6 @@ maps_generate_daily_summary:
 idf_report:
   dependencies:
     - idf_report_cities_by_week
-    - idf_report_neighborhoods_by_week
   module: src.idf_report.idf_report
   external_sharing_packages:
     - package_path: out/bayesian/idf/datapackage.json
@@ -135,4 +118,20 @@ idf_report:
           files_foreach:
             min_per_region_lst:
               "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.html"
+  skip-failures: true
+
+
+idf_report_neighborhoods_by_week:
+  dependencies:
+    - idf_report
+    - maps_generate_daily_summary
+  module: src.idf_report.cities_by_week
+  args: ["--neighborhoods", "--no-cache"]
+  external_sharing_packages:
+    - package_path: out/bayesian/idf/neighborhoods_by_week_datapackage.json
+      publish_targets:
+        - github_repo: hrossman/Covid19-Survey
+          deploy_key: hrossman_covid19_survey
+          files:
+            neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
   skip-failures: true
