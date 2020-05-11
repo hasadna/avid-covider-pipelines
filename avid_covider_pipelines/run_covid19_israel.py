@@ -5,6 +5,7 @@ import json
 import hashlib
 import os
 from datapackage_pipelines_covid19israel import publish_external_sharing_packages
+import traceback
 
 
 def run_covid19_israel(parameters, run_row):
@@ -17,9 +18,10 @@ def run_covid19_israel(parameters, run_row):
     # cmd = ['bash', '-c', 'echo %s && false' % cmd]
     log_files_dir = os.path.join(parameters['output-dir'], 'log_files')
     os.makedirs(log_files_dir, exist_ok=True)
+    log_filename = os.path.join(log_files_dir, '%s.log' % run_row['start_time'].strftime('%Y%m%dT%H%M%S'))
     if utils.subprocess_call_log(
             cmd,
-            log_file=os.path.join(log_files_dir, '%s.log' % run_row['start_time'].strftime('%Y%m%dT%H%M%S')),
+            log_file=log_filename,
             cwd='../COVID19-ISRAEL'
     ) != 0:
         run_row['error'] = 'yes'
@@ -31,7 +33,11 @@ def run_covid19_israel(parameters, run_row):
             try:
                 publish_external_sharing_packages.flow({"packages": external_sharing_packages}).process()
             except Exception:
-                logging.exception("Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args))
+                errmsg = "Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args)
+                with open(log_filename, "a") as f:
+                    f.write(errmsg)
+                    traceback.print_exc(file=f)
+                logging.exception(errmsg)
                 run_row['error'] = 'yes'
 
 

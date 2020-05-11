@@ -39,8 +39,9 @@ class Generator(GeneratorBase):
             "pipeline": [{
                 "flow": "datapackage_pipelines_covid19israel.check_last_failures",
                 "parameters": {
-                    "check_covid19_israel_id_paths": check_covid19_israel_id_paths
+                    "check_covid19_israel_id_paths": check_covid19_israel_id_paths,
+                    "output-dir": "data/covid19_israel_summary_report"
                 }
             }]
         }
-        yield os.path.join(source_dir, "covid19_israel_failures_report"), failures_report_pipeline
+        yield os.path.join(source_dir, "covid19_israel_summary_report"), failures_report_pipeline

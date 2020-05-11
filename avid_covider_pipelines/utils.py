@@ -84,6 +84,7 @@ def keep_last_runs_history(output_dir, run_callback, *callback_args, **callback_
             run_fields.add(f['name'])
 
     if run_row:
+        run_row["end_time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         for k in run_row.keys():
             run_fields.add(k)
 
