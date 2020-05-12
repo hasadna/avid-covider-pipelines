@@ -64,7 +64,7 @@ jobs:
           mkdir .gpg &&\
           cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/log.gpg .log &&\
           cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/data.tar.gz.gpg data.tar.gz &&\
-          if [ "${RES}" != "0" ]; then exit 1; fi &&\
+          if [ "${RES}" != "0" ]; then exit 1; fi
         fi &&\
         docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
         echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
