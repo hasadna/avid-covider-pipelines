@@ -55,6 +55,12 @@
 #
 #   if set and is true - if pipeline fails, the dashboard will show it as a success and dependant pipelines will run
 #   at the end of all pipeline steps, there will be an additional step which will show failure with details of which pipelines failed
+#
+#
+# run-once-daily:
+#
+#   if set and is true - before running the step it will check the last runs for this step, if there was a successful run for current day -
+#   it will not run again. In this case the step will immediately fail.
 
 
 get_raw_data:
@@ -105,6 +111,7 @@ idf_report_neighborhoods_by_week:
           files:
             neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
   skip-failures: true
+  run-once-daily: true
 
 
 maps_generate_daily_summary:

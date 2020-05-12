@@ -6,39 +6,74 @@ import hashlib
 import os
 from datapackage_pipelines_covid19israel import publish_external_sharing_packages
 import traceback
+from dataflows import Flow, load
+import datetime
+from collections import defaultdict
+
+
+def did_pipeline_complete_successfully_today(output_dir):
+    if os.path.exists(os.path.join(output_dir, "runs_history", "datapackage.json")):
+        stats = defaultdict(int)
+
+        def _process_runs_history(rows):
+            for row in rows:
+                yield row
+                try:
+                    if row["error"] == "no" and row["start_time"].strftime("%Y-%m-%d") == datetime.datetime.now().strftime("%Y-%m-%d"):
+                        stats["completed_successfully"] += 1
+                except Exception:
+                    pass
+
+        Flow(load(os.path.join(output_dir, "runs_history", "datapackage.json")), _process_runs_history).process()
+        if stats["completed_successfully"] > 0:
+            logging.info("pipeline completed successfully today")
+            return True
+        else:
+            logging.info("pipeline did not complete successfully today")
+            return False
+    else:
+        logging.info("pipeline does not have runs_history datapackage, this is probably the first run for this pipeline")
+        return False
 
 
 def run_covid19_israel(parameters, run_row):
     run_row['github_sha1'] = globals().get('COVID19_ISRAEL_GITHUB_SHA1', '_')
-    args = parameters.get('args')
-    if not args:
-        args = []
-    cmd = ['python', '-u', '-m', parameters['module'], *args]
-    # cmd = ['echo'] + cmd
-    # cmd = ['bash', '-c', 'echo %s && false' % cmd]
     log_files_dir = os.path.join(parameters['output-dir'], 'log_files')
     os.makedirs(log_files_dir, exist_ok=True)
     log_filename = os.path.join(log_files_dir, '%s.log' % run_row['start_time'].strftime('%Y%m%dT%H%M%S'))
-    if utils.subprocess_call_log(
-            cmd,
-            log_file=log_filename,
-            cwd='../COVID19-ISRAEL'
-    ) != 0:
+    if parameters.get("run-once-daily") and did_pipeline_complete_successfully_today(parameters['output-dir']):
         run_row['error'] = 'yes'
-        logging.error('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
+        errmsg = "run-once-daily is set and pipeline already ran today"
+        logging.error(errmsg)
+        with open(log_filename, "w") as f:
+            f.write(errmsg)
     else:
-        run_row['error'] = 'no'
-        external_sharing_packages = parameters.get("external_sharing_packages")
-        if external_sharing_packages:
-            try:
-                publish_external_sharing_packages.flow({"packages": external_sharing_packages}).process()
-            except Exception:
-                errmsg = "Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args)
-                with open(log_filename, "a") as f:
-                    f.write(errmsg)
-                    traceback.print_exc(file=f)
-                logging.exception(errmsg)
-                run_row['error'] = 'yes'
+        args = parameters.get('args')
+        if not args:
+            args = []
+        cmd = ['python', '-u', '-m', parameters['module'], *args]
+        # cmd = ['echo'] + cmd
+        # cmd = ['bash', '-c', 'echo %s && false' % cmd]
+        if utils.subprocess_call_log(
+                cmd,
+                log_file=log_filename,
+                cwd='../COVID19-ISRAEL'
+        ) != 0:
+            run_row['error'] = 'yes'
+            logging.error('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))
+        else:
+            run_row['error'] = 'no'
+            external_sharing_packages = parameters.get("external_sharing_packages")
+            if external_sharing_packages:
+                try:
+                    publish_external_sharing_packages.flow({"packages": external_sharing_packages}).process()
+                except Exception:
+                    errmsg = "Failed to export external sharing packages for module %s with args %s" % (parameters["module"], args)
+                    with open(log_filename, "a") as f:
+                        f.write(errmsg)
+                        traceback.print_exc(file=f)
+                    logging.exception(errmsg)
+                    run_row['error'] = 'yes'
 
 
 def flow(parameters, *_):
