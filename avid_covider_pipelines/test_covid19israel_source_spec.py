@@ -33,11 +33,11 @@ def predownload_data(tests_config):
                 if row['size'] and int(row['size']) > 0:
                     filename = os.path.join("..", "COVID19-ISRAEL", row['name'])
                     if os.path.exists(filename):
-                        logging.info("File already exists: " + filename)
-                    elif not lower_in_fnmatch_list(filename, tests_config.get("predownload_data", {}).get("fnmatch_patterns_to_download", []), True):
-                        logging.info("filename is not included in fnmatch_patterns_to_download: " + filename)
-                    elif lower_in_fnmatch_list(filename, tests_config.get("predownload_data", {}).get("fnmatch_patterns_to_skip", []), False):
-                        logging.info("filename is included in fnmatch_patterns_to_skip: " + filename)
+                        logging.debug("File already exists: " + filename)
+                    elif not lower_in_fnmatch_list(row['name'], tests_config.get("predownload_data", {}).get("fnmatch_patterns_to_download", []), True):
+                        logging.debug("filename is not included in fnmatch_patterns_to_download: " + row['name'])
+                    elif lower_in_fnmatch_list(row['name'], tests_config.get("predownload_data", {}).get("fnmatch_patterns_to_skip", []), False):
+                        logging.debug("filename is included in fnmatch_patterns_to_skip: " + row['name'])
                     else:
                         logging.info("Downloading file " + filename)
                         os.makedirs(os.path.dirname(filename), exist_ok=True)
