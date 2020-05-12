@@ -64,7 +64,7 @@ jobs:
         docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
         echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
         docker push "avidcovider/pipelines:${GITHUB_SHA}" &&\
-        if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
+        if [ "${GITHUB_REF}" == "refs/heads/master" ] && ! git log -1 --pretty=format:"%s" | grep -- --no-deploy; then
           docker tag avid-covider-pipelines avidcovider/pipelines:latest &&\
           docker push avidcovider/pipelines:latest &&\
           cd `mktemp -d` &&\

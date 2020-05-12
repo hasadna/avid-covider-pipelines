@@ -56,7 +56,7 @@ def flow(parameters, *_):
         else:
             run_row['datapackage-dependencies-hash'] = ''
         run_covid19_israel(parameters, run_row)
-        return run_row, 'failed to run COVID19-ISRAEL module' if run_row['error'] == 'yes' and not parameters.get("skip-failures") else None
+        return run_row, 'failed to run COVID19-ISRAEL module %s' % parameters if run_row['error'] == 'yes' and not parameters.get("skip-failures") else None
 
     return utils.keep_last_runs_history(output_dir, _last_runs_run_callback)
 
