@@ -126,6 +126,7 @@ maps_generate_daily_summary:
           deploy_key: hasadna_avid_covider_raw_data
           files:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
+            all_dates: "input/all_dates.csv"
   skip-failures: true
 
 
