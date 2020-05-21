@@ -95,6 +95,7 @@ idf_report_cities_by_week:
           deploy_key: hrossman_covid19_survey
           files:
             cities_csv: "aggregated_data/{recent_date}_cities_by_week.csv"
+            latest_ts: "aggregated_data/ts.txt"
   skip-failures: true
 
 
