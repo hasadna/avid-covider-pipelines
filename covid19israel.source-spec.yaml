@@ -94,7 +94,7 @@ idf_report_cities_by_week:
         - github_repo: hrossman/Covid19-Survey
           deploy_key: hrossman_covid19_survey
           files:
-            cities_csv: "aggregated_data/{recent_date}_cities_by_week.csv"
+            cities_csv: "aggregated_data/cities_by_week.csv"
             latest_ts: "aggregated_data/ts.txt"
   skip-failures: true
 
@@ -110,7 +110,7 @@ idf_report_neighborhoods_by_week:
         - github_repo: hrossman/Covid19-Survey
           deploy_key: hrossman_covid19_survey
           files:
-            neighborhoods_csv: "aggregated_data/{recent_date}_neighborhoods_by_week.csv"
+            neighborhoods_csv: "aggregated_data/neighborhoods_by_week.csv"
   skip-failures: true
   run-once-daily: true
 
