@@ -111,6 +111,8 @@ maps_generate_daily_summary:
           files:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
             all_dates: "input/all_dates.csv"
+            latest_ts: "input/ts.txt"
+            latest_commit_id: "input/commit_id.txt"
   skip-failures: true
 
 
