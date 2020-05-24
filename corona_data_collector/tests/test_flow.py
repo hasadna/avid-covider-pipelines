@@ -126,7 +126,6 @@ def main():
                     "COVID-19-English.csv": "google",
                     "COVID-19-Russian.csv": "google",
                     "COVID-19-Hebrew.csv": "hebrew_google",
-                    "maccabi_updated.csv": "maccabi",
                 }
             }),
             load_from_db.flow({

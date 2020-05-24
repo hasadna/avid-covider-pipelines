@@ -121,7 +121,6 @@ if __name__ == "__main__":
         "file_sources": {
             "COVID-19-English.csv": "google",
             "COVID-19-Russian.csv": "google",
-            "COVID-19-Hebrew.csv": "hebrew_google",
-            "maccabi-2020-04-22.csv": "maccabi",
+            "COVID-19-Hebrew.csv": "hebrew_google"
         }
     }).process()

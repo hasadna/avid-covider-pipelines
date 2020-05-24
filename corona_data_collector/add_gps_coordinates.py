@@ -185,9 +185,6 @@ if __name__ == "__main__":
                 "עיר / ישוב מגורים": "city",
                 "עיר / יישוב מגורים": "city",
                 "רחוב מגורים": "street",
-            },
-            "maccabi": {
-                "yishuv": "city",
             }
         },
         'dump_to_path': 'data/corona_data_collector/add_gps_coordinates',
