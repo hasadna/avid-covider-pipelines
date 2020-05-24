@@ -102,7 +102,6 @@ idf_report_cities_by_week:
 maps_generate_daily_summary:
   dependencies:
     - idf_report_cities_by_week
-    - idf_report_neighborhoods_by_week
   module: src.utils.maps.generate_daily_summary
   external_sharing_packages:
     - package_path: out/external_sharing/HASADNA/datapackage.json
@@ -118,7 +117,6 @@ maps_generate_daily_summary:
 idf_report:
   dependencies:
     - idf_report_cities_by_week
-    - idf_report_neighborhoods_by_week
   module: src.idf_report.idf_report
   external_sharing_packages:
     - package_path: out/bayesian/idf/datapackage.json
