@@ -87,32 +87,16 @@ idf_report_cities_by_week:
   dependencies:
     - lamas_features
   module: src.idf_report.cities_by_week
-  args: ["--cities", "--no-cache"]
   external_sharing_packages:
-    - package_path: out/bayesian/idf/cities_by_week_datapackage.json
+    - package_path: out/bayesian/idf/cities_and_neighborhoods_by_week_datapackage.json
       publish_targets:
         - github_repo: hrossman/Covid19-Survey
           deploy_key: hrossman_covid19_survey
           files:
             cities_csv: "aggregated_data/cities_by_week.csv"
             latest_ts: "aggregated_data/ts.txt"
-  skip-failures: true
-
-
-idf_report_neighborhoods_by_week:
-  dependencies:
-    - lamas_features
-  module: src.idf_report.cities_by_week
-  args: ["--neighborhoods", "--no-cache"]
-  external_sharing_packages:
-    - package_path: out/bayesian/idf/neighborhoods_by_week_datapackage.json
-      publish_targets:
-        - github_repo: hrossman/Covid19-Survey
-          deploy_key: hrossman_covid19_survey
-          files:
             neighborhoods_csv: "aggregated_data/neighborhoods_by_week.csv"
   skip-failures: true
-  run-once-daily: false
 
 
 maps_generate_daily_summary:
