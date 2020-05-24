@@ -125,5 +125,5 @@ idf_report:
           deploy_key: hrossman_covid19_survey
           files_foreach:
             min_per_region_lst:
-              "min_per_region_{foreach_value}_html": "aggregated_data/{posterior_date}_min_per_region_{foreach_value}.html"
+              "min_per_region_{foreach_value}_html": "aggregated_data/min_per_region_{foreach_value}.html"
   skip-failures: true
