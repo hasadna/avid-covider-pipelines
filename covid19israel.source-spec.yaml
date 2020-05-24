@@ -112,7 +112,7 @@ idf_report_neighborhoods_by_week:
           files:
             neighborhoods_csv: "aggregated_data/neighborhoods_by_week.csv"
   skip-failures: true
-  run-once-daily: true
+  run-once-daily: false
 
 
 maps_generate_daily_summary:
