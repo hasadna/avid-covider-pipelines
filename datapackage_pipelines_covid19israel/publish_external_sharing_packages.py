@@ -7,6 +7,12 @@ import logging
 from avid_covider_pipelines.utils import get_hash, subprocess_call_log
 
 
+try:
+    from avid_covider_pipelines.run_covid19_israel import COVID19_ISRAEL_GITHUB_SHA1
+except ImportError:
+    COVID19_ISRAEL_GITHUB_SHA1 = "_"
+
+
 def flow(parameters, *_):
 
     def _process_packages():
@@ -17,6 +23,7 @@ def flow(parameters, *_):
                 resource["name"]: resource
                 for resource in package_descriptor["resources"]
             }
+            package_descriptor["COVID19_ISRAEL_GITHUB_SHA1"] = COVID19_ISRAEL_GITHUB_SHA1
             for publish_target in package["publish_targets"]:
                 assert "github_repo" in publish_target and "deploy_key" in publish_target and ("files" in publish_target or "files_foreach" in publish_target)
                 with tempfile.TemporaryDirectory() as tmpdir:
