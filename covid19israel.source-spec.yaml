@@ -116,6 +116,9 @@ maps_generate_daily_summary:
           files:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
             all_dates: "input/all_dates.csv"
+            latest_ts: "input/ts.txt"
+          file_contents:
+            "input/commit_id.txt": "{COVID19_ISRAEL_GITHUB_SHA1}"
   skip-failures: true
 
 
