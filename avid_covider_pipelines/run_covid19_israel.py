@@ -57,7 +57,8 @@ def run_covid19_israel(parameters, run_row):
         if utils.subprocess_call_log(
                 cmd,
                 log_file=log_filename,
-                cwd='../COVID19-ISRAEL'
+                cwd='../COVID19-ISRAEL',
+                env={**os.environ, "COVID19_ISRAEL_GITHUB_SHA1": globals().get('COVID19_ISRAEL_GITHUB_SHA1', '_')}
         ) != 0:
             run_row['error'] = 'yes'
             logging.error('Failed to run COVID19-ISRAEL module %s with args %s' % (parameters['module'], args))

@@ -34,21 +34,26 @@
 #
 # external_sharing_packages:
 #
-#   list of output packages to share to external sources (only if the step completes successfully)
-#   each item in the list has the following attributes:
+#   list of output packages to share to external sources (only if the step completes successfully).
+#   some fields can contain python format values from package metadata, this includes all fields in the external sharing package json
+#   as well as the following fields: COVID19_ISRAEL_GITHUB_SHA1
+#   each item in the external_sharing_packages list can have the following attributes:
 #     package_path: path to json file in COVID19-ISRAEL repository which was generated using external_sharing.save_package
 #     publish_targets: list of targets to publish the package to, each item has the following attributes:
 #        github_repo: repository to publish the data to
 #        deploy_key: id of deploy key with write access to the repository
 #        files: list of files:
 #           key: key from the external sharing package
-#           value: target path in the repository to save the file int.
+#           value: target path in the repository to save the file into.
 #                  the value can contain values from the package metadata in standard python format e.g. {metadata_attribute_name}
 #        files_foreach: allows to get a dynamic list of files form the package:
 #           key: name of value from the package meteadata which is a list of strings
 #           value: object with the following key/values:
 #             key: key from package, may include {foreach_value} replaced by an item from the list as well as other package metadata
 #             value: target path, may include {foreach_value} as well as other package metadata
+#        file_contents: allows to create files with dynamic content based on package metadata
+#           key: target path in the repository to save the file content into
+#           value: the file content, can include package metadata in standard python format e.g. {metadata_attribute_name}
 #
 #
 # skip-failures:
@@ -111,6 +116,9 @@ maps_generate_daily_summary:
           files:
             daily_summary: "input/{POSTERIOR_DATE}.csv"
             all_dates: "input/all_dates.csv"
+            latest_ts: "input/ts.txt"
+          file_contents:
+            "input/commit_id.txt": "{COVID19_ISRAEL_GITHUB_SHA1}"
   skip-failures: true
 
 
