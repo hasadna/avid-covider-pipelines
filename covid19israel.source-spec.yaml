@@ -44,13 +44,16 @@
 #        deploy_key: id of deploy key with write access to the repository
 #        files: list of files:
 #           key: key from the external sharing package
-#           value: target path in the repository to save the file int.
+#           value: target path in the repository to save the file into.
 #                  the value can contain values from the package metadata in standard python format e.g. {metadata_attribute_name}
 #        files_foreach: allows to get a dynamic list of files form the package:
 #           key: name of value from the package meteadata which is a list of strings
 #           value: object with the following key/values:
 #             key: key from package, may include {foreach_value} replaced by an item from the list as well as other package metadata
 #             value: target path, may include {foreach_value} as well as other package metadata
+#        file_contents: allows to create files with dynamic content based on package metadata
+#           key: target path in the repository to save the file content into
+#           value: the file content, can include package metadata in standard python format e.g. {metadata_attribute_name}
 #
 #
 # skip-failures:
