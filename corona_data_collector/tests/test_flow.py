@@ -12,20 +12,25 @@ DOMAIN = os.environ["AVIDCOVIDER_PIPELINES_DATA_DOMAIN"]
 AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 
 
-def _mock_school_name(id, created, data):
-    try:
-        age = int(data["age"])
-    except Exception:
-        age = None
-    if 640000 <= id <= 640100:
-        data["version"] = "3.1.0"
-        if age and age < 18:
-            agemsg = "with school_name (for age<18)"
-            data["school_name"] = "הבית ספר של נווה חמציצים"
-        else:
-            agemsg = ""
-            data["school_name"] = ""
-        logging.info("Mocking version 3.1 for ids 640000 to 640100 %s" % agemsg)
+# def _mock_school_name(id, created, data):
+#     try:
+#         age = int(data["age"])
+#     except Exception:
+#         age = None
+#     if 640000 <= id <= 640100:
+#         data["version"] = "3.1.0"
+#         if age and age < 18:
+#             agemsg = "with school_name (for age<18)"
+#             data["school_name"] = "הבית ספר של נווה חמציצים"
+#         else:
+#             agemsg = ""
+#             data["school_name"] = ""
+#         logging.info("Mocking version 3.1 for ids 640000 to 640100 %s" % agemsg)
+#     return id, created, data
+
+
+def _filter_db_row_callback(id, created, data):
+    # id, created, data = _mock_school_name(id, created, data)
     return id, created, data
 
 
@@ -52,10 +57,11 @@ def main():
                 }
             }),
             load_from_db.flow({
-                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) or (id > 640000 and id < 641000) or (id > 670000 and id < 670500) or (id > 860000 and id < 865000)",
-                "filter_db_row_callback": _mock_school_name
+                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) "
+                         "or (id > 640000 and id < 641000) or (id > 670000 and id < 670500) or (id > 860000 and id < 865000) "
+                         "or id = 462819 or id = 321761 ",
+                "filter_db_row_callback": _filter_db_row_callback
             }),
-            # _mock_gender_other,
             add_gps_coordinates.flow({
                 "source_fields": utils.get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["source_fields"],
                 "workplace_source_fields": utils.get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["workplace_source_fields"],

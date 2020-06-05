@@ -239,6 +239,7 @@ default_values = {
     "routine_visits_prayer_house": 2,  # no_response
     "routine_wears_mask": 4,  # no_response
     "routine_wears_gloves": 4,  # no_response
+    "school_name": "",
 }
 
 
