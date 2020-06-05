@@ -21,11 +21,14 @@ def test_corona_bot_answers(actual_row_callback, expected_data, extra_row_test_c
     return _test
 
 
-def run_full_db_data_test(test_fields, test_data, dry_run=False, get_real_coords=False):
+def run_full_db_data_test(test_fields, test_data, dry_run=False, get_real_coords=False, mock_data=None):
     _test_data = {id: {} for id in test_data}
 
     def _db_row_callback(id, created, data):
         if id in test_data:
+            if mock_data and id in mock_data:
+                for mock_field, mock_value in mock_data[id].items():
+                    data[mock_field] = mock_value
             for db_field, assert_values in test_data[id].items():
                 if data.get(db_field) != assert_values[0]:
                     msg = "Invalid data in db field %s id %s. expected=%s actual=%s" % (db_field, id, assert_values[0], data.get(db_field))
@@ -116,6 +119,7 @@ def get_db_test_row(version=None, field_name=None, value=None, where=None, show_
     Flow(
         load_from_db.flow({
             "where": where,
+            "limit_rows": 10,
         }),
         add_gps_coordinates.flow({
             "source_fields": get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["source_fields"],

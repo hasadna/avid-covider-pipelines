@@ -123,6 +123,7 @@ answer_titles = {
     "routine_wears_mask": "last_week_wear_mask",
     "routine_wears_gloves": "last_week_wear_gloves",
     "routine_last_asked": "routine_last_asked",
+    "school_name": "school_name",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
