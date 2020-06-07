@@ -103,7 +103,7 @@ def run_full_db_data_test(test_fields, test_data, dry_run=False, get_real_coords
     logging.info("Great Success!")
 
 
-def get_db_test_row(version=None, field_name=None, value=None, where=None, show_fields=None):
+def get_db_test_row(version=None, field_name=None, value=None, where=None, show_fields=None, limit_rows=10, db_dump_to_path=None):
     if not where:
         where = []
         if version:
@@ -119,7 +119,8 @@ def get_db_test_row(version=None, field_name=None, value=None, where=None, show_
     Flow(
         load_from_db.flow({
             "where": where,
-            "limit_rows": 10,
+            "limit_rows": limit_rows,
+            **({"dump_to_path": db_dump_to_path} if db_dump_to_path else {}),
         }),
         add_gps_coordinates.flow({
             "source_fields": get_parameters_from_pipeline_spec("pipeline-spec.yaml", "corona_data_collector", "corona_data_collector.add_gps_coordinates")["source_fields"],

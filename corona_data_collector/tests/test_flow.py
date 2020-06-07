@@ -29,8 +29,15 @@ AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 #     return id, created, data
 
 
+def _mock_symptoms_duration(id, created, data):
+    if id in (851523, 850724, 849379):
+        data["version"] = "4.1.0"
+    return id, created, data
+
+
 def _filter_db_row_callback(id, created, data):
     # id, created, data = _mock_school_name(id, created, data)
+    id, created, data = _mock_symptoms_duration(id, created, data)
     return id, created, data
 
 
@@ -59,7 +66,7 @@ def main():
             load_from_db.flow({
                 "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) "
                          "or (id > 640000 and id < 641000) or (id > 670000 and id < 670500) or (id > 860000 and id < 865000) "
-                         "or id = 462819 or id = 321761 ",
+                         "or id in (462819, 321761, 851523, 850724, 849379) ",
                 "filter_db_row_callback": _filter_db_row_callback
             }),
             add_gps_coordinates.flow({
