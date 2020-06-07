@@ -54,7 +54,7 @@ def main():
             "url": "https://%s/data/corona_data_collector/gps_data_cache/gps_data.csv" % DOMAIN})
         Flow(
             download_gdrive_data.flow({
-                "limit_rows": 50000,
+                "limit_rows": 5000,
                 "files_dump_to_path": "data/corona_data_collector/gdrive_data",
                 "google_drive_csv_folder_id": "1pzAyk-uXy__bt1tCX4rpTiPZNmrehTOz",
                 "file_sources": {
@@ -64,9 +64,15 @@ def main():
                 }
             }),
             load_from_db.flow({
-                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) "
-                         "or (id > 640000 and id < 641000) or (id > 670000 and id < 670500) or (id > 860000 and id < 865000) "
-                         "or id in (462819, 321761, 851523, 850724, 849379) ",
+                "where": "   (id > 500    and id < 1000  ) "
+                         "or (id > 180000 and id < 185000) "
+                         "or (id > 321000 and id < 322000) "
+                         "or (id > 462000 and id < 463000) "
+                         "or (id > 600000 and id < 601000) "
+                         "or (id > 640000 and id < 641000) "
+                         "or (id > 670000 and id < 670500) "
+                         "or (id < 849000 and id < 852000) "
+                         "or (id > 860000 and id < 865000) ",
                 "filter_db_row_callback": _filter_db_row_callback
             }),
             add_gps_coordinates.flow({
