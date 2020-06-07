@@ -312,7 +312,7 @@ questionare_versions = {
               "school_name",
               'version'},
 }
-
+questionare_versions["4.0.*"] = questionare_versions["4.1.*"]
 
 def get_version_columns(target_version):
     target_version = LooseVersion(target_version).version

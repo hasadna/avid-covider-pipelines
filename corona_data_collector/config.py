@@ -259,6 +259,9 @@ default_values = {
     "routine_wears_gloves": 4,  # no_response
     "school_name": "",
 }
+for key in answer_titles.keys():
+    if key.startswith("symptoms_") and key.endswith("_duration"):
+        default_values[key] = ""
 
 
 values_datetime = [

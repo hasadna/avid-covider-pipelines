@@ -29,15 +29,15 @@ AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 #     return id, created, data
 
 
-def _mock_symptoms_duration(id, created, data):
-    if id in (851523, 850724, 849379):
-        data["version"] = "4.1.0"
-    return id, created, data
+# def _mock_symptoms_duration(id, created, data):
+#     if id in (851523, 850724, 849379):
+#         data["version"] = "4.1.0"
+#     return id, created, data
 
 
 def _filter_db_row_callback(id, created, data):
     # id, created, data = _mock_school_name(id, created, data)
-    id, created, data = _mock_symptoms_duration(id, created, data)
+    # id, created, data = _mock_symptoms_duration(id, created, data)
     return id, created, data
 
 

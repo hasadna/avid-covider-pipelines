@@ -10,11 +10,6 @@ logging.basicConfig(level=logging.INFO)
 # 850724
 # 849379
 
-MOCK_DATA = {
-    851523: {"version": "4.1.0"},
-    850724: {"version": "4.1.0"},
-    849379: {"version": "4.1.0"},
-}
 TEST_FIELDS = {
     # db field                                              corona_bot_answers field
     "symptoms_clogged_nose":                                "symptoms_clogged_nose",
@@ -49,11 +44,65 @@ TEST_FIELDS = {
 TEST_DATA = {
     # id in DB:
     #   "db field": ("value in db", "value_in_corona_bot_answers")
+    400000: {
+        "symptoms_clogged_nose": (None, "0"),
+        "symptoms_clogged_nose_duration": (None, ""),
+        "symptoms_lack_of_appetite_or_skipping_meals": (None, ""),
+        "symptoms_lack_of_appetite_or_skipping_meals_duration": (None, ""),
+        "symptoms_nausea_and_vomiting": (None, "0"),
+        "symptoms_nausea_and_vomiting_duration": (None, ""),
+        "symptoms_breath_shortness": (None, "0"),
+        "symptoms_breath_shortness_duration": (None, ""),
+        "symptoms_muscles_pain": (None, "0"),
+        "symptoms_muscles_pain_duration": (None, ""),
+        "symptoms_tiredness_or_fatigue": (None, "0"),
+        "symptoms_tiredness_or_fatigue_duration": (None, ""),
+        "symptoms_headache": (None, "0"),
+        "symptoms_headache_duration": (None, ""),
+        "symptoms_smell_taste_loss": (None, "0"),
+        "symptoms_smell_taste_loss_duration": (None, ""),
+        "symptoms_dry_cough": (None, "0"),
+        "symptoms_dry_cough_duration": (None, ""),
+        "symptoms_abdominal_pain": (None, ""),
+        "symptoms_abdominal_pain_duration": (None, ""),
+        "symptoms_sore_throat": (None, "0"),
+        "symptoms_sore_throat_duration": (None, ""),
+        "symptoms_moist_cough": (None, "0"),
+        "symptoms_moist_cough_duration": (None, ""),
+        "symptoms_confusion": (None, "0"),
+        "symptoms_confusion_duration": (None, ""),
+        "symptoms_diarrhea": (None, "0"),
+        "symptoms_diarrhea_duration": (None, ""),
+    },
     851523: {
+        "symptoms_clogged_nose": (None, "0"),
+        "symptoms_clogged_nose_duration": (None, ""),
+        "symptoms_lack_of_appetite_or_skipping_meals": (None, "0"),
+        "symptoms_lack_of_appetite_or_skipping_meals_duration": (None, ""),
         "symptoms_nausea_and_vomiting": (True, "1"),
         "symptoms_nausea_and_vomiting_duration": ("0", "0"),
+        "symptoms_breath_shortness": (None, "0"),
+        "symptoms_breath_shortness_duration": (None, ""),
+        "symptoms_muscles_pain": (None, "0"),
+        "symptoms_muscles_pain_duration": (None, ""),
+        "symptoms_tiredness_or_fatigue": (None, "0"),
+        "symptoms_tiredness_or_fatigue_duration": (None, ""),
+        "symptoms_headache": (None, "0"),
+        "symptoms_headache_duration": (None, ""),
+        "symptoms_smell_taste_loss": (None, "0"),
+        "symptoms_smell_taste_loss_duration": (None, ""),
+        "symptoms_dry_cough": (None, "0"),
+        "symptoms_dry_cough_duration": (None, ""),
+        "symptoms_abdominal_pain": (None, "0"),
+        "symptoms_abdominal_pain_duration": (None, ""),
+        "symptoms_sore_throat": (None, "0"),
+        "symptoms_sore_throat_duration": (None, ""),
         "symptoms_moist_cough": (True, "1"),
-        "symptoms_moist_cough_duration": ("4", "4"),
+        "symptoms_moist_cough_duration": ("4",),
+        "symptoms_confusion": (None, "0"),
+        "symptoms_confusion_duration": (None, ""),
+        "symptoms_diarrhea": (None, "0"),
+        "symptoms_diarrhea_duration": (None, ""),
     },
     850724: {
         "symptoms_clogged_nose": (True, "1"),
@@ -78,15 +127,44 @@ TEST_DATA = {
         "symptoms_abdominal_pain_duration": ("2",),
         "symptoms_sore_throat": (True, "1"),
         "symptoms_sore_throat_duration": ("5",),
+        "symptoms_moist_cough": (None, "0"),
+        "symptoms_moist_cough_duration": (None, ""),
+        "symptoms_confusion": (None, "0"),
+        "symptoms_confusion_duration": (None, ""),
+        "symptoms_diarrhea": (None, "0"),
+        "symptoms_diarrhea_duration": (None, ""),
     },
-    849379: {},
+    849379: {
+        "symptoms_clogged_nose": (None, "0"),
+        "symptoms_clogged_nose_duration": (None, ""),
+        "symptoms_lack_of_appetite_or_skipping_meals": (None, "0"),
+        "symptoms_lack_of_appetite_or_skipping_meals_duration": (None, ""),
+        "symptoms_nausea_and_vomiting": (None, "0"),
+        "symptoms_nausea_and_vomiting_duration": (None, ""),
+        "symptoms_breath_shortness": (None, "0"),
+        "symptoms_breath_shortness_duration": (None, ""),
+        "symptoms_muscles_pain": (None, "0"),
+        "symptoms_muscles_pain_duration": (None, ""),
+        "symptoms_tiredness_or_fatigue": (None, "0"),
+        "symptoms_tiredness_or_fatigue_duration": (None, ""),
+        "symptoms_headache": (None, "0"),
+        "symptoms_headache_duration": (None, ""),
+        "symptoms_smell_taste_loss": (None, "0"),
+        "symptoms_smell_taste_loss_duration": (None, ""),
+        "symptoms_dry_cough": (None, "0"),
+        "symptoms_dry_cough_duration": (None, ""),
+        "symptoms_abdominal_pain": (None, "0"),
+        "symptoms_abdominal_pain_duration": (None, ""),
+        "symptoms_sore_throat": (None, "0"),
+        "symptoms_sore_throat_duration": (None, ""),
+        "symptoms_moist_cough": (None, "0"),
+        "symptoms_moist_cough_duration": (None, ""),
+        "symptoms_confusion": (None, "0"),
+        "symptoms_confusion_duration": (None, ""),
+        "symptoms_diarrhea": (None, "0"),
+        "symptoms_diarrhea_duration": (None, ""),
+    },
 }
 
 
-for db_field, _ in TEST_FIELDS.items():
-    for _, values in TEST_DATA.items():
-        if db_field not in values:
-            values[db_field] = (None, "0")
-
-
-run_full_db_data_test(TEST_FIELDS, TEST_DATA, mock_data=MOCK_DATA)
+run_full_db_data_test(TEST_FIELDS, TEST_DATA)
