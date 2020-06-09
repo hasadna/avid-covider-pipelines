@@ -142,6 +142,14 @@ answer_titles = {
     "routine_wears_gloves": "last_week_wear_gloves",
     "routine_last_asked": "routine_last_asked",
     "school_name": "school_name",
+    "covid_positive":                   "covid_positive",
+    "covid_last_positive_results_date": "covid_last_positive_results_date",
+    "covid_last_negative_results_date": "covid_last_negative_results_date",
+    "hospitalization_status":           "hospitalization_status",
+    "hospitalization_start_date":       "hospitalization_start_date",
+    "hospitalization_end_date":         "hospitalization_end_date",
+    "hospitalization_icu_required":     "hospitalization_icu_required",
+    "hospitalization_icu_duration":     "hospitalization_icu_duration",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -258,6 +266,13 @@ default_values = {
     "routine_wears_mask": 4,  # no_response
     "routine_wears_gloves": 4,  # no_response
     "school_name": "",
+    "covid_last_positive_results_date": "",
+    "covid_last_negative_results_date": "",
+    "hospitalization_start_date": "",
+    "hospitalization_end_date": "",
+    "covid19_check_date": "",
+    "covid19_check_result": "",
+    "hospitalization_icu_duration": "",
 }
 for key in answer_titles.keys():
     if key.startswith("symptoms_") and key.endswith("_duration"):

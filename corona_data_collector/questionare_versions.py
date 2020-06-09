@@ -310,6 +310,8 @@ questionare_versions = {
               "routine_uses_public_transportation", "routine_uses_public_transportation_bus", "routine_uses_public_transportation_train", "routine_uses_public_transportation_taxi", "routine_uses_public_transportation_other",
               "routine_visits_prayer_house", "routine_wears_mask", "routine_wears_gloves", "routine_workplace_single_location",
               "school_name",
+              "covid_positive", "covid_last_positive_results_date", "covid_last_negative_results_date", "hospitalization_status", "hospitalization_start_date", "hospitalization_end_date",
+              "hospitalization_icu_required", "hospitalization_icu_duration",
               'version'},
 }
 questionare_versions["4.0.*"] = questionare_versions["4.1.*"]
