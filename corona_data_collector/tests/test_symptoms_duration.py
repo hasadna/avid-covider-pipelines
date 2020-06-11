@@ -22,7 +22,7 @@ TEST_FIELDS = {
     "symptoms_breath_shortness_duration":                   "symptoms_breath_shortness_duration",
     "symptoms_muscles_pain":                                "symptoms_muscles_pain",
     "symptoms_muscles_pain_duration":                       "symptoms_muscles_pain_duration",
-    "symptoms_tiredness_or_fatigue":                        "symptoms_tiredness_or_fatigue",
+    "symptoms_tiredness_or_fatigue":                        "symptoms_fatigue",
     "symptoms_tiredness_or_fatigue_duration":               "symptoms_tiredness_or_fatigue_duration",
     "symptoms_headache":                                    "symptoms_headache",
     "symptoms_headache_duration":                           "symptoms_headache_duration",
