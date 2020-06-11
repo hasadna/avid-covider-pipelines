@@ -312,6 +312,7 @@ questionare_versions = {
               "school_name",
               "covid_positive", "covid_last_positive_results_date", "covid_last_negative_results_date", "hospitalization_status", "hospitalization_start_date", "hospitalization_end_date",
               "hospitalization_icu_required", "hospitalization_icu_duration",
+              "v4_insulation_status", "v4_insulation_reason",
               'version'},
 }
 questionare_versions["4.0.*"] = questionare_versions["4.1.*"]
@@ -341,6 +342,13 @@ def is_supported_version(target_version):
         return False
 
 
+def is_version_larger_or_equal_to(version, target_version):
+    try:
+        return LooseVersion(version) >= LooseVersion(target_version)
+    except Exception:
+        return False
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "--get-version-columns":
         print(get_version_columns(sys.argv[2]))
@@ -348,3 +356,5 @@ if __name__ == "__main__":
         print(get_last_version())
     elif sys.argv[1] == "--is-supported-version":
         print(is_supported_version(sys.argv[2]))
+    elif sys.argv[1] == "--is_version_larger_or_equal_to":
+        print(is_version_larger_or_equal_to(sys.argv[2], sys.argv[3]))

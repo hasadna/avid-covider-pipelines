@@ -118,6 +118,15 @@ def flow(parameters, *_):
         data_dict["workplace_lat"] = row.get("workplace_lat")
         data_dict["workplace_lng"] = row.get("workplace_lng")
         data_dict["workplace_street_accurate"] = row.get("workplace_street_accurate")
+        if questionare_versions.is_version_larger_or_equal_to(data_dict["version"], "4"):
+            data_dict["v4_insulation_status"] = data_dict["insulation_status"]
+            data_dict["v4_insulation_reason"] = data_dict["insulation_reason"]
+            data_dict["insulation_status"] = None
+            data_dict["insulation_reason"] = None
+            data_dict["exposure_status"] = None
+        else:
+            data_dict["v4_insulation_status"] = None
+            data_dict["v4_insulation_reason"] = None
         # print(data_dict)
         fixed_row = convert_values(data_dict, stats)
         if fixed_row is None:

@@ -150,6 +150,8 @@ answer_titles = {
     "hospitalization_end_date":         "hospitalization_end_date",
     "hospitalization_icu_required":     "hospitalization_icu_required",
     "hospitalization_icu_duration":     "hospitalization_icu_duration",
+    "v4_insulation_status": "v4_insulation_status",
+    "v4_insulation_reason": "v4_insulation_reason",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -204,6 +206,19 @@ values_to_convert = {
         'hospitalized': 5,
         'diagnosed': 5,
         'insulation_with_family': 6,
+    },
+    'v4_insulation_status': {
+        'none': 0,
+        'insulation': 1,
+        'insulation_with_family': 2,
+        'insulation_hotel': 3,
+    },
+    'v4_insulation_reason': {
+        'none': 0,
+        'back_from_abroad': 1,
+        'contact_with_patient': 2,
+        'has_symptoms': 3,
+        'voluntary': 4
     },
     'diagnosed_location': {
         'none': 0,
