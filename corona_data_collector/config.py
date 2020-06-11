@@ -69,23 +69,41 @@ answer_titles = {
     'toplevel_symptoms_tiredness': 'toplevel_symptoms_tiredness',
     'toplevel_symptoms_stomach': 'toplevel_symptoms_stomach',
     'symptoms_clogged_nose': 'symptoms_clogged_nose',
+    'symptoms_clogged_nose_duration': 'symptoms_clogged_nose_duration',
     'symptoms_sore_throat': 'symptoms_sore_throat',
+    'symptoms_sore_throat_duration': 'symptoms_sore_throat_duration',
     'symptoms_dry_cough': 'symptoms_dry_cough',
+    'symptoms_dry_cough_duration': 'symptoms_dry_cough_duration',
     'symptoms_moist_cough': 'symptoms_moist_cough',
+    'symptoms_moist_cough_duration': 'symptoms_moist_cough_duration',
     'symptoms_breath_shortness': 'symptoms_breath_shortness',
+    'symptoms_breath_shortness_duration': 'symptoms_breath_shortness_duration',
     'symptoms_muscles_pain': 'symptoms_muscles_pain',
+    'symptoms_muscles_pain_duration': 'symptoms_muscles_pain_duration',
     'symptoms_headache': 'symptoms_headache',
+    'symptoms_headache_duration': 'symptoms_headache_duration',
     'symptoms_fatigue': 'symptoms_fatigue',
+    'symptoms_fatigue_duration': 'symptoms_fatigue_duration',
     'symptoms_infirmity': 'symptoms_infirmity',
+    'symptoms_infirmity_duration': 'symptoms_infirmity_duration',
     'symptoms_diarrhea': 'symptoms_diarrhea',
+    'symptoms_diarrhea_duration': 'symptoms_diarrhea_duration',
     'symptoms_nausea_and_vomiting': 'symptoms_nausea_and_vomiting',
+    'symptoms_nausea_and_vomiting_duration': 'symptoms_nausea_and_vomiting_duration',
     'symptoms_chills': 'symptoms_chills',
+    'symptoms_chills_duration': 'symptoms_chills_duration',
     'symptoms_confusion': 'symptoms_confusion',
+    'symptoms_confusion_duration': 'symptoms_confusion_duration',
     'symptoms_tiredness_or_fatigue': 'symptoms_tiredness_or_fatigue',
+    'symptoms_tiredness_or_fatigue_duration': 'symptoms_tiredness_or_fatigue_duration',
     'symptoms_smell_taste_loss': 'symptoms_smell_taste_loss',
+    'symptoms_smell_taste_loss_duration': 'symptoms_smell_taste_loss_duration',
     'symptoms_other': 'symptoms_other',
+    'symptoms_other_duration': 'symptoms_other_duration',
     "symptoms_abdominal_pain": "symptoms_abdominal_pain",
+    "symptoms_abdominal_pain_duration": "symptoms_abdominal_pain_duration",
     "symptoms_lack_of_appetite_or_skipping_meals": "symptoms_lack_of_appetite_skipping_meals",
+    "symptoms_lack_of_appetite_or_skipping_meals_duration": "symptoms_lack_of_appetite_skipping_meals_duration",
     'exposure_met_people': 'exposure_met_people',
     'flatmates': 'flatmates',
     'flatmates_over_70': 'flatmates_over_70',
@@ -124,6 +142,16 @@ answer_titles = {
     "routine_wears_gloves": "last_week_wear_gloves",
     "routine_last_asked": "routine_last_asked",
     "school_name": "school_name",
+    "covid_positive":                   "covid_positive",
+    "covid_last_positive_results_date": "covid_last_positive_results_date",
+    "covid_last_negative_results_date": "covid_last_negative_results_date",
+    "hospitalization_status":           "hospitalization_status",
+    "hospitalization_start_date":       "hospitalization_start_date",
+    "hospitalization_end_date":         "hospitalization_end_date",
+    "hospitalization_icu_required":     "hospitalization_icu_required",
+    "hospitalization_icu_duration":     "hospitalization_icu_duration",
+    "v4_insulation_status": "v4_insulation_status",
+    "v4_insulation_reason": "v4_insulation_reason",
 }
 # make sure there aren't any duplicate columns
 assert len(set(answer_titles.values())) == len(answer_titles)
@@ -178,6 +206,19 @@ values_to_convert = {
         'hospitalized': 5,
         'diagnosed': 5,
         'insulation_with_family': 6,
+    },
+    'v4_insulation_status': {
+        'none': 0,
+        'insulation': 1,
+        'insulation_with_family': 2,
+        'insulation_hotel': 3,
+    },
+    'v4_insulation_reason': {
+        'none': 0,
+        'back_from_abroad': 1,
+        'contact_with_patient': 2,
+        'has_symptoms': 3,
+        'voluntary': 4
     },
     'diagnosed_location': {
         'none': 0,
@@ -240,7 +281,17 @@ default_values = {
     "routine_wears_mask": 4,  # no_response
     "routine_wears_gloves": 4,  # no_response
     "school_name": "",
+    "covid_last_positive_results_date": "",
+    "covid_last_negative_results_date": "",
+    "hospitalization_start_date": "",
+    "hospitalization_end_date": "",
+    "covid19_check_date": "",
+    "covid19_check_result": "",
+    "hospitalization_icu_duration": "",
 }
+for key in answer_titles.keys():
+    if key.startswith("symptoms_") and key.endswith("_duration"):
+        default_values[key] = ""
 
 
 values_datetime = [

@@ -29,8 +29,23 @@ AUTH_USER, AUTH_PASSWORD = os.environ["AVIDCOVIDER_PIPELINES_AUTH"].split(" ")
 #     return id, created, data
 
 
+# def _mock_symptoms_duration(id, created, data):
+#     if id in (851523, 850724, 849379):
+#         data["version"] = "4.1.0"
+#     return id, created, data
+
+
+def _mock_hospitalization_icu(id, created, data):
+    if id == 854455:
+        data["hospitalization_icu_required"] = True
+        data["hospitalization_icu_duration"] = "5"
+    return id, created, data
+
+
 def _filter_db_row_callback(id, created, data):
     # id, created, data = _mock_school_name(id, created, data)
+    # id, created, data = _mock_symptoms_duration(id, created, data)
+    id, created, data = _mock_hospitalization_icu(id, created, data)
     return id, created, data
 
 
@@ -47,7 +62,7 @@ def main():
             "url": "https://%s/data/corona_data_collector/gps_data_cache/gps_data.csv" % DOMAIN})
         Flow(
             download_gdrive_data.flow({
-                "limit_rows": 50000,
+                "limit_rows": 5000,
                 "files_dump_to_path": "data/corona_data_collector/gdrive_data",
                 "google_drive_csv_folder_id": "1pzAyk-uXy__bt1tCX4rpTiPZNmrehTOz",
                 "file_sources": {
@@ -57,9 +72,15 @@ def main():
                 }
             }),
             load_from_db.flow({
-                "where": "(id > 500 and id < 1000) or (id > 180000 and id < 185000) or (id > 600000 and id < 601000) "
-                         "or (id > 640000 and id < 641000) or (id > 670000 and id < 670500) or (id > 860000 and id < 865000) "
-                         "or id = 462819 or id = 321761 ",
+                "where": "   (id > 500    and id < 1000  ) "
+                         "or (id > 180000 and id < 185000) "
+                         "or (id > 321000 and id < 322000) "
+                         "or (id > 462000 and id < 463000) "
+                         "or (id > 600000 and id < 601000) "
+                         "or (id > 640000 and id < 641000) "
+                         "or (id > 670000 and id < 670500) "
+                         "or (id < 849000 and id < 855000) "
+                         "or (id > 860000 and id < 865000) ",
                 "filter_db_row_callback": _filter_db_row_callback
             }),
             add_gps_coordinates.flow({
