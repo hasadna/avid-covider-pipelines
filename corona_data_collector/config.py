@@ -104,6 +104,8 @@ answer_titles = {
     "symptoms_abdominal_pain_duration": "symptoms_abdominal_pain_duration",
     "symptoms_lack_of_appetite_or_skipping_meals": "symptoms_lack_of_appetite_skipping_meals",
     "symptoms_lack_of_appetite_or_skipping_meals_duration": "symptoms_lack_of_appetite_skipping_meals_duration",
+    "symptoms_rash": "symptoms_rash",
+    "symptoms_rash_duration": "symptoms_rash_duration",
     'exposure_met_people': 'exposure_met_people',
     'flatmates': 'flatmates',
     'flatmates_over_70': 'flatmates_over_70',
