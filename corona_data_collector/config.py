@@ -21,7 +21,7 @@ gps_url = 'https://maps.googleapis.com/maps/api/geocode/json'
 gps_url_key = keys.gps_url_key
 
 db_settings = {
-    "host": "35.230.137.198",
+    "host": "35.189.107.154",
     "port": 5432,
     "username": "readonly",
     "password": keys.db_pass,
