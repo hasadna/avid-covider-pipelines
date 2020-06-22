@@ -15,16 +15,17 @@ def flow(parameters, *_):
     last_id = None
     load_from = parameters.get("load_from", parameters.get('dump_to_path'))
     if load_from and os.path.exists(os.path.join(load_from, "datapackage.json")):
-        logging.info("Loading from last load_from_db package: " + os.path.join(load_from, "datapackage.json"))
-        row = None
-        for resource in Flow(load(os.path.join(load_from, "datapackage.json"), limit_rows=parameters.get("limit_rows"), resources="db_data")).datastream().res_iter:
-            for row in resource:
-                stats['loaded from package'] += 1
-                last_id = row['__id']
-                kv.set("{:0>12}".format(last_id), row)
-                if last_id % 10000 == 0:
-                    logging.info("Loaded id: %s" % last_id)
-        all_data_keys = set(row.keys()) if row else set()
+        raise Exception("load_from is not supported")
+        # logging.info("Loading from last load_from_db package: " + os.path.join(load_from, "datapackage.json"))
+        # row = None
+        # for resource in Flow(load(os.path.join(load_from, "datapackage.json"), limit_rows=parameters.get("limit_rows"), resources="db_data")).datastream().res_iter:
+        #     for row in resource:
+        #         stats['loaded from package'] += 1
+        #         last_id = row['__id']
+        #         kv.set("{:0>12}".format(last_id), row)
+        #         if last_id % 10000 == 0:
+        #             logging.info("Loaded id: %s" % last_id)
+        # all_data_keys = set(row.keys()) if row else set()
     else:
         all_data_keys = set()
     logging.info('num rows loaded from package: %s' % stats['loaded from package'])
@@ -36,12 +37,13 @@ def flow(parameters, *_):
         logging.info("Loading from DB, with where clause: " + parameters["where"])
         where = " where " + parameters["where"]
     elif last_id:
-        logging.info("Loading from DB, starting at id %s" % last_id)
-        where = " where id > %s" % last_id
+        raise Exception("Loading from last_id is not supported")
+        # logging.info("Loading from DB, starting at id %s" % last_id)
+        # where = " where id > %s" % last_id
     else:
         logging.info("Loading all records from DB")
         where = ""
-    for id, created, data in engine.execute("select id, created, data from reports%s order by id" % where):
+    for id, created, data in engine.execute("select id, created, data from reports%s order by created" % where):
         if parameters.get("filter_db_row_callback"):
             id, created, data = parameters["filter_db_row_callback"](id, created, data)
         if not data or not isinstance(data, dict):
@@ -53,7 +55,7 @@ def flow(parameters, *_):
         for k, v in data.items():
             all_data_keys.add(k)
             row[k] = v
-        kv.set("{:0>12}".format(id), row)
+        kv.set(row["__created"].strftime('%Y%m%dT%H%M%S'), row)
         if id % 100000 == 0:
             logging.info("Loaded id: %s" % id)
         if parameters.get("limit_rows") and stats['loaded from db'] > parameters["limit_rows"]:
