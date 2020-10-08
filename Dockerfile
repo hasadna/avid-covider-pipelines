@@ -26,6 +26,7 @@ RUN curl -L https://github.com/plotly/orca/releases/download/v1.3.1/orca-1.3.1.A
 COPY requirements-full.txt /pipelines/
 COPY requirements.txt /pipelines/
 RUN python3 -m pip install -r requirements-full.txt
+RUN python3 -m pip install 'celery<5'
 COPY . /pipelines
 RUN python3 -m pip install -e .
 RUN sed -i 's/count % 100 ==/count % 100000 ==/' /usr/local/lib/python3.6/dist-packages/datapackage_pipelines/lib/internal/sink.py
