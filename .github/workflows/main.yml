@@ -7,6 +7,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - env:
+        REGISTRY_URL: docker.pkg.github.com
+        DOCKER_IMAGE_NAME: "${{ env.REGISTRY_URL }}/avidcovider/pipelines"
         DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
         HASADNA_K8S_DEPLOY_KEY: ${{ secrets.HASADNA_K8S_DEPLOY_KEY }}
@@ -23,8 +25,8 @@ jobs:
         CDC_CLIENT_CERT: ${{ secrets.CDC_CLIENT_CERT }}
         CDC_CLIENT_KEY: ${{ secrets.CDC_CLIENT_KEY }}
       run: |
-        docker pull avidcovider/pipelines:latest &&\
-        docker build --cache-from avidcovider/pipelines:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -t avid-covider-pipelines . &&\
+        docker pull "${env.DOCKER_IMAGE_NAME}:latest" &&\
+        docker build --cache-from "${env.DOCKER_IMAGE_NAME}:latest" --build-arg GITHUB_SHA=${GITHUB_SHA} -t "${env.DOCKER_IMAGE_NAME}" . &&\
         if git log -1 --pretty=format:"%s" | grep -- --skip-tests; then
           mkdir -p .gpg &&\
           touch .gpg/skipped
@@ -66,12 +68,12 @@ jobs:
           cat $SECRETS_PATH/gpg_password | gpg -c --passphrase-fd 0 --batch  -o .gpg/data.tar.gz.gpg data.tar.gz &&\
           if [ "${RES}" != "0" ]; then exit 1; fi
         fi &&\
-        docker tag avid-covider-pipelines "avidcovider/pipelines:${GITHUB_SHA}" &&\
+        docker tag "${env.DOCKER_IMAGE_NAME}" "${env.DOCKER_IMAGE_NAME}:${GITHUB_SHA}" &&\
         echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin &&\
-        docker push "avidcovider/pipelines:${GITHUB_SHA}" &&\
+        docker push "${env.DOCKER_IMAGE_NAME}:${GITHUB_SHA}" &&\
         if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
-          docker tag avid-covider-pipelines avidcovider/pipelines:latest &&\
-          docker push avidcovider/pipelines:latest &&\
+          docker tag "${env.DOCKER_IMAGE_NAME}" "${env.DOCKER_IMAGE_NAME}:latest" &&\
+          docker push "${env.DOCKER_IMAGE_NAME}:latest" &&\
           if ! git log -1 --pretty=format:"%s" | grep -- --no-deploy; then
             cd `mktemp -d` &&\
             echo "${HASADNA_K8S_DEPLOY_KEY}" > hasadna_k8s_deploy_key &&\
