@@ -21,7 +21,7 @@ plotly==4.6.0
 branca==0.4.0
 scipy==1.4.1
 joblib==0.14.1
-numpy==1.18.2
+numpy==1.22.0
 sklearn==0.0
 folium==0.10.1
 psutil==5.7.0
